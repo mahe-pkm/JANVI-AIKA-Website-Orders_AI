@@ -33,23 +33,48 @@ const elements = {
     // KPIs
     kpiOrders: document.getElementById('kpi-total-orders'),
     kpiRevenue: document.getElementById('kpi-total-revenue'),
+    kpiRevenueSub: document.getElementById('kpi-total-revenue-sub'),
     kpiReturnedCount: document.getElementById('kpi-returned-count'),
     kpiRefunded: document.getElementById('kpi-total-refunded'),
     kpiSuccessfulCount: document.getElementById('kpi-successful-count'),
+    kpiSuccessfulProfit: document.getElementById('kpi-successful-profit'),
+    kpiSuccessfulRate: document.getElementById('kpi-successful-rate'),
+    kpiSuccessfulProgress: document.getElementById('kpi-successful-progress'),
     kpiProfit: document.getElementById('kpi-total-profit'),
+    kpiNetRevenueCount: document.getElementById('kpi-net-revenue-count'),
+    kpiNetRevenueCountSub: document.getElementById('kpi-net-revenue-count-sub'),
     kpiReturnRate: document.getElementById('kpi-return-rate'),
     kpiDenialRate: document.getElementById('kpi-denial-rate'),
     kpiReturnProgress: document.getElementById('kpi-return-progress'),
     kpiDenialProgress: document.getElementById('kpi-denial-progress'),
+    kpiCanceledProgress: document.getElementById('kpi-canceled-progress'),
     kpiReturnRateSub: document.getElementById('kpi-return-rate-sub'),
     kpiDenialRateSub: document.getElementById('kpi-denial-rate-sub'),
     kpiCanceledCount: document.getElementById('kpi-canceled-count'),
     kpiCanceledCountSub: document.getElementById('kpi-canceled-count-sub'),
     kpiTotalCanceled: document.getElementById('kpi-total-canceled'),
     kpiTotalCanceledSub: document.getElementById('kpi-total-canceled-sub'),
+    kpiCanceledRate: document.getElementById('kpi-canceled-rate'),
+    kpiCanceledRateSub: document.getElementById('kpi-canceled-rate-sub'),
+    kpiCanceledRateProgress: document.getElementById('kpi-canceled-rate-progress'),
+    kpiAov: document.getElementById('kpi-aov'),
+    kpiAovSub: document.getElementById('kpi-aov-sub'),
+    kpiCodNetRevenue: document.getElementById('kpi-cod-net-revenue'),
+    kpiCodNetRevenueSub: document.getElementById('kpi-cod-net-revenue-sub'),
+    kpiCodAov: document.getElementById('kpi-cod-aov'),
+    kpiCodAovSub: document.getElementById('kpi-cod-aov-sub'),
+    kpiPrepaidNetRevenue: document.getElementById('kpi-prepaid-net-revenue'),
+    kpiPrepaidNetRevenueSub: document.getElementById('kpi-prepaid-net-revenue-sub'),
+    kpiPrepaidAov: document.getElementById('kpi-prepaid-aov'),
+    kpiPrepaidAovSub: document.getElementById('kpi-prepaid-aov-sub'),
+    kpiDeniedCount: document.getElementById('kpi-denied-count'),
+    kpiDeniedCountSub: document.getElementById('kpi-denied-count-sub'),
+    kpiTotalDenied: document.getElementById('kpi-total-denied'),
+    kpiTotalDeniedSub: document.getElementById('kpi-total-denied-sub'),
     
     // Pipeline
     pipeUnfulfilled: document.querySelector('#step-unfulfilled .step-count'),
+    pipeDenied: document.querySelector('#step-denied .step-count'),
     pipeReturned: document.querySelector('#step-returned .step-count'),
     pipePickup: document.querySelector('#step-pickup .step-count'),
     pipeTransit: document.querySelector('#step-transit .step-count'),
@@ -340,16 +365,18 @@ function fetchData() {
     document.body.appendChild(script);
 }
 
-// Classify an order into one of the 6 logistics pipeline stages
+// Classify an order into logistics pipeline stages
 function getPipelineStage(o) {
     const status = (o.logisticsStatus || '').toUpperCase().trim();
     
     if (status.includes('CANCELED') || status.includes('CANCELLED')) {
         return 'canceled';
+    } else if (status.includes('RTO') || (o.codDenies === 'Yes' && status !== 'DELIVERED' && status !== 'SELF FULFILED')) {
+        return 'denied';
+    } else if (o.returned && (status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'NEW ORDER')) {
+        return 'returned';
     } else if (status === 'DELIVERED' || status === 'SELF FULFILED') {
         return 'delivered';
-    } else if (o.returned || status.includes('RTO')) {
-        return 'returned';
     } else if (status.includes('TRANSIT') || status.includes('PICKED UP') || status.includes('DELIVERY') || status.includes('HUB') || status.includes('SHIPPED') || status.includes('UNDELIVERED')) {
         return 'transit';
     } else if (status.includes('PICKUP') || status.includes('READY TO SHIP')) {
@@ -519,7 +546,7 @@ function formatCurrency(amount) {
 function renderDashboard() {
     // 1. Calculate general stats
     const canceledList = state.monthFilteredOrders.filter(o => {
-        const s = o.logisticsStatus.toUpperCase().trim();
+        const s = (o.logisticsStatus || '').toUpperCase().trim();
         return s.includes('CANCELED') || s.includes('CANCELLED');
     });
     const canceledCount = canceledList.length;
@@ -527,51 +554,138 @@ function renderDashboard() {
 
     const totalOrders = state.monthFilteredOrders.length;
     const totalRevenue = state.monthFilteredOrders.reduce((sum, o) => sum + o.totalPrice, 0);
-    const totalRefunded = state.monthFilteredOrders.filter(o => {
-        const s = o.logisticsStatus.toUpperCase().trim();
-        return o.returned && !s.includes('CANCELED') && !s.includes('CANCELLED') && s !== 'DELIVERED' && s !== 'SELF FULFILED';
-    }).reduce((sum, o) => sum + o.totalPrice, 0);
-    const totalProfit = totalRevenue - totalRefunded - totalCanceledAmount;
     
-    const returnCount = state.monthFilteredOrders.filter(o => {
-        const s = o.logisticsStatus.toUpperCase().trim();
-        return o.returned && !s.includes('CANCELED') && !s.includes('CANCELLED') && s !== 'DELIVERED' && s !== 'SELF FULFILED';
-    }).length;
-    const returnRate = totalOrders > 0 ? (returnCount / totalOrders) * 100 : 0;
-    const successfulCount = state.monthFilteredOrders.filter(o => {
-        const status = o.logisticsStatus.toUpperCase().trim();
-        return status === 'DELIVERED' || status === 'SELF FULFILED';
-    }).length;
+    const returnedList = state.monthFilteredOrders.filter(o => {
+        const s = (o.logisticsStatus || '').toUpperCase().trim();
+        const isDelivered = s === 'DELIVERED' || s === 'SELF FULFILED';
+        return o.returned && isDelivered && !s.includes('RTO') && !s.includes('CANCELED') && !s.includes('CANCELLED');
+    });
+    const returnCount = returnedList.length;
+    const totalRefunded = returnedList.reduce((sum, o) => sum + o.totalPrice, 0);
+
+    const successfulList = state.monthFilteredOrders.filter(o => {
+        return getPipelineStage(o) === 'delivered';
+    });
+    const successfulCount = successfulList.length;
+    const successfulRevenue = successfulList.reduce((sum, o) => sum + o.totalPrice, 0);
+    const successfulRate = totalOrders > 0 ? (successfulCount / totalOrders) * 100 : 0;
+
+    const returnRate = successfulCount > 0 ? (returnCount / successfulCount) * 100 : (totalOrders > 0 ? (returnCount / totalOrders) * 100 : 0);
+
+    const codOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('COD'));
+    const deniedList = state.monthFilteredOrders.filter(o => {
+        const s = (o.logisticsStatus || '').toUpperCase().trim();
+        return s.includes('RTO');
+    });
+    const allDenials = deniedList.length;
+    const totalDeniedAmount = deniedList.reduce((sum, o) => sum + o.totalPrice, 0);
+    const denialRate = codOrders.length > 0 ? (allDenials / codOrders.length) * 100 : 0;
+
+    const totalProfit = totalRevenue - totalDeniedAmount - totalRefunded - totalCanceledAmount;
+    const canceledRate = totalOrders > 0 ? (canceledCount / totalOrders) * 100 : 0;
     
-    const codOrders = state.monthFilteredOrders.filter(o => o.paymentMethod === 'COD');
-    const codDenials = codOrders.filter(o => o.codDenies === 'Yes').length;
-    const denialRate = codOrders.length > 0 ? (codDenials / codOrders.length) * 100 : 0;
+    // Average Order Value (AOV) Metrics
+    const aov = successfulCount > 0 ? totalProfit / successfulCount : (totalOrders > 0 ? totalProfit / totalOrders : 0);
+
+    const codSuccessful = codOrders.filter(o => {
+        const status = (o.logisticsStatus || '').toUpperCase().trim();
+        const isDelivered = status === 'DELIVERED' || status === 'SELF FULFILED';
+        return isDelivered && !o.returned && o.codDenies !== 'Yes';
+    });
+    const codSuccessfulCount = codSuccessful.length;
+    const codNetRevenue = codSuccessful.reduce((sum, o) => sum + o.totalPrice, 0);
+    const codAov = codSuccessfulCount > 0 ? codNetRevenue / codSuccessfulCount : 0;
+
+    const prepaidOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('PREPAID'));
+    const prepaidSuccessful = prepaidOrders.filter(o => {
+        const status = (o.logisticsStatus || '').toUpperCase().trim();
+        const isDelivered = status === 'DELIVERED' || status === 'SELF FULFILED';
+        return isDelivered && !o.returned;
+    });
+    const prepaidSuccessfulCount = prepaidSuccessful.length;
+    const prepaidNetRevenue = prepaidSuccessful.reduce((sum, o) => sum + o.totalPrice, 0);
+    const prepaidAov = prepaidSuccessfulCount > 0 ? prepaidNetRevenue / prepaidSuccessfulCount : 0;
+
+    const netRevenueList = state.monthFilteredOrders.filter(o => {
+        const s = getPipelineStage(o);
+        return s === 'delivered' || s === 'transit' || s === 'pickup' || s === 'unfulfilled';
+    });
+    const netRevenueCount = netRevenueList.length;
+    const netRevenueVal = netRevenueList.reduce((sum, o) => sum + o.totalPrice, 0);
+
+    // Write values safely
+    if (elements.kpiOrders) elements.kpiOrders.textContent = totalOrders;
+    if (elements.kpiRevenue) elements.kpiRevenue.textContent = formatCurrency(totalRevenue);
+    if (elements.kpiRevenueSub) elements.kpiRevenueSub.textContent = `From ${totalOrders} active orders`;
+    if (elements.kpiNetRevenueCount) elements.kpiNetRevenueCount.textContent = netRevenueCount;
+    if (elements.kpiNetRevenueCountSub) elements.kpiNetRevenueCountSub.textContent = `${successfulCount} delivered & ${netRevenueCount - successfulCount} in progress`;
+    if (elements.kpiReturnedCount) elements.kpiReturnedCount.textContent = returnCount;
+    if (elements.kpiRefunded) elements.kpiRefunded.textContent = formatCurrency(totalRefunded);
+    if (elements.kpiSuccessfulCount) elements.kpiSuccessfulCount.textContent = successfulCount;
+    if (elements.kpiSuccessfulProfit) elements.kpiSuccessfulProfit.textContent = formatCurrency(successfulRevenue);
+    if (elements.kpiSuccessfulRate) elements.kpiSuccessfulRate.textContent = `${successfulRate.toFixed(1)}%`;
+    if (elements.kpiProfit) elements.kpiProfit.textContent = formatCurrency(totalProfit);
+    if (elements.kpiTotalProfitSub) elements.kpiTotalProfitSub.textContent = `${netRevenueCount} net orders (${successfulCount} delivered + ${netRevenueCount - successfulCount} in progress)`;
+    if (elements.kpiReturnRate) elements.kpiReturnRate.textContent = `${returnRate.toFixed(1)}%`;
+    if (elements.kpiDenialRate) elements.kpiDenialRate.textContent = `${denialRate.toFixed(1)}%`;
     
-    // Write values
-    elements.kpiOrders.textContent = totalOrders;
-    elements.kpiRevenue.textContent = formatCurrency(totalRevenue);
-    elements.kpiReturnedCount.textContent = returnCount;
-    elements.kpiRefunded.textContent = formatCurrency(totalRefunded);
-    elements.kpiSuccessfulCount.textContent = successfulCount;
-    elements.kpiProfit.textContent = formatCurrency(totalProfit);
-    elements.kpiReturnRate.textContent = `${returnRate.toFixed(1)}%`;
-    elements.kpiDenialRate.textContent = `${denialRate.toFixed(1)}%`;
+    if (elements.kpiReturnRateSub) elements.kpiReturnRateSub.textContent = `${returnCount} returned of ${successfulCount} delivered`;
+    if (elements.kpiDenialRateSub) elements.kpiDenialRateSub.textContent = `${allDenials} denials of ${codOrders.length} COD orders`;
     
-    elements.kpiReturnRateSub.textContent = `${returnCount} returned of ${totalOrders}`;
-    elements.kpiDenialRateSub.textContent = `${codDenials} denials of ${codOrders.length} COD`;
+    if (elements.kpiCanceledCount) elements.kpiCanceledCount.textContent = canceledCount;
+    if (elements.kpiCanceledCountSub) elements.kpiCanceledCountSub.textContent = `${canceledCount} orders not accepted of ${totalOrders}`;
+    if (elements.kpiTotalCanceled) elements.kpiTotalCanceled.textContent = formatCurrency(totalCanceledAmount);
+    if (elements.kpiTotalCanceledSub) elements.kpiTotalCanceledSub.textContent = `From ${canceledCount} orders not accepted`;
+
+    if (elements.kpiDeniedCount) {
+        elements.kpiDeniedCount.textContent = allDenials;
+        if (elements.kpiDeniedCountSub) elements.kpiDeniedCountSub.textContent = `${allDenials} denied of ${totalOrders}`;
+    }
+    if (elements.kpiTotalDenied) {
+        elements.kpiTotalDenied.textContent = formatCurrency(totalDeniedAmount);
+        if (elements.kpiTotalDeniedSub) elements.kpiTotalDeniedSub.textContent = `From ${allDenials} denied`;
+    }
+
+    if (elements.kpiCanceledRate) {
+        elements.kpiCanceledRate.textContent = `${canceledRate.toFixed(1)}%`;
+        if (elements.kpiCanceledRateSub) elements.kpiCanceledRateSub.textContent = `${canceledCount} orders not accepted of ${totalOrders}`;
+    }
+
+    if (elements.kpiAov) {
+        elements.kpiAov.textContent = `~ ${formatCurrency(aov)}`;
+        if (elements.kpiAovSub) elements.kpiAovSub.textContent = `Net revenue / ${successfulCount} successful`;
+    }
+
+    if (elements.kpiCodNetRevenue) {
+        elements.kpiCodNetRevenue.textContent = formatCurrency(codNetRevenue);
+        if (elements.kpiCodNetRevenueSub) elements.kpiCodNetRevenueSub.textContent = `From ${codSuccessfulCount} delivered COD orders`;
+    }
+
+    if (elements.kpiCodAov) {
+        elements.kpiCodAov.textContent = `~ ${formatCurrency(codAov)}`;
+        if (elements.kpiCodAovSub) elements.kpiCodAovSub.textContent = `COD net revenue / ${codSuccessfulCount} successful`;
+    }
+
+    if (elements.kpiPrepaidNetRevenue) {
+        elements.kpiPrepaidNetRevenue.textContent = formatCurrency(prepaidNetRevenue);
+        if (elements.kpiPrepaidNetRevenueSub) elements.kpiPrepaidNetRevenueSub.textContent = `From ${prepaidSuccessfulCount} delivered Prepaid orders`;
+    }
+
+    if (elements.kpiPrepaidAov) {
+        elements.kpiPrepaidAov.textContent = `~ ${formatCurrency(prepaidAov)}`;
+        if (elements.kpiPrepaidAovSub) elements.kpiPrepaidAovSub.textContent = `Prepaid net revenue / ${prepaidSuccessfulCount} successful`;
+    }
     
-    elements.kpiCanceledCount.textContent = canceledCount;
-    elements.kpiCanceledCountSub.textContent = `${canceledCount} canceled of ${totalOrders}`;
-    elements.kpiTotalCanceled.textContent = formatCurrency(totalCanceledAmount);
-    elements.kpiTotalCanceledSub.textContent = `From ${canceledCount} canceled`;
-    
-    // Progress bar animations
-    elements.kpiReturnProgress.style.width = `${returnRate}%`;
-    elements.kpiDenialProgress.style.width = `${denialRate}%`;
+    // Progress bar accent lines
+    if (elements.kpiSuccessfulProgress) elements.kpiSuccessfulProgress.style.width = '100%';
+    if (elements.kpiReturnProgress) elements.kpiReturnProgress.style.width = '100%';
+    if (elements.kpiDenialProgress) elements.kpiDenialProgress.style.width = '100%';
+    if (elements.kpiCanceledProgress) elements.kpiCanceledProgress.style.width = '100%';
     
     // 2. Render Logistics Pipeline counts
     const pipeCounts = {
         unfulfilled: 0,
+        denied: 0,
         returned: 0,
         pickup: 0,
         transit: 0,
@@ -587,6 +701,7 @@ function renderDashboard() {
     });
     
     elements.pipeUnfulfilled.textContent = pipeCounts.unfulfilled;
+    if (elements.pipeDenied) elements.pipeDenied.textContent = pipeCounts.denied;
     elements.pipeReturned.textContent = pipeCounts.returned;
     elements.pipePickup.textContent = pipeCounts.pickup;
     elements.pipeTransit.textContent = pipeCounts.transit;
@@ -621,24 +736,24 @@ function renderPaymentModeBreakdown() {
     const totalMonthOrders = state.monthFilteredOrders.length;
     
     // COD Orders
-    const codOrders = state.monthFilteredOrders.filter(o => o.paymentMethod === 'COD' || o.cod === 'Yes');
+    const codOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('COD') || o.cod === 'Yes');
     const codTotal = codOrders.length;
     const codTotalVal = codOrders.reduce((sum, o) => sum + o.totalPrice, 0);
     const codShare = totalMonthOrders > 0 ? (codTotal / totalMonthOrders) * 100 : 0;
     
-    const codCounts = { delivered: 0, transit: 0, pickup: 0, unfulfilled: 0, returned: 0, canceled: 0 };
+    const codCounts = { delivered: 0, transit: 0, pickup: 0, unfulfilled: 0, denied: 0, returned: 0, canceled: 0 };
     codOrders.forEach(o => {
         const stage = getPipelineStage(o);
         if (codCounts.hasOwnProperty(stage)) codCounts[stage]++;
     });
     
     // Prepaid Orders
-    const prepaidOrders = state.monthFilteredOrders.filter(o => o.paymentMethod === 'Prepaid' || o.prepaid === 'Yes');
+    const prepaidOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('PREPAID') || o.prepaid === 'Yes');
     const prepaidTotal = prepaidOrders.length;
     const prepaidTotalVal = prepaidOrders.reduce((sum, o) => sum + o.totalPrice, 0);
     const prepaidShare = totalMonthOrders > 0 ? (prepaidTotal / totalMonthOrders) * 100 : 0;
     
-    const prepaidCounts = { delivered: 0, transit: 0, pickup: 0, unfulfilled: 0, returned: 0, canceled: 0 };
+    const prepaidCounts = { delivered: 0, transit: 0, pickup: 0, unfulfilled: 0, denied: 0, returned: 0, canceled: 0 };
     prepaidOrders.forEach(o => {
         const stage = getPipelineStage(o);
         if (prepaidCounts.hasOwnProperty(stage)) prepaidCounts[stage]++;
@@ -669,14 +784,16 @@ function renderPaymentModeBreakdown() {
     setTxt('payment-cod-pickup-pct', `${getPct(codCounts.pickup, codTotal)}%`);
     setTxt('payment-cod-unfulfilled', codCounts.unfulfilled);
     setTxt('payment-cod-unfulfilled-pct', `${getPct(codCounts.unfulfilled, codTotal)}%`);
+    setTxt('payment-cod-denied', codCounts.denied);
+    setTxt('payment-cod-denied-pct', `${getPct(codCounts.denied, codTotal)}%`);
     setTxt('payment-cod-returned', codCounts.returned);
     setTxt('payment-cod-returned-pct', `${getPct(codCounts.returned, codTotal)}%`);
     setTxt('payment-cod-canceled', codCounts.canceled);
     setTxt('payment-cod-canceled-pct', `${getPct(codCounts.canceled, codTotal)}%`);
     
-    const codReturnRate = getPct(codCounts.returned, codTotal);
-    setTxt('payment-cod-progress-text', `${codReturnRate}%`);
-    setWidth('payment-cod-progress-bar', parseFloat(codReturnRate));
+    const codDenialRate = getPct(codCounts.denied, codTotal);
+    setTxt('payment-cod-progress-text', `${codDenialRate}%`);
+    setWidth('payment-cod-progress-bar', parseFloat(codDenialRate));
     
     // Prepaid Card DOM values
     setTxt('payment-prepaid-share', `${prepaidShare.toFixed(1)}% of total`);
@@ -690,6 +807,8 @@ function renderPaymentModeBreakdown() {
     setTxt('payment-prepaid-pickup-pct', `${getPct(prepaidCounts.pickup, prepaidTotal)}%`);
     setTxt('payment-prepaid-unfulfilled', prepaidCounts.unfulfilled);
     setTxt('payment-prepaid-unfulfilled-pct', `${getPct(prepaidCounts.unfulfilled, prepaidTotal)}%`);
+    setTxt('payment-prepaid-denied', prepaidCounts.denied);
+    setTxt('payment-prepaid-denied-pct', `${getPct(prepaidCounts.denied, prepaidTotal)}%`);
     setTxt('payment-prepaid-returned', prepaidCounts.returned);
     setTxt('payment-prepaid-returned-pct', `${getPct(prepaidCounts.returned, prepaidTotal)}%`);
     setTxt('payment-prepaid-canceled', prepaidCounts.canceled);
@@ -724,6 +843,7 @@ function renderCategoryBreakdown() {
             transit: 0,
             pickup: 0,
             unfulfilled: 0,
+            denied: 0,
             returned: 0,
             canceled: 0
         };
@@ -735,6 +855,7 @@ function renderCategoryBreakdown() {
         transit: 0,
         pickup: 0,
         unfulfilled: 0,
+        denied: 0,
         returned: 0,
         canceled: 0
     };
@@ -752,6 +873,7 @@ function renderCategoryBreakdown() {
                     transit: 0,
                     pickup: 0,
                     unfulfilled: 0,
+                    denied: 0,
                     returned: 0,
                     canceled: 0
                 };
@@ -845,6 +967,10 @@ function renderCategoryBreakdown() {
                 <div class="metric-group">
                     <span class="metric-label">Unfulfilled</span>
                     <span class="metric-val" style="color:#f39c12;">${item.stats.unfulfilled}</span>
+                </div>
+                <div class="metric-group">
+                    <span class="metric-label">Denied</span>
+                    <span class="metric-val" style="color:#e74c3c;">${item.stats.denied}</span>
                 </div>
                 <div class="metric-group">
                     <span class="metric-label">Returned</span>

@@ -103,20 +103,24 @@
             </div>
         </header>
 
-        <!-- KPI Cards Grid -->
-        <section class="kpi-grid">
+        <!-- Primary Executive KPI Grid (Row 1: 4 items) -->
+        <section class="kpi-grid kpi-grid-row-1">
             <!-- Total Orders -->
             <div class="kpi-card" id="card-orders">
-                <div class="kpi-icon-wrapper blue">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/>
-                        <path d="M3 6h18"/>
-                        <path d="M16 10a4 4 0 01-8 0"/>
-                    </svg>
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Total Orders</span>
+                    <div class="kpi-icon-wrapper blue">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/>
+                            <path d="M3 6h18"/>
+                            <path d="M16 10a4 4 0 01-8 0"/>
+                        </svg>
+                    </div>
                 </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Total Orders</p>
+                <div class="kpi-card-middle">
                     <h3 class="kpi-value" id="kpi-total-orders">--</h3>
+                </div>
+                <div class="kpi-card-bottom">
                     <p class="kpi-subtext" id="kpi-total-orders-sub">Active Shopify Orders</p>
                 </div>
                 <div class="kpi-progress-bar blue">
@@ -124,166 +128,298 @@
                 </div>
             </div>
 
-            <!-- Total Sales -->
+            <!-- Total Revenue -->
             <div class="kpi-card" id="card-revenue">
-                <div class="kpi-icon-wrapper green">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 4h12M6 9h12M6 4c0 0 8 0 8 5s-8 5-8 5h4l6 7"/>
-                    </svg>
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Total Revenue</span>
+                    <div class="kpi-icon-wrapper green">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 4h12M6 9h12M6 4c0 0 8 0 8 5s-8 5-8 5h4l6 7"/>
+                        </svg>
+                    </div>
                 </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Total Revenue</p>
+                <div class="kpi-card-middle">
                     <h3 class="kpi-value" id="kpi-total-revenue">--</h3>
-                    <p class="kpi-subtext" id="kpi-total-revenue-sub">From active orders</p>
+                </div>
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-total-revenue-sub">From 147 active orders</p>
                 </div>
                 <div class="kpi-progress-bar green">
                     <div class="progress-fill" style="width: 100%;"></div>
                 </div>
             </div>
 
-            <!-- Returned Orders (Count) -->
-            <div class="kpi-card" id="card-returned-count">
-                <div class="kpi-icon-wrapper red">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 14L4 9l5-5"/>
-                        <path d="M4 9h10a5 5 0 015 5v3"/>
-                    </svg>
+            <!-- Net Revenue (Individual Card) -->
+            <div class="kpi-card" id="card-profit">
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Net Revenue</span>
+                    <div class="kpi-icon-wrapper green">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                            <polyline points="17 6 23 6 23 12"/>
+                        </svg>
+                    </div>
                 </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Returned Orders</p>
-                    <h3 class="kpi-value" id="kpi-returned-count">--</h3>
-                    <p class="kpi-subtext">Returned & RTO count</p>
+                <div class="kpi-card-middle">
+                    <h3 class="kpi-value" id="kpi-total-profit">--</h3>
                 </div>
-                <div class="kpi-progress-bar red">
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-total-profit-sub">128 net orders (108 delivered + 20 in progress)</p>
+                </div>
+                <div class="kpi-progress-bar green">
                     <div class="progress-fill" style="width: 100%;"></div>
                 </div>
             </div>
 
-            <!-- Total Refunded -->
-            <div class="kpi-card" id="card-refunded">
-                <div class="kpi-icon-wrapper red">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                        <path d="M12 7v5l4 2"/>
-                    </svg>
+            <!-- Average Order Value (AOV) -->
+            <div class="kpi-card" id="card-aov">
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Average Order Value (AOV)</span>
+                    <div class="kpi-icon-wrapper blue">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12V7H5a2 2 0 010-4h14v4"/>
+                            <path d="M3 5v14a2 2 0 002 2h16v-5"/>
+                            <path d="M18 12a2 2 0 100 4 2 2 0 000-4z"/>
+                        </svg>
+                    </div>
                 </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Total Refunded</p>
-                    <h3 class="kpi-value" id="kpi-total-refunded">--</h3>
-                    <p class="kpi-subtext" id="kpi-total-refunded-sub">From returned/RTO orders</p>
+                <div class="kpi-card-middle">
+                    <h3 class="kpi-value" id="kpi-aov">--</h3>
                 </div>
-                <div class="kpi-progress-bar red">
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-aov-sub">Net revenue / successful</p>
+                </div>
+                <div class="kpi-progress-bar blue">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Performance KPI Grid (Row 2: 4 items) -->
+        <section class="kpi-grid kpi-grid-row-2">
+            <!-- COD Net Revenue -->
+            <div class="kpi-card" id="card-cod-net-revenue">
+                <div class="kpi-card-top">
+                    <span class="kpi-label">COD Net Revenue</span>
+                    <div class="kpi-icon-wrapper orange">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="6" width="20" height="12" rx="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <path d="M6 12h.01M18 12h.01"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="kpi-card-middle">
+                    <h3 class="kpi-value" id="kpi-cod-net-revenue">--</h3>
+                </div>
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-cod-net-revenue-sub">From 32 delivered COD orders</p>
+                </div>
+                <div class="kpi-progress-bar orange">
                     <div class="progress-fill" style="width: 100%;"></div>
                 </div>
             </div>
 
-            <!-- Canceled Orders -->
-            <div class="kpi-card" id="card-canceled-count">
-                <div class="kpi-icon-wrapper orange">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="8" y1="12" x2="16" y2="12"/>
-                    </svg>
+            <!-- Average COD Order Value -->
+            <div class="kpi-card" id="card-cod-aov">
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Avg COD Order Value</span>
+                    <div class="kpi-icon-wrapper orange">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="6" width="20" height="12" rx="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <path d="M6 12h.01M18 12h.01"/>
+                        </svg>
+                    </div>
                 </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Canceled Orders</p>
-                    <h3 class="kpi-value" id="kpi-canceled-count">--</h3>
-                    <p class="kpi-subtext" id="kpi-canceled-count-sub">Canceled count</p>
+                <div class="kpi-card-middle">
+                    <h3 class="kpi-value" id="kpi-cod-aov">--</h3>
+                </div>
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-cod-aov-sub">COD net revenue / successful</p>
+                </div>
+                <div class="kpi-progress-bar orange">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Prepaid Net Revenue -->
+            <div class="kpi-card" id="card-prepaid-net-revenue">
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Prepaid Net Revenue</span>
+                    <div class="kpi-icon-wrapper green">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="kpi-card-middle">
+                    <h3 class="kpi-value" id="kpi-prepaid-net-revenue">--</h3>
+                </div>
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-prepaid-net-revenue-sub">From 76 delivered Prepaid orders</p>
+                </div>
+                <div class="kpi-progress-bar green">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Average Prepaid Order Value -->
+            <div class="kpi-card" id="card-prepaid-aov">
+                <div class="kpi-card-top">
+                    <span class="kpi-label">Avg Prepaid Order Value</span>
+                    <div class="kpi-icon-wrapper green">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="kpi-card-middle">
+                    <h3 class="kpi-value" id="kpi-prepaid-aov">--</h3>
+                </div>
+                <div class="kpi-card-bottom">
+                    <p class="kpi-subtext" id="kpi-prepaid-aov-sub">Prepaid net revenue / successful</p>
+                </div>
+                <div class="kpi-progress-bar green">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Consolidated Category Performance Grid (4 items) -->
+        <section class="kpi-grid kpi-grid-consolidated">
+            <!-- Successful Orders (Consolidated Card) -->
+            <div class="kpi-card multi-metric-card" id="card-successful-consolidated">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper green">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Successful Orders</p>
+                        <p class="kpi-subtext" id="kpi-successful-count-sub">Delivered & self fulfilled</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-successful-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Successful Revenue</span>
+                        <span class="sub-metric-val" id="kpi-successful-profit">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Successful Rate</span>
+                        <span class="sub-metric-val text-success" id="kpi-successful-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar green">
+                    <div class="progress-fill" id="kpi-successful-progress" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Denied Orders (Consolidated Card) -->
+            <div class="kpi-card multi-metric-card" id="card-denied-consolidated">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper red">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Denied Orders</p>
+                        <p class="kpi-subtext" id="kpi-denied-count-sub">Doorstep delivery denials</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-denied-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Amount</span>
+                        <span class="sub-metric-val" id="kpi-total-denied">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Denial Rate</span>
+                        <span class="sub-metric-val text-danger" id="kpi-denial-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar red">
+                    <div class="progress-fill" id="kpi-denial-progress" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Returned Orders (Consolidated Card) -->
+            <div class="kpi-card multi-metric-card" id="card-returned-consolidated">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper red">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 14L4 9l5-5"/>
+                            <path d="M4 9h10a5 5 0 015 5v3"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Returned Orders</p>
+                        <p class="kpi-subtext" id="kpi-returned-count-sub">Delivered then sent back</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-returned-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Refunded</span>
+                        <span class="sub-metric-val" id="kpi-total-refunded">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Return Rate</span>
+                        <span class="sub-metric-val text-warning" id="kpi-return-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar orange">
+                    <div class="progress-fill" id="kpi-return-progress" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Canceled Orders (Consolidated Card) -->
+            <div class="kpi-card multi-metric-card" id="card-canceled-consolidated">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper orange">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Canceled Orders</p>
+                        <p class="kpi-subtext" id="kpi-canceled-count-sub">Order not accepted</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-canceled-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Amount</span>
+                        <span class="sub-metric-val" id="kpi-total-canceled">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Canceled Rate</span>
+                        <span class="sub-metric-val text-warning" id="kpi-canceled-rate">--%</span>
+                    </div>
                 </div>
                 <div class="kpi-progress-bar orange">
                     <div class="progress-fill" id="kpi-canceled-progress" style="width: 100%;"></div>
-                </div>
-            </div>
-
-            <!-- Total Canceled Amount -->
-            <div class="kpi-card" id="card-canceled-amount">
-                <div class="kpi-icon-wrapper red">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 4h12M6 9h12M6 4c0 0 8 0 8 5s-8 5-8 5h4l6 7"/>
-                    </svg>
-                </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Total Canceled</p>
-                    <h3 class="kpi-value" id="kpi-total-canceled">--</h3>
-                    <p class="kpi-subtext" id="kpi-total-canceled-sub">Canceled orders value</p>
-                </div>
-                <div class="kpi-progress-bar red">
-                    <div class="progress-fill" id="kpi-canceled-amount-progress" style="width: 100%;"></div>
-                </div>
-            </div>
-
-            <!-- Successful Orders (Count) -->
-            <div class="kpi-card" id="card-successful-count">
-                <div class="kpi-icon-wrapper green">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                        <polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Successful Orders</p>
-                    <h3 class="kpi-value" id="kpi-successful-count">--</h3>
-                    <p class="kpi-subtext">Delivered & self fulfilled count</p>
-                </div>
-                <div class="kpi-progress-bar green">
-                    <div class="progress-fill" style="width: 100%;"></div>
-                </div>
-            </div>
-
-            <!-- Total Profit -->
-            <div class="kpi-card" id="card-profit">
-                <div class="kpi-icon-wrapper green">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                        <polyline points="17 6 23 6 23 12"/>
-                    </svg>
-                </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Total Profit</p>
-                    <h3 class="kpi-value" id="kpi-total-profit">--</h3>
-                    <p class="kpi-subtext" id="kpi-total-profit-sub">Revenue minus Refunded</p>
-                </div>
-                <div class="kpi-progress-bar green">
-                    <div class="progress-fill" style="width: 100%;"></div>
-                </div>
-            </div>
-
-            <!-- Return Rate -->
-            <div class="kpi-card" id="card-return">
-                <div class="kpi-icon-wrapper orange">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23 4 23 10 17 10"/>
-                        <polyline points="1 20 1 14 7 14"/>
-                        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                    </svg>
-                </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">Return Rate</p>
-                    <h3 class="kpi-value" id="kpi-return-rate">--</h3>
-                    <p class="kpi-subtext" id="kpi-return-rate-sub">Shopify returned count</p>
-                </div>
-                <div class="kpi-progress-bar orange">
-                    <div class="progress-fill" id="kpi-return-progress" style="width: 0%;"></div>
-                </div>
-            </div>
-
-            <!-- COD Denial Rate -->
-            <div class="kpi-card" id="card-denial">
-                <div class="kpi-icon-wrapper red">
-                    <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="15" y1="9" x2="9" y2="15"/>
-                        <line x1="9" y1="9" x2="15" y2="15"/>
-                    </svg>
-                </div>
-                <div class="kpi-content">
-                    <p class="kpi-label">COD Denial Rate</p>
-                    <h3 class="kpi-value" id="kpi-denial-rate">--</h3>
-                    <p class="kpi-subtext" id="kpi-denial-rate-sub">Delivery denials / COD total</p>
-                </div>
-                <div class="kpi-progress-bar red">
-                    <div class="progress-fill" id="kpi-denial-progress" style="width: 0%;"></div>
                 </div>
             </div>
         </section>
@@ -352,29 +488,43 @@
 
                 <div class="pipeline-arrow"></div>
 
-                <!-- Step 5: Returned / RTO -->
-                <div class="pipeline-step" id="step-returned">
+                <!-- Step 5: Denied -->
+                <div class="pipeline-step" id="step-denied">
                     <div class="step-icon">
                         <span class="step-num">5</span>
                     </div>
                     <div class="step-details">
-                        <h4>Returned / RTO</h4>
+                        <h4>Denied</h4>
                         <div class="step-count">--</div>
-                        <p>Returns & Denials</p>
+                        <p>Doorstep / RTO denials</p>
                     </div>
                 </div>
 
                 <div class="pipeline-arrow"></div>
 
-                <!-- Step 6: Canceled -->
-                <div class="pipeline-step" id="step-canceled">
+                <!-- Step 6: Returned -->
+                <div class="pipeline-step" id="step-returned">
                     <div class="step-icon">
                         <span class="step-num">6</span>
                     </div>
                     <div class="step-details">
+                        <h4>Returned</h4>
+                        <div class="step-count">--</div>
+                        <p>Delivered then sent back</p>
+                    </div>
+                </div>
+
+                <div class="pipeline-arrow"></div>
+
+                <!-- Step 7: Canceled -->
+                <div class="pipeline-step" id="step-canceled">
+                    <div class="step-icon">
+                        <span class="step-num">7</span>
+                    </div>
+                    <div class="step-details">
                         <h4>Canceled</h4>
                         <div class="step-count">--</div>
-                        <p>Canceled orders</p>
+                        <p>Order not accepted</p>
                     </div>
                 </div>
             </div>
@@ -427,21 +577,26 @@
                             <span class="box-value text-amber" id="payment-cod-unfulfilled">--</span>
                             <span class="box-sub" id="payment-cod-unfulfilled-pct">--%</span>
                         </div>
+                        <div class="metric-box highlight-deny">
+                            <span class="box-label">Denied</span>
+                            <span class="box-value text-danger" id="payment-cod-denied">--</span>
+                            <span class="box-sub text-danger" id="payment-cod-denied-pct">--%</span>
+                        </div>
                         <div class="metric-box highlight-warning">
                             <span class="box-label">Returned</span>
                             <span class="box-value text-warning" id="payment-cod-returned">--</span>
-                            <span class="box-sub text-warning" id="payment-cod-returned-pct">--% Rate</span>
+                            <span class="box-sub text-warning" id="payment-cod-returned-pct">--%</span>
                         </div>
                         <div class="metric-box highlight-deny">
                             <span class="box-label">Canceled</span>
                             <span class="box-value text-danger" id="payment-cod-canceled">--</span>
-                            <span class="box-sub text-danger" id="payment-cod-canceled-pct">--% Rate</span>
+                            <span class="box-sub text-danger" id="payment-cod-canceled-pct">--%</span>
                         </div>
                     </div>
                     
                     <div class="payment-progress-wrapper">
                         <div class="progress-info">
-                            <span>Return Rate (RTO)</span>
+                            <span>Denial Rate (RTO)</span>
                             <span id="payment-cod-progress-text">--%</span>
                         </div>
                         <div class="progress-bar-bg">
@@ -486,15 +641,20 @@
                             <span class="box-value text-amber" id="payment-prepaid-unfulfilled">--</span>
                             <span class="box-sub" id="payment-prepaid-unfulfilled-pct">--%</span>
                         </div>
+                        <div class="metric-box highlight-deny">
+                            <span class="box-label">Denied</span>
+                            <span class="box-value text-danger" id="payment-prepaid-denied">--</span>
+                            <span class="box-sub text-danger" id="payment-prepaid-denied-pct">--%</span>
+                        </div>
                         <div class="metric-box highlight-warning">
                             <span class="box-label">Returned</span>
                             <span class="box-value text-warning" id="payment-prepaid-returned">--</span>
-                            <span class="box-sub text-warning" id="payment-prepaid-returned-pct">--% Rate</span>
+                            <span class="box-sub text-warning" id="payment-prepaid-returned-pct">--%</span>
                         </div>
                         <div class="metric-box highlight-deny">
                             <span class="box-label">Canceled</span>
                             <span class="box-value text-danger" id="payment-prepaid-canceled">--</span>
-                            <span class="box-sub text-danger" id="payment-prepaid-canceled-pct">--% Rate</span>
+                            <span class="box-sub text-danger" id="payment-prepaid-canceled-pct">--%</span>
                         </div>
                     </div>
                     
@@ -624,6 +784,7 @@
                         <option value="unfulfilled">Unfulfilled</option>
                         <option value="returned">Returned</option>
                         <option value="canceled">Canceled</option>
+                        <option value="denied">Denied</option>
                     </select>
                     
                     <button id="clear-filters-btn" class="btn btn-secondary">Clear</button>

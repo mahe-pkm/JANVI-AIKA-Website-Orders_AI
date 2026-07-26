@@ -244,14 +244,15 @@ body {
     gap: var(--space-3);
 }
 
-/* Month Filter Selector in Header */
+/* Month & Date Filter Selectors in Header */
 .header-filter-group {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2);
     background: var(--bg-muted);
     border: 1px solid var(--border-color);
-    padding: 6px var(--space-3);
+    padding: 0 var(--space-3);
+    height: 36px;
     border-radius: var(--radius-sm);
     transition: border-color var(--transition-fast);
 }
@@ -266,25 +267,28 @@ body {
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    white-space: nowrap;
 }
 
 .header-month-select {
     border: none !important;
-    padding: 0 30px 0 0 !important;
+    background-color: transparent !important;
+    padding: 0 24px 0 0 !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     color: var(--color-brand) !important;
     cursor: pointer;
     outline: none;
-    height: auto !important;
+    height: 100% !important;
     width: auto !important;
     min-width: 0 !important;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     background-repeat: no-repeat;
-    background-position: right 6px center;
+    background-position: right 4px center;
     background-size: 12px 12px;
+    box-shadow: none !important;
 }
 
 .header-date-select {
@@ -330,8 +334,8 @@ body.dark-mode .date-range-trigger-btn {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
@@ -358,7 +362,7 @@ body.dark-mode .date-range-trigger-btn {
     color: var(--color-brand);
     font-size: 12px;
     font-weight: 600;
-    height: 34px;
+    height: 36px;
     padding: 0 14px;
     border-radius: var(--radius-sm);
     display: flex;
@@ -382,10 +386,11 @@ body.dark-mode .moon-icon { display: none; }
 
 /* Sync Status Indicator */
 .sync-indicator {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: 6px var(--space-3);
+    padding: 0 var(--space-4);
+    height: 36px;
     background: var(--bg-muted);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-full);
@@ -492,22 +497,123 @@ body.dark-mode .moon-icon { display: none; }
 
 .kpi-grid {
     display: grid;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.kpi-grid-primary {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-4);
+}
+
+.kpi-grid-row-1 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.kpi-grid-row-2 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.kpi-grid-consolidated {
+    grid-template-columns: repeat(4, 1fr);
 }
 
 .kpi-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: var(--space-4);
+    padding: 12px 16px;
     display: flex;
-    align-items: center;
-    gap: var(--space-3);
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 100px;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-card);
     transition: all var(--transition-fast);
+}
+
+.kpi-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-2);
+    width: 100%;
+}
+
+.kpi-card-middle {
+    margin: 4px 0;
+}
+
+.kpi-card-bottom {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.kpi-value {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.15;
+}
+
+.multi-metric-card {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: space-between !important;
+    min-height: 112px;
+    padding: 12px 16px !important;
+}
+
+.kpi-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: 6px;
+}
+
+.kpi-header-titles {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-metrics-row {
+    display: grid;
+    grid-template-columns: 0.8fr 1.6fr 1.1fr;
+    gap: var(--space-2);
+    margin-top: auto;
+    background-color: var(--bg-hover);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.kpi-sub-metric {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sub-metric-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    line-height: 1.2;
+    min-height: 24px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.sub-metric-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: auto;
+    white-space: nowrap;
 }
 
 .kpi-card:hover {
@@ -533,10 +639,23 @@ body.dark-mode .moon-icon { display: none; }
 #card-refunded .kpi-icon-wrapper { background: var(--bg-kpi-refunded); color: var(--text-kpi-refunded); }
 #card-successful-count .kpi-icon-wrapper { background: var(--bg-kpi-profit); color: var(--text-kpi-profit); }
 #card-profit .kpi-icon-wrapper { background: var(--bg-kpi-profit); color: var(--text-kpi-profit); }
+#card-net-revenue-count .kpi-icon-wrapper { background: var(--bg-kpi-orders); color: var(--text-kpi-orders); }
+#card-aov .kpi-icon-wrapper { background: var(--bg-kpi-orders); color: var(--text-kpi-orders); }
+#card-cod-net-revenue .kpi-icon-wrapper { background: var(--bg-kpi-return); color: var(--text-kpi-return); }
+#card-cod-aov .kpi-icon-wrapper { background: var(--bg-kpi-return); color: var(--text-kpi-return); }
+#card-prepaid-net-revenue .kpi-icon-wrapper { background: var(--bg-kpi-profit); color: var(--text-kpi-profit); }
+#card-prepaid-aov .kpi-icon-wrapper { background: var(--bg-kpi-profit); color: var(--text-kpi-profit); }
+#card-canceled-rate .kpi-icon-wrapper { background: var(--bg-kpi-denial); color: var(--text-kpi-denial); }
 #card-return .kpi-icon-wrapper { background: var(--bg-kpi-return); color: var(--text-kpi-return); }
 #card-denial .kpi-icon-wrapper { background: var(--bg-kpi-denial); color: var(--text-kpi-denial); }
 #card-canceled-count .kpi-icon-wrapper { background: var(--bg-kpi-return); color: var(--text-kpi-return); }
 #card-canceled-amount .kpi-icon-wrapper { background: var(--bg-kpi-denial); color: var(--text-kpi-denial); }
+#card-denied-count .kpi-icon-wrapper { background: var(--bg-kpi-denial); color: var(--text-kpi-denial); }
+#card-denied-amount .kpi-icon-wrapper { background: var(--bg-kpi-denial); color: var(--text-kpi-denial); }
+#card-successful-consolidated .kpi-icon-wrapper { background: var(--bg-kpi-profit); color: var(--text-kpi-profit); }
+#card-denied-consolidated .kpi-icon-wrapper { background: var(--bg-kpi-denial); color: var(--text-kpi-denial); }
+#card-returned-consolidated .kpi-icon-wrapper { background: var(--bg-kpi-refunded); color: var(--text-kpi-refunded); }
+#card-canceled-consolidated .kpi-icon-wrapper { background: var(--bg-kpi-return); color: var(--text-kpi-return); }
 
 .kpi-icon {
     width: 18px;
@@ -592,10 +711,24 @@ body.dark-mode .moon-icon { display: none; }
 #card-refunded .progress-fill { background: var(--color-danger); }
 #card-successful-count .progress-fill { background: var(--color-success); }
 #card-profit .progress-fill { background: var(--color-success); }
+#card-net-revenue-count .progress-fill { background: var(--color-info); }
+#card-aov .progress-fill { background: var(--color-info); }
+#card-cod-net-revenue .progress-fill { background: var(--color-warning); }
+#card-cod-aov .progress-fill { background: var(--color-warning); }
+#card-prepaid-net-revenue .progress-fill { background: var(--color-success); }
+#card-prepaid-aov .progress-fill { background: var(--color-success); }
+#card-canceled-rate .progress-fill { background: var(--color-danger); }
 #card-return .progress-fill { background: var(--color-warning); }
 #card-denial .progress-fill { background: var(--color-danger); }
 #card-canceled-count .progress-fill { background: var(--color-warning); }
 #card-canceled-amount .progress-fill { background: var(--color-danger); }
+#card-denied-count .progress-fill { background: var(--color-danger); }
+#card-denied-amount .progress-fill { background: var(--color-danger); }
+#card-canceled-amount .progress-fill { background: var(--color-danger); }
+#card-successful-consolidated .progress-fill { background: var(--color-success); }
+#card-denied-consolidated .progress-fill { background: var(--color-danger); }
+#card-returned-consolidated .progress-fill { background: var(--color-warning); }
+#card-canceled-consolidated .progress-fill { background: var(--color-warning); }
 
 /* ==========================================================================
    Fulfillment Status Pipeline Section
@@ -1279,15 +1412,27 @@ body.dark-mode .filter-select {
 
 /* 1. Large Screen / TV & Desktop (> 1200px) */
 @media (min-width: 1201px) {
-    .kpi-grid {
-        grid-template-columns: repeat(5, 1fr) !important;
+    .kpi-grid-row-1 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    .kpi-grid-row-2 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    .kpi-grid-consolidated {
+        grid-template-columns: repeat(4, 1fr) !important;
     }
 }
 
 /* 2. Standard Laptops / Small Desktop (1025px to 1200px) */
 @media (min-width: 1025px) and (max-width: 1200px) {
-    .kpi-grid {
-        grid-template-columns: repeat(5, 1fr) !important;
+    .kpi-grid-row-1 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    .kpi-grid-row-2 {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    .kpi-grid-consolidated {
+        grid-template-columns: repeat(4, 1fr) !important;
     }
     .charts-row {
         grid-template-columns: 3fr 2fr !important;
@@ -1299,9 +1444,17 @@ body.dark-mode .filter-select {
 
 /* 3. Tablets Landscape & Portrait (769px to 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .kpi-grid {
-        grid-template-columns: repeat(5, 1fr) !important;
-        gap: var(--space-3) !important;
+    .kpi-grid-row-1 {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: var(--space-4) !important;
+    }
+    .kpi-grid-row-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-4) !important;
+    }
+    .kpi-grid-consolidated {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-4) !important;
     }
     .charts-row {
         grid-template-columns: 3fr 2fr !important;
@@ -1319,8 +1472,16 @@ body.dark-mode .filter-select {
 
 /* 4. Small Tablet / Mobile Landscape (481px to 768px) */
 @media (min-width: 481px) and (max-width: 768px) {
-    .kpi-grid {
+    .kpi-grid-row-1 {
         grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-3) !important;
+    }
+    .kpi-grid-row-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-3) !important;
+    }
+    .kpi-grid-consolidated {
+        grid-template-columns: 1fr !important;
         gap: var(--space-3) !important;
     }
     .charts-row {
@@ -1482,15 +1643,17 @@ body.dark-mode .filter-select {
 
     
     /* KPI Cards (2 Columns Compact) */
-    .kpi-grid {
+    .kpi-grid-primary {
         grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-2) !important;
+    }
+
+    .kpi-grid-consolidated {
+        grid-template-columns: 1fr !important;
         gap: var(--space-2) !important;
     }
     
     .kpi-card {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: var(--space-2) !important;
         padding: var(--space-3) !important;
     }
     
@@ -1756,21 +1919,37 @@ select option,
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    padding-right: var(--space-8);
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    padding: 0 24px 0 0 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
     color: var(--color-brand) !important;
+    height: 100% !important;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    background-size: 12px 12px;
 }
 
 .date-picker-popup {
     position: absolute;
     top: calc(100% + var(--space-2));
-    left: 0;
-    z-index: 1100;
+    right: -280px;
+    left: auto;
+    z-index: 99999;
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.15), 0 10px 15px -6px rgba(0, 0, 0, 0.1);
     padding: var(--space-5);
     width: 620px;
+    max-width: calc(100vw - 32px);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
