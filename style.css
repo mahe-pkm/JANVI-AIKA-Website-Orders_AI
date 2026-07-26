@@ -1627,16 +1627,25 @@ body.dark-mode .filter-select {
     .header-filter-group {
         flex: 1 1 auto !important;
         height: 36px !important;
-        padding: 0 var(--space-2) !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+        padding: 0 10px !important;
+        display: inline-flex !important;
         align-items: center !important;
         box-sizing: border-box !important;
+        overflow: hidden !important;
     }
     
     .header-month-select {
         font-size: 12px !important;
         height: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
         line-height: 36px !important;
-        padding: 0 16px 0 0 !important;
+        padding: 0 18px 0 0 !important;
+        margin: 0 !important;
+        vertical-align: middle !important;
+        box-sizing: border-box !important;
     }
 
     .sync-indicator {
@@ -1758,7 +1767,7 @@ body.dark-mode .filter-select {
         left: 10px !important;
     }
     
-    .filter-select {
+    .filter-controls .filter-select {
         grid-column: span 1 !important;
         font-size: 12px !important;
         padding: 8px 32px 8px 12px !important;
