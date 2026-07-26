@@ -275,7 +275,7 @@ body {
 .header-month-select {
     border: none !important;
     background-color: transparent !important;
-    padding: 0 20px 0 0 !important;
+    padding: 0 32px 0 6px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     color: var(--color-brand) !important;
@@ -289,7 +289,7 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     background-repeat: no-repeat;
-    background-position: right 4px center;
+    background-position: right 8px center !important;
     background-size: 12px 12px;
     box-shadow: none !important;
     margin: 0 !important;
@@ -1642,7 +1642,8 @@ body.dark-mode .filter-select {
         min-height: 36px !important;
         max-height: 36px !important;
         line-height: 36px !important;
-        padding: 0 18px 0 0 !important;
+        padding: 0 32px 0 6px !important;
+        background-position: right 8px center !important;
         margin: 0 !important;
         vertical-align: middle !important;
         box-sizing: border-box !important;
