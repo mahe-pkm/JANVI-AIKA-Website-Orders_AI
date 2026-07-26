@@ -647,148 +647,203 @@ def process_and_create_excel():
         })
     df_monthly_summary = pd.DataFrame(monthly_data)
     
-    return_orders = df_consolidated[
-        (df_consolidated["Returned (True/False)"] == True) &
-        (~df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED"]))
+    # Net Revenue orders (DELIVERED, SELF FULFILED, TRANSIT, PICKUP, UNFULFILLED)
+    net_rev_df = df_consolidated[
+        df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED", "TRANSIT", "IN TRANSIT", "PICKUP", "PICKUP SCHEDULED", "UNFULFILLED"])
     ]
-    return_rate = (len(return_orders) / total_orders) if total_orders > 0 else 0
-    total_refunded = return_orders["Total Price"].sum()
+    net_revenue_val = net_rev_df["Total Price"].sum()
+    net_revenue_count = len(net_rev_df)
     
-    canceled_orders = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.contains("CANCELED|CANCELLED", na=False)]
-    total_canceled_count = len(canceled_orders)
-    total_canceled_amount = canceled_orders["Total Price"].sum()
+    # Delivered / Successful orders
+    successful_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED"])]
+    successful_count = len(successful_df)
+    successful_revenue = successful_df["Total Price"].sum()
+    aov = (net_revenue_val / successful_count) if successful_count > 0 else 0
     
-    successful_orders_count = len(df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED"])])
+    # COD Delivered orders
+    cod_delivered_df = df_consolidated[
+        (df_consolidated["COD (Yes/No)"] == "Yes") &
+        (df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED"]))
+    ]
+    cod_successful_count = len(cod_delivered_df)
+    cod_net_revenue = cod_delivered_df["Total Price"].sum()
+    cod_aov = (cod_net_revenue / cod_successful_count) if cod_successful_count > 0 else 0
     
-    total_profit = total_revenue - total_refunded - total_canceled_amount
+    # Prepaid Delivered orders
+    prepaid_delivered_df = df_consolidated[
+        (df_consolidated["COD (Yes/No)"] != "Yes") &
+        (df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED"]))
+    ]
+    prepaid_successful_count = len(prepaid_delivered_df)
+    prepaid_net_revenue = prepaid_delivered_df["Total Price"].sum()
+    prepaid_aov = (prepaid_net_revenue / prepaid_successful_count) if prepaid_successful_count > 0 else 0
     
-    cod_orders_df = df_consolidated[df_consolidated["COD (Yes/No)"] == "Yes"]
-    total_cod = len(cod_orders_df)
-    cod_denies_df = cod_orders_df[cod_orders_df["COD Denies (Yes/No)"] == "Yes"]
-    cod_denial_rate = (len(cod_denies_df) / total_cod) if total_cod > 0 else 0
+    # Denied Orders
+    denied_df = df_consolidated[
+        df_consolidated["Fulfillment Status"].str.upper().str.contains("DENIED|RTO DENIED", na=False) |
+        (df_consolidated["COD Denies (Yes/No)"] == "Yes")
+    ]
+    denied_count = len(denied_df)
     
-    # ROW 1 OF KPIs: Columns B to F
+    # Returned Orders
+    returned_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.contains("CUSTOMER RETURNED|RETURNED", na=False)]
+    returned_count = len(returned_df)
+    
+    # Canceled Orders
+    canceled_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.contains("CANCELED|CANCELLED", na=False)]
+    canceled_count = len(canceled_df)
+    
     # ----------------------------------------------------
+    # ROW 1 OF KPIs: Primary Overview (Cols B, C, D, E)
+    # ----------------------------------------------------
+    card_fill = PatternFill(start_color="F9F9FB", end_color="F9F9FB", fill_type="solid")
     
     # KPI 1: Total Orders
     dash_sheet["B3"] = "TOTAL ORDERS"
     dash_sheet["B3"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["B3"].alignment = align_center
-    dash_sheet["B3"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["B3"].fill = card_fill
     dash_sheet["B4"] = total_orders
-    dash_sheet["B4"].font = Font(name=font_family, size=18, bold=True, color=color_primary)
+    dash_sheet["B4"].font = Font(name=font_family, size=16, bold=True, color=color_primary)
     dash_sheet["B4"].alignment = align_center
     dash_sheet["B4"].number_format = '#,##0'
-    dash_sheet["B4"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["B4"].fill = card_fill
     
     # KPI 2: Total Revenue
     dash_sheet["C3"] = "TOTAL REVENUE"
     dash_sheet["C3"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["C3"].alignment = align_center
-    dash_sheet["C3"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["C3"].fill = card_fill
     dash_sheet["C4"] = total_revenue
-    dash_sheet["C4"].font = Font(name=font_family, size=18, bold=True, color="1E8449")
+    dash_sheet["C4"].font = Font(name=font_family, size=16, bold=True, color="1E8449")
     dash_sheet["C4"].alignment = align_center
     dash_sheet["C4"].number_format = '₹#,##0.00'
-    dash_sheet["C4"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["C4"].fill = card_fill
     
-    # KPI 3: Returned Orders
-    dash_sheet["D3"] = "RETURNED ORDERS"
+    # KPI 3: Net Revenue
+    dash_sheet["D3"] = "NET REVENUE"
     dash_sheet["D3"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["D3"].alignment = align_center
-    dash_sheet["D3"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["D4"] = len(return_orders)
-    dash_sheet["D4"].font = Font(name=font_family, size=18, bold=True, color="BA4A00")
+    dash_sheet["D3"].fill = card_fill
+    dash_sheet["D4"] = net_revenue_val
+    dash_sheet["D4"].font = Font(name=font_family, size=16, bold=True, color="1E8449")
     dash_sheet["D4"].alignment = align_center
-    dash_sheet["D4"].number_format = '#,##0'
-    dash_sheet["D4"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["D4"].number_format = '₹#,##0.00'
+    dash_sheet["D4"].fill = card_fill
     
-    # KPI 4: Total Refunded
-    dash_sheet["E3"] = "TOTAL REFUNDED"
+    # KPI 4: Average Order Value (AOV)
+    dash_sheet["E3"] = "AVERAGE ORDER VALUE (AOV)"
     dash_sheet["E3"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["E3"].alignment = align_center
-    dash_sheet["E3"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["E4"] = total_refunded
-    dash_sheet["E4"].font = Font(name=font_family, size=18, bold=True, color="A93226")
+    dash_sheet["E3"].fill = card_fill
+    dash_sheet["E4"] = f"~ ₹{aov:,.2f}"
+    dash_sheet["E4"].font = Font(name=font_family, size=16, bold=True, color="1F618D")
     dash_sheet["E4"].alignment = align_center
-    dash_sheet["E4"].number_format = '₹#,##0.00'
-    dash_sheet["E4"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-
-    # KPI 5: Canceled Orders Count
-    dash_sheet["F3"] = "CANCELED ORDERS"
-    dash_sheet["F3"].font = Font(name=font_family, size=9, bold=True, color="555555")
-    dash_sheet["F3"].alignment = align_center
-    dash_sheet["F3"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["F4"] = total_canceled_count
-    dash_sheet["F4"].font = Font(name=font_family, size=18, bold=True, color="BA4A00")
-    dash_sheet["F4"].alignment = align_center
-    dash_sheet["F4"].number_format = '#,##0'
-    dash_sheet["F4"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["E4"].fill = card_fill
     
-    # ROW 2 OF KPIs: Columns B to F (shifted down by 1 row to insert row 5 as spacer)
+    # ----------------------------------------------------
+    # ROW 2 OF KPIs: Payment Performance (Cols B, C, D, E)
     # ----------------------------------------------------
     
-    # KPI 6: Total Canceled Amount
-    dash_sheet["B6"] = "TOTAL CANCELED"
+    # KPI 5: COD Net Revenue
+    dash_sheet["B6"] = "COD NET REVENUE"
     dash_sheet["B6"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["B6"].alignment = align_center
-    dash_sheet["B6"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["B7"] = total_canceled_amount
-    dash_sheet["B7"].font = Font(name=font_family, size=18, bold=True, color="A93226")
+    dash_sheet["B6"].fill = card_fill
+    dash_sheet["B7"] = cod_net_revenue
+    dash_sheet["B7"].font = Font(name=font_family, size=16, bold=True, color="D35400")
     dash_sheet["B7"].alignment = align_center
     dash_sheet["B7"].number_format = '₹#,##0.00'
-    dash_sheet["B7"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["B7"].fill = card_fill
     
-    # KPI 7: Successful Orders
-    dash_sheet["C6"] = "SUCCESSFUL ORDERS"
+    # KPI 6: Avg COD Order Value
+    dash_sheet["C6"] = "AVG COD ORDER VALUE"
     dash_sheet["C6"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["C6"].alignment = align_center
-    dash_sheet["C6"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["C7"] = successful_orders_count
-    dash_sheet["C7"].font = Font(name=font_family, size=18, bold=True, color="1E8449")
+    dash_sheet["C6"].fill = card_fill
+    dash_sheet["C7"] = f"~ ₹{cod_aov:,.2f}"
+    dash_sheet["C7"].font = Font(name=font_family, size=16, bold=True, color="D35400")
     dash_sheet["C7"].alignment = align_center
-    dash_sheet["C7"].number_format = '#,##0'
-    dash_sheet["C7"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["C7"].fill = card_fill
     
-    # KPI 8: Total Profit
-    dash_sheet["D6"] = "TOTAL PROFIT"
+    # KPI 7: Prepaid Net Revenue
+    dash_sheet["D6"] = "PREPAID NET REVENUE"
     dash_sheet["D6"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["D6"].alignment = align_center
-    dash_sheet["D6"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["D7"] = total_profit
-    dash_sheet["D7"].font = Font(name=font_family, size=18, bold=True, color="1E8449")
+    dash_sheet["D6"].fill = card_fill
+    dash_sheet["D7"] = prepaid_net_revenue
+    dash_sheet["D7"].font = Font(name=font_family, size=16, bold=True, color="1E8449")
     dash_sheet["D7"].alignment = align_center
     dash_sheet["D7"].number_format = '₹#,##0.00'
-    dash_sheet["D7"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["D7"].fill = card_fill
     
-    # KPI 9: Return Rate
-    dash_sheet["E6"] = "RETURN RATE"
+    # KPI 8: Avg Prepaid Order Value
+    dash_sheet["E6"] = "AVG PREPAID ORDER VALUE"
     dash_sheet["E6"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["E6"].alignment = align_center
-    dash_sheet["E6"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["E7"] = return_rate
-    dash_sheet["E7"].font = Font(name=font_family, size=18, bold=True, color="BA4A00")
+    dash_sheet["E6"].fill = card_fill
+    dash_sheet["E7"] = f"~ ₹{prepaid_aov:,.2f}"
+    dash_sheet["E7"].font = Font(name=font_family, size=16, bold=True, color="1E8449")
     dash_sheet["E7"].alignment = align_center
-    dash_sheet["E7"].number_format = '0.0%'
-    dash_sheet["E7"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    dash_sheet["E7"].fill = card_fill
     
-    # KPI 10: COD Denial Rate
-    dash_sheet["F6"] = "COD DENIAL RATE"
-    dash_sheet["F6"].font = Font(name=font_family, size=9, bold=True, color="555555")
-    dash_sheet["F6"].alignment = align_center
-    dash_sheet["F6"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
-    dash_sheet["F7"] = cod_denial_rate
-    dash_sheet["F7"].font = Font(name=font_family, size=18, bold=True, color="922B21")
-    dash_sheet["F7"].alignment = align_center
-    dash_sheet["F7"].number_format = '0.0%'
-    dash_sheet["F7"].fill = PatternFill(start_color=color_accent, end_color=color_accent, fill_type="solid")
+    # ----------------------------------------------------
+    # ROW 3 OF KPIs: Operational Status Breakdown (Cols B, C, D, E)
+    # ----------------------------------------------------
     
-    # KPI Borders (2 rows of 5 cards with empty row 5)
-    for col in ["B", "C", "D", "E", "F"]:
-        # Clear Row 5
+    # KPI 9: Successful Orders
+    dash_sheet["B9"] = "SUCCESSFUL ORDERS"
+    dash_sheet["B9"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["B9"].alignment = align_center
+    dash_sheet["B9"].fill = card_fill
+    dash_sheet["B10"] = successful_count
+    dash_sheet["B10"].font = Font(name=font_family, size=16, bold=True, color="1E8449")
+    dash_sheet["B10"].alignment = align_center
+    dash_sheet["B10"].number_format = '#,##0'
+    dash_sheet["B10"].fill = card_fill
+    
+    # KPI 10: Denied Orders
+    dash_sheet["C9"] = "DENIED ORDERS"
+    dash_sheet["C9"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["C9"].alignment = align_center
+    dash_sheet["C9"].fill = card_fill
+    dash_sheet["C10"] = denied_count
+    dash_sheet["C10"].font = Font(name=font_family, size=16, bold=True, color="922B21")
+    dash_sheet["C10"].alignment = align_center
+    dash_sheet["C10"].number_format = '#,##0'
+    dash_sheet["C10"].fill = card_fill
+    
+    # KPI 11: Returned Orders
+    dash_sheet["D9"] = "RETURNED ORDERS"
+    dash_sheet["D9"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["D9"].alignment = align_center
+    dash_sheet["D9"].fill = card_fill
+    dash_sheet["D10"] = returned_count
+    dash_sheet["D10"].font = Font(name=font_family, size=16, bold=True, color="BA4A00")
+    dash_sheet["D10"].alignment = align_center
+    dash_sheet["D10"].number_format = '#,##0'
+    dash_sheet["D10"].fill = card_fill
+    
+    # KPI 12: Canceled Orders
+    dash_sheet["E9"] = "CANCELED ORDERS"
+    dash_sheet["E9"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["E9"].alignment = align_center
+    dash_sheet["E9"].fill = card_fill
+    dash_sheet["E10"] = canceled_count
+    dash_sheet["E10"].font = Font(name=font_family, size=16, bold=True, color="922B21")
+    dash_sheet["E10"].alignment = align_center
+    dash_sheet["E10"].number_format = '#,##0'
+    dash_sheet["E10"].fill = card_fill
+    
+    # KPI Card Borders (3 rows of 4 cards: Cols B, C, D, E)
+    for col in ["B", "C", "D", "E"]:
+        # Clear spacer rows
         dash_sheet[f"{col}5"].value = None
         dash_sheet[f"{col}5"].fill = PatternFill(fill_type=None)
         dash_sheet[f"{col}5"].border = Border()
+        dash_sheet[f"{col}8"].value = None
+        dash_sheet[f"{col}8"].fill = PatternFill(fill_type=None)
+        dash_sheet[f"{col}8"].border = Border()
         
         # Row 1 borders
         dash_sheet[f"{col}3"].border = Border(left=thin_side, right=thin_side, top=thin_side)
@@ -796,30 +851,37 @@ def process_and_create_excel():
         # Row 2 borders
         dash_sheet[f"{col}6"].border = Border(left=thin_side, right=thin_side, top=thin_side)
         dash_sheet[f"{col}7"].border = Border(left=thin_side, right=thin_side, bottom=thin_side)
+        # Row 3 borders
+        dash_sheet[f"{col}9"].border = Border(left=thin_side, right=thin_side, top=thin_side)
+        dash_sheet[f"{col}10"].border = Border(left=thin_side, right=thin_side, bottom=thin_side)
         
     dash_sheet.row_dimensions[3].height = 18
-    dash_sheet.row_dimensions[4].height = 28
-    dash_sheet.row_dimensions[5].height = 15  # Spacer Row
+    dash_sheet.row_dimensions[4].height = 26
+    dash_sheet.row_dimensions[5].height = 12  # Spacer Row
     dash_sheet.row_dimensions[6].height = 18
-    dash_sheet.row_dimensions[7].height = 28
+    dash_sheet.row_dimensions[7].height = 26
+    dash_sheet.row_dimensions[8].height = 12  # Spacer Row
+    dash_sheet.row_dimensions[9].height = 18
+    dash_sheet.row_dimensions[10].height = 26
+    dash_sheet.row_dimensions[11].height = 15 # Spacer Row
     
-    # Daily Table Title (shifted down)
-    dash_sheet["B9"] = "DAILY ORDERS COUNT SUMMARY"
-    dash_sheet["B9"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
+    # Daily Table Title (shifted down to row 12)
+    dash_sheet["B12"] = "DAILY ORDERS COUNT SUMMARY"
+    dash_sheet["B12"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
     
-    # Table headers (shifted down)
+    # Table headers (shifted down to row 14)
     dash_headers = ["Date of Order", "Total Orders Count", "Total Sales"]
-    dash_sheet.row_dimensions[11].height = 25
+    dash_sheet.row_dimensions[14].height = 25
     for col_idx, text in enumerate(dash_headers, start=2): # Col B to Col D
-        cell = dash_sheet.cell(row=11, column=col_idx)
+        cell = dash_sheet.cell(row=14, column=col_idx)
         cell.value = text
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = header_align
         cell.border = border_all
         
-    # Table data (shifted down)
-    start_row = 12
+    # Table data (shifted down to row 15)
+    start_row = 15
     df_daily_output = df_daily.copy()
     df_daily_output['Date of Order'] = pd.to_datetime(df_daily_output['Date of Order']).dt.strftime('%d-%m-%Y')
     
@@ -858,24 +920,24 @@ def process_and_create_excel():
     # ----------------------------------------------------
     # SECTION 8: WRITE MONTHLY SUMMARY TABLE TO DASHBOARD
     # ----------------------------------------------------
-    # Table Title (shifted down)
-    dash_sheet["F9"] = "MONTHLY ORDERS SUMMARY"
-    dash_sheet["F9"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
-    dash_sheet.merge_cells("F9:H9")
+    # Table Title (shifted down to row 12)
+    dash_sheet["F12"] = "MONTHLY ORDERS SUMMARY"
+    dash_sheet["F12"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
+    dash_sheet.merge_cells("F12:H12")
     
-    # Table headers (shifted down)
+    # Table headers (shifted down to row 14)
     monthly_headers = ["Month", "Total Orders Count", "Total Sales"]
     for col_offset, text in enumerate(monthly_headers):
         col_idx = 6 + col_offset  # F, G, H
-        cell = dash_sheet.cell(row=11, column=col_idx)
+        cell = dash_sheet.cell(row=14, column=col_idx)
         cell.value = text
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = header_align
         cell.border = border_all
         
-    # Table data (shifted down)
-    start_row_monthly = 12
+    # Table data (shifted down to row 15)
+    start_row_monthly = 15
     for idx, row in df_monthly_summary.iterrows():
         current_row = start_row_monthly + idx
         row_fill = zebra_fill if current_row % 2 == 1 else white_fill
@@ -907,15 +969,15 @@ def process_and_create_excel():
         c_rev.border = border_all
         c_rev.number_format = '₹#,##0.00'
         
-    # Set widths
+    # Set column widths
     dash_sheet.column_dimensions["A"].width = 3
-    dash_sheet.column_dimensions["B"].width = 18
-    dash_sheet.column_dimensions["C"].width = 20
-    dash_sheet.column_dimensions["D"].width = 18
-    dash_sheet.column_dimensions["E"].width = 18   # Return Rate / separator column
-    dash_sheet.column_dimensions["F"].width = 20   # Month name / COD Denial Rate
-    dash_sheet.column_dimensions["G"].width = 20   # Total Orders Count
-    dash_sheet.column_dimensions["H"].width = 18   # Total Sales
+    dash_sheet.column_dimensions["B"].width = 24
+    dash_sheet.column_dimensions["C"].width = 24
+    dash_sheet.column_dimensions["D"].width = 24
+    dash_sheet.column_dimensions["E"].width = 26
+    dash_sheet.column_dimensions["F"].width = 20
+    dash_sheet.column_dimensions["G"].width = 20
+    dash_sheet.column_dimensions["H"].width = 18
     
     # Save Excel
     writer.close()
@@ -930,14 +992,19 @@ def process_and_create_excel():
     print(f"- Shiprocket Source Orders : {sr['order_id_clean'].nunique()}")
     print(f"- Consolidated Final Orders: {total_orders}")
     
-    print("\n-------------------- KPI Summary --------------------")
+    print("\n-------------------- KPI Summary (Executive Grid) --------------------")
     print(f"* Total Orders Count      : {total_orders}")
     print(f"* Total Sales Revenue     : Rs. {total_revenue:,.2f}")
-    print(f"* Return Rate             : {return_rate:.1%} ({len(return_orders)} returned orders)")
-    print(f"* COD Denial Rate         : {cod_denial_rate:.1%} ({len(cod_denies_df)} COD denied out of {total_cod} COD orders)")
-    print(f"* Canceled Orders Count   : {total_canceled_count} orders")
-    print(f"* Total Canceled Value    : Rs. {total_canceled_amount:,.2f}")
-    print(f"* Total Calculated Profit : Rs. {total_profit:,.2f}")
+    print(f"* Net Revenue             : Rs. {net_revenue_val:,.2f} ({net_revenue_count} net orders)")
+    print(f"* Average Order Value AOV : ~ Rs. {aov:,.2f}")
+    print(f"* COD Net Revenue         : Rs. {cod_net_revenue:,.2f} ({cod_successful_count} delivered COD)")
+    print(f"* Avg COD Order Value     : ~ Rs. {cod_aov:,.2f}")
+    print(f"* Prepaid Net Revenue     : Rs. {prepaid_net_revenue:,.2f} ({prepaid_successful_count} delivered Prepaid)")
+    print(f"* Avg Prepaid Order Value : ~ Rs. {prepaid_aov:,.2f}")
+    print(f"* Successful Orders       : {successful_count} orders")
+    print(f"* Denied Orders           : {denied_count} orders")
+    print(f"* Returned Orders         : {returned_count} orders")
+    print(f"* Canceled Orders         : {canceled_count} orders")
     
     print("\n----------------- Shopify Statuses ------------------")
     print("* Financial Status:")
