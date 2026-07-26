@@ -255,6 +255,7 @@ body {
     height: 36px;
     border-radius: var(--radius-sm);
     transition: border-color var(--transition-fast);
+    box-sizing: border-box;
 }
 
 .header-filter-group:hover {
@@ -268,18 +269,20 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
+    line-height: 36px;
 }
 
 .header-month-select {
     border: none !important;
     background-color: transparent !important;
-    padding: 0 24px 0 0 !important;
+    padding: 0 20px 0 0 !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     color: var(--color-brand) !important;
     cursor: pointer;
     outline: none;
-    height: 100% !important;
+    height: 36px !important;
+    line-height: 36px !important;
     width: auto !important;
     min-width: 0 !important;
     appearance: none;
@@ -289,6 +292,8 @@ body {
     background-position: right 4px center;
     background-size: 12px 12px;
     box-shadow: none !important;
+    margin: 0 !important;
+    vertical-align: middle !important;
 }
 
 .header-date-select {
@@ -1621,11 +1626,17 @@ body.dark-mode .filter-select {
     
     .header-filter-group {
         flex: 1 1 auto !important;
-        padding: 4px var(--space-2) !important;
+        height: 36px !important;
+        padding: 0 var(--space-2) !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
     }
     
     .header-month-select {
         font-size: 12px !important;
+        height: 36px !important;
+        line-height: 36px !important;
+        padding: 0 16px 0 0 !important;
     }
 
     .sync-indicator {
