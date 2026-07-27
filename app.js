@@ -468,7 +468,16 @@ function parseData() {
 function populateFilterOptions() {
     const months = new Set();
     const statuses = new Set();
-    const categories = new Set();
+    const categories = new Set([
+        "ANARKALI",
+        "CHUDIDHAR",
+        "CO-ORD SET",
+        "HALF SAREE LEHENGA",
+        "LEHENGA",
+        "LONG GOWN",
+        "SHARARA",
+        "TOPS"
+    ]);
     
     state.orders.forEach(o => {
         if (o.dateOfOrder) {
