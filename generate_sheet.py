@@ -684,40 +684,43 @@ def process_and_create_excel():
         })
     df_monthly_summary = pd.DataFrame(monthly_data)
     
-    # Canceled Orders (6 orders = ₹22,582.00)
+    # Canceled Orders
     canceled_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.contains("CANCELED|CANCELLED", na=False)]
     canceled_count = len(canceled_df)
     canceled_amount = canceled_df["Total Price"].sum()
     
-    # Denied Orders (11 RTO Delivered orders = ₹15,938.00)
-    denied_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip() == "RTO DELIVERED"]
+    # Denied Orders (RTO Delivered or COD Denied = Yes)
+    denied_mask = (df_consolidated["Fulfillment Status"].str.upper().str.contains("DENIED|RTO DELIVERED", na=False)) | (df_consolidated["COD Denies (Yes/No)"] == "Yes")
+    denied_df = df_consolidated[denied_mask]
     denied_count = len(denied_df)
     denied_amount = denied_df["Total Price"].sum()
     
-    # Returned Orders (2 Customer Returned orders = ₹3,176.00)
-    returned_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.contains("CUSTOMER RETURNED|RETURNED", na=False)]
+    # Returned Orders (Customer Returned orders, excluding RTO/Denied)
+    returned_mask = (df_consolidated["Returned (True/False)"] == True) & (~denied_mask) & (~df_consolidated["Fulfillment Status"].str.upper().str.contains("CANCELED|CANCELLED", na=False))
+    returned_df = df_consolidated[returned_mask]
     returned_count = len(returned_df)
-    returned_amount = returned_df["Total Price"].sum() if len(returned_df) > 0 else 3176.0
-    if returned_count == 0:
-        returned_count = 2
-        returned_amount = 3176.0
+    returned_amount = returned_df["Total Price"].sum()
         
-    # Net Revenue (₹2,08,172.00 = Total Revenue - Denied - Returned - Canceled)
+    # Net Revenue (Total Revenue - Denied - Returned - Canceled)
     net_revenue_val = total_revenue - denied_amount - returned_amount - canceled_amount
     net_revenue_count = total_orders - denied_count - returned_count - canceled_count
     
-    # Successful Orders (108 delivered orders)
-    successful_count = 108
+    # Successful Orders (Delivered, Self Fulfilled, or Fulfilled without Returns/Denials)
+    successful_mask = (df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(["DELIVERED", "SELF FULFILED", "FULFILLED"])) & (~df_consolidated["Returned (True/False)"] == True) & (df_consolidated["COD Denies (Yes/No)"] != "Yes") & (~denied_mask)
+    successful_df = df_consolidated[successful_mask]
+    successful_count = len(successful_df)
     aov = (net_revenue_val / successful_count) if successful_count > 0 else 0
     
-    # COD Net Revenue (32 delivered COD orders = ₹48,604.00)
-    cod_successful_count = 32
-    cod_net_revenue = 48604.0
+    # COD Net Revenue (Delivered COD orders)
+    cod_successful_df = successful_df[successful_df["COD (Yes/No)"] == "Yes"]
+    cod_successful_count = len(cod_successful_df)
+    cod_net_revenue = cod_successful_df["Total Price"].sum()
     cod_aov = (cod_net_revenue / cod_successful_count) if cod_successful_count > 0 else 0
     
-    # Prepaid Net Revenue (76 delivered Prepaid orders = ₹124,076.00)
-    prepaid_successful_count = 76
-    prepaid_net_revenue = 124076.0
+    # Prepaid Net Revenue (Delivered Prepaid orders)
+    prepaid_successful_df = successful_df[successful_df["Prepaid (Yes/No)"] == "Yes"]
+    prepaid_successful_count = len(prepaid_successful_df)
+    prepaid_net_revenue = prepaid_successful_df["Total Price"].sum()
     prepaid_aov = (prepaid_net_revenue / prepaid_successful_count) if prepaid_successful_count > 0 else 0
     
     # ----------------------------------------------------
