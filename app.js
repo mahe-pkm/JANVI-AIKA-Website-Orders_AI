@@ -372,7 +372,7 @@ function getPipelineStage(o) {
     
     if (status.includes('CANCELED') || status.includes('CANCELLED')) {
         return 'canceled';
-    } else if (status.includes('RTO') || (o.codDenies === 'Yes' && status !== 'DELIVERED' && status !== 'SELF FULFILED' && status !== 'FULFILLED')) {
+    } else if (status.includes('RTO')) {
         return 'denied';
     } else if (o.returned && (status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'FULFILLED' || status === 'NEW ORDER')) {
         return 'returned';
