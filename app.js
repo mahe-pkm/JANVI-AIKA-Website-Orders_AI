@@ -371,11 +371,11 @@ function getPipelineStage(o) {
     
     if (status.includes('CANCELED') || status.includes('CANCELLED')) {
         return 'canceled';
-    } else if (status.includes('RTO') || (o.codDenies === 'Yes' && status !== 'DELIVERED' && status !== 'SELF FULFILED')) {
+    } else if (status.includes('RTO') || (o.codDenies === 'Yes' && status !== 'DELIVERED' && status !== 'SELF FULFILED' && status !== 'FULFILLED')) {
         return 'denied';
-    } else if (o.returned && (status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'NEW ORDER')) {
+    } else if (o.returned && (status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'FULFILLED' || status === 'NEW ORDER')) {
         return 'returned';
-    } else if (status === 'DELIVERED' || status === 'SELF FULFILED') {
+    } else if (status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'FULFILLED') {
         return 'delivered';
     } else if (status.includes('TRANSIT') || status.includes('PICKED UP') || status.includes('DELIVERY') || status.includes('HUB') || status.includes('SHIPPED') || status.includes('UNDELIVERED')) {
         return 'transit';
@@ -589,7 +589,7 @@ function renderDashboard() {
 
     const codSuccessful = codOrders.filter(o => {
         const status = (o.logisticsStatus || '').toUpperCase().trim();
-        const isDelivered = status === 'DELIVERED' || status === 'SELF FULFILED';
+        const isDelivered = status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'FULFILLED';
         return isDelivered && !o.returned && o.codDenies !== 'Yes';
     });
     const codSuccessfulCount = codSuccessful.length;
@@ -599,7 +599,7 @@ function renderDashboard() {
     const prepaidOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('PREPAID'));
     const prepaidSuccessful = prepaidOrders.filter(o => {
         const status = (o.logisticsStatus || '').toUpperCase().trim();
-        const isDelivered = status === 'DELIVERED' || status === 'SELF FULFILED';
+        const isDelivered = status === 'DELIVERED' || status === 'SELF FULFILED' || status === 'FULFILLED';
         return isDelivered && !o.returned;
     });
     const prepaidSuccessfulCount = prepaidSuccessful.length;
@@ -1540,8 +1540,8 @@ function renderTable() {
         const fulClass = o.fulfillmentStatus.toLowerCase() === 'fulfilled' ? 'success' : 'danger';
         
         let logClass = 'info';
-        if (o.logisticsStatus === 'DELIVERED') logClass = 'success';
-        if (o.logisticsStatus === 'CANCELED') logClass = 'danger';
+        if (o.logisticsStatus === 'DELIVERED' || o.logisticsStatus === 'SELF FULFILED' || o.logisticsStatus === 'FULFILLED') logClass = 'success';
+        if (o.logisticsStatus === 'CANCELED' || o.logisticsStatus === 'CANCELLED') logClass = 'danger';
         if (o.logisticsStatus.includes('RTO')) logClass = 'warning';
         
         // Feedback status pill
