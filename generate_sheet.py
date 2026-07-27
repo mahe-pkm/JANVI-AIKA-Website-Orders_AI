@@ -267,6 +267,43 @@ def process_and_create_excel():
             awb_code = ""
         tracking_link = f"https://shiprocket.co/tracking/{awb_code}" if awb_code else "-"
         
+        # Manual Order Overrides for orders fulfilled via external tracking (#1081, #1082, #1087)
+        manual_overrides = {
+            "#1081": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Failed Delivery - Customer Denied & RTO",
+                "awb": "1319460341773",
+                "tracking_link": "https://www.xpressbees.com/track?isAwb=true&trackValue=1319460341773"
+            },
+            "#1082": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Failed Delivery - Customer Denied & RTO",
+                "awb": "1319460341769",
+                "tracking_link": "https://www.xpressbees.com/track?isAwb=true&trackValue=1319460341769"
+            },
+            "#1087": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Failed Delivery - Customer Denied & RTO",
+                "awb": "SF3576445793KR",
+                "tracking_link": "https://track.shadowfax.in/track?awb=SF3576445793KR"
+            }
+        }
+        
+        if order_no in manual_overrides:
+            ov = manual_overrides[order_no]
+            fulfillment_status = ov["fulfillment_status"]
+            cod_denied = ov["cod_denied"]
+            returned = ov["returned"]
+            comments = ov["comments"]
+            awb_code = ov["awb"]
+            tracking_link = ov["tracking_link"]
+            
         # 14. SKU & Category
         sku = str(row['Lineitem sku']).strip() if pd.notna(row['Lineitem sku']) else "-"
         if not sku or sku.lower() == 'nan':
