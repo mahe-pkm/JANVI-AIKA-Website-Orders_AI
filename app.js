@@ -41,6 +41,7 @@ const elements = {
     kpiSuccessfulRate: document.getElementById('kpi-successful-rate'),
     kpiSuccessfulProgress: document.getElementById('kpi-successful-progress'),
     kpiProfit: document.getElementById('kpi-total-profit'),
+    kpiTotalProfitSub: document.getElementById('kpi-total-profit-sub'),
     kpiNetRevenueCount: document.getElementById('kpi-net-revenue-count'),
     kpiNetRevenueCountSub: document.getElementById('kpi-net-revenue-count-sub'),
     kpiReturnRate: document.getElementById('kpi-return-rate'),
