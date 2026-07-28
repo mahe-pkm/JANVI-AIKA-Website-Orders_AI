@@ -236,7 +236,7 @@ utm_content: Facebook_UA
 utm_term: 120246482908400298
 fbclid: IwZXh0bgNhZW0BMABhZGlkAas1KeYi7lpzcnRjBmFwcF9pZAwzNTA2ODU1MzE3MjgAAR753X09bYC8xRmlFZdzKuMxgPhZBAptl8TghXm9ODGrRDwDaljnLYAWHDPzrg_aem_foAqNYTCUTVhCVfZRLJcMw
 razorpay_payment_id: pay_THe8WwqSglIUoi",,Razorpay,#1227.1,0.00,Janvi Aika,0.00,,,,16821906506099,"Magic, upi",Low,399890841601,0.00,IGST 18%,212.03,,,,,,,,,+919600733224,,,Tamil Nadu,Tamil Nadu,#1227.1,,,#1227.1
-#1228,gayuu1806@gmail.com,partially_paid,2026-07-26 10:31:41 +0530,unfulfilled,,no,INR,2480.00,0.00,378.31,2480.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 10:31:38 +0530,1,Scarlet Soul - XXL,1390.00,,TOP-SS-DR-XXL,true,true,pending,Gayathri Shankaran,63 Anand Enclave Road,63 Anand Enclave Road,,,Bandlaguda Jagir,'500086,TS,IN,+919791478129,Gayathri Shankaran,63 Anand Enclave Road,63 Anand Enclave Road,,,Bandlaguda Jagir,'500086,TS,IN,+919791478129,,"Paid via: Razorpay Magic Checkout
+#1228,gayuu1806@gmail.com,partially_paid,2026-07-26 10:31:41 +0530,fulfilled,2026-07-27 10:28:06 +0530,no,INR,2480.00,0.00,378.31,2480.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 10:31:38 +0530,1,Scarlet Soul - XXL,1390.00,,TOP-SS-DR-XXL,true,true,fulfilled,Gayathri Shankaran,63 Anand Enclave Road,63 Anand Enclave Road,,,Bandlaguda Jagir,'500086,TS,IN,+919791478129,Gayathri Shankaran,63 Anand Enclave Road,63 Anand Enclave Road,,,Bandlaguda Jagir,'500086,TS,IN,+919791478129,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI0WDYjh5mHlGx
 Device_details_IP: 35.154.143.15
 cart_token: hWNE3BMi9LFga3dPbaIalmwm?key=217c05ace0eadd14ebb6759675c0f5a0
@@ -252,8 +252,8 @@ utm_content: Facebook_UA
 utm_term: 120246482908400298
 fbclid: PAZXh0bgNhZW0BMABhZGlkAas1KeYi7lpzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAafkgCAIWj_R6xrrr2g-evzkcIdZGy4HFimiHegU30ThFbhAlBQNGYZIFji7jg_aem_vaQBBtmRBQM2dE0Jt0efjQ
 razorpay_payment_id: pay_TI0ZWCME6T9a1q, pay_TI0aMnDWe6i6hn",,Razorpay,#1228.1,0.00,Janvi Aika,2381.00,,,,16823383097715,"Magic, razorpay_partial_cod, upi",Low,399890841601,0.00,IGST 18%,378.31,,,,,,,,,+919791478129,,,Telangana,Telangana,#1228.1,,,#1228.1
-#1228,gayuu1806@gmail.com,,,,,,,,,,,,,,2026-07-26 10:31:38 +0530,1,Azure Bloom Top - XXL,1390.00,"",TOP-AB-RB-XXL,true,true,pending,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919791478129,,,,,,,,
-#1229,688f065048a9dab9f11e8562@blitzscale.co,paid,2026-07-26 11:36:21 +0530,unfulfilled,,no,INR,4080.00,0.00,622.37,4080.00,Flat 500,500.00,FREE SHIPPING,2026-07-26 11:36:18 +0530,1,Naurya Teal Anarkali Dress - L,3190.00,,A-25612-NT-L,true,true,pending,Siva N,"No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,, GRS VILLA GARDEN","No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,",GRS VILLA GARDEN,,Kandigai,'600127,TN,IN,+919715267294,Siva N,"No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,, GRS VILLA GARDEN","No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,",GRS VILLA GARDEN,,Kandigai,'600127,TN,IN,+919715267294,,"Paid via: Razorpay Magic Checkout
+#1228,gayuu1806@gmail.com,,,,,,,,,,,,,,2026-07-26 10:31:38 +0530,1,Azure Bloom Top - XXL,1390.00,"",TOP-AB-RB-XXL,true,true,fulfilled,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919791478129,,,,,,,,
+#1229,688f065048a9dab9f11e8562@blitzscale.co,paid,2026-07-26 11:36:21 +0530,fulfilled,2026-07-27 11:01:25 +0530,no,INR,4080.00,0.00,622.37,4080.00,Flat 500,500.00,FREE SHIPPING,2026-07-26 11:36:18 +0530,1,Naurya Teal Anarkali Dress - L,3190.00,,A-25612-NT-L,true,true,fulfilled,Siva N,"No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,, GRS VILLA GARDEN","No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,",GRS VILLA GARDEN,,Kandigai,'600127,TN,IN,+919715267294,Siva N,"No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,, GRS VILLA GARDEN","No7, GRS VILLA GARDEN, PERUMAL KOIL STREET, OPPO TO GOVT CHILDREN'S PARK,",GRS VILLA GARDEN,,Kandigai,'600127,TN,IN,+919715267294,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI1eXHVwFkeEaY
 Device_details_IP: 35.154.217.40
 cart_token: hWNEGYi3IPGA6QQJ5omGEydI?key=6c505837852d64172c3530a64f76ac30
@@ -270,8 +270,8 @@ utm_content: Facebook_UA
 utm_term: 120247740534190298
 fbclid: PAcGRvZgJleHRuA2FlbQEwAGFkaWQBqzUp7H4g2nNydGMGYXBwX2lkDzU2NzA2NzM0MzM1MjQyNwABp1w7lA2H-mJFi8hFPDm_hxCpUb2Kaya2jX1ikTtJ0y9gsTTNVaqkgvU36i8Y_aem_QPUhYm5GgzwOZPYB8MDBag
 razorpay_payment_id: pay_TI1fo30vcyNjtT",,Razorpay,#1229.1,0.00,Janvi Aika,0.00,,,,16823432708467,"Magic, upi",Low,399890841601,0.00,IGST 18%,622.37,,,,,,,,,+919715267294,,,Tamil Nadu,Tamil Nadu,#1229.1,,,#1229.1
-#1229,688f065048a9dab9f11e8562@blitzscale.co,,,,,,,,,,,,,,2026-07-26 11:36:18 +0530,1,Tulip Tradition - L,1390.00,"",TOP-TT-LP-L,true,true,pending,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919715267294,,,,,,,,
-#1230,rkvivekanantha@gmail.com,paid,2026-07-26 11:53:40 +0530,unfulfilled,,no,INR,3570.00,0.00,544.58,3570.00,Flat 500,500.00,FREE SHIPPING,2026-07-26 11:53:38 +0530,1,Purple Panache - M,1290.00,,TOP-PP-PU-M,true,true,pending,Vivekananthan .,"B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam, Chennai","B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam",Chennai,,Kanchipuram,'603210,TN,IN,+919910674610,Vivekananthan .,"B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam, Chennai","B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam",Chennai,,Kanchipuram,'603210,TN,IN,+919910674610,,"Paid via: Razorpay Magic Checkout
+#1229,688f065048a9dab9f11e8562@blitzscale.co,,,,,,,,,,,,,,2026-07-26 11:36:18 +0530,1,Tulip Tradition - L,1390.00,"",TOP-TT-LP-L,true,true,fulfilled,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919715267294,,,,,,,,
+#1230,rkvivekanantha@gmail.com,paid,2026-07-26 11:53:40 +0530,fulfilled,2026-07-27 11:41:47 +0530,no,INR,3570.00,0.00,544.58,3570.00,Flat 500,500.00,FREE SHIPPING,2026-07-26 11:53:38 +0530,1,Purple Panache - M,1290.00,,TOP-PP-PU-M,true,true,fulfilled,Vivekananthan .,"B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam, Chennai","B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam",Chennai,,Kanchipuram,'603210,TN,IN,+919910674610,Vivekananthan .,"B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam, Chennai","B 303, Sidharth Dakshin, Iyyancherry main road, Urapakkam",Chennai,,Kanchipuram,'603210,TN,IN,+919910674610,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI1vOAivyhWTFE
 Device_details_IP: 35.154.217.40
 cart_token: hWNEt1L9hqvpsXDkHykEsvXo?key=cb03a492664cd1d806d079ae5bf654a4
@@ -287,9 +287,9 @@ utm_content: Facebook_UA
 utm_term: 120246482908400298
 fbclid: PAcGRvZgJleHRuA2FlbQEwAGFkaWQBqzUp5iLuWnNydGMGYXBwX2lkDzEyNDAyNDU3NDI4NzQxNAABpy_C16zAISYp9-C32u-LWS_PGAUNvrkfeNpJhJw84ATVoX-CwserjVH-meK9_aem_LeCLCS1NZN1rLHET71mozA
 razorpay_payment_id: pay_TI1y890psYdOkX",,Razorpay,#1230.1,0.00,Janvi Aika,0.00,,,,16823446765939,"Magic, upi",Low,399890841601,0.00,IGST 18%,544.58,,,,,,,,,+919910674610,,,Tamil Nadu,Tamil Nadu,#1230.1,,,#1230.1
-#1230,rkvivekanantha@gmail.com,,,,,,,,,,,,,,2026-07-26 11:53:38 +0530,1,Daisy Dusk Yellow - M,1390.00,"",TOP-DD-YL-M,true,true,pending,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919910674610,,,,,,,,
-#1230,rkvivekanantha@gmail.com,,,,,,,,,,,,,,2026-07-26 11:53:38 +0530,1,Golden Charm Top - M,1390.00,"",TOP-GC-YL-M,true,true,pending,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919910674610,,,,,,,,
-#1231,,paid,2026-07-26 16:16:15 +0530,unfulfilled,,no,INR,2480.00,0.00,378.31,2480.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 16:16:13 +0530,1,Aqua A-line - 3XL,1390.00,,TOP-AA-SB-3XL,true,true,pending,vishalini priya,"A-5,janaki Apartment, kannadhasan street, Vellakal bus stop, medavakkam koot road","A-5,janaki Apartment, kannadhasan street","Vellakal bus stop, medavakkam koot road",,Kanchipuram,'600117,TN,IN,+917845783988,vishalini priya,"A-5,janaki Apartment, kannadhasan street, Vellakal bus stop, medavakkam koot road","A-5,janaki Apartment, kannadhasan street","Vellakal bus stop, medavakkam koot road",,Kanchipuram,'600117,TN,IN,+917845783988,,"Paid via: Razorpay Magic Checkout
+#1230,rkvivekanantha@gmail.com,,,,,,,,,,,,,,2026-07-26 11:53:38 +0530,1,Daisy Dusk Yellow - M,1390.00,"",TOP-DD-YL-M,true,true,fulfilled,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919910674610,,,,,,,,
+#1230,rkvivekanantha@gmail.com,,,,,,,,,,,,,,2026-07-26 11:53:38 +0530,1,Golden Charm Top - M,1390.00,"",TOP-GC-YL-M,true,true,fulfilled,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919910674610,,,,,,,,
+#1231,,paid,2026-07-26 16:16:15 +0530,fulfilled,2026-07-27 11:43:06 +0530,no,INR,2480.00,0.00,378.31,2480.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 16:16:13 +0530,1,Aqua A-line - 3XL,1390.00,,TOP-AA-SB-3XL,true,true,fulfilled,vishalini priya,"A-5,janaki Apartment, kannadhasan street, Vellakal bus stop, medavakkam koot road","A-5,janaki Apartment, kannadhasan street","Vellakal bus stop, medavakkam koot road",,Kanchipuram,'600117,TN,IN,+917845783988,vishalini priya,"A-5,janaki Apartment, kannadhasan street, Vellakal bus stop, medavakkam koot road","A-5,janaki Apartment, kannadhasan street","Vellakal bus stop, medavakkam koot road",,Kanchipuram,'600117,TN,IN,+917845783988,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI6R8S0o7shS5r
 Device_details_IP: 35.154.143.15
 cart_token: hWNE1JeZvgNKHsLwF0Me2GVI?key=d2b5fe9b32b41d0707b7ece7bc6169d4
@@ -305,8 +305,8 @@ utm_content: 120246482908410298
 utm_term: 120246482908400298
 fbclid: IwZXh0bgNhZW0BMABhZGlkAas1KeauZXpzcnRjBmFwcF9pZA8yNzUyNTQ2OTI1OTgyNzkAAR4ERk-ITNfeWGLDo67-eW7DV3kxIREXfUJ-r-zHqIFdqZ-kZD5B9ba57qRUzQ_aem_EoCIqGWtOn65AwUPW4i7xA
 razorpay_payment_id: pay_TI6RS6lmkhh3js",,Razorpay,#1231.1,0.00,Janvi Aika,0.00,,,,16823645307251,"Magic, upi",Low,399890841601,0.00,IGST 18%,378.31,,,,,,,,,+917845783988,,,Tamil Nadu,Tamil Nadu,#1231.1,,,#1231.1
-#1231,,,,,,,,,,,,,,,2026-07-26 16:16:13 +0530,1,Cherry Chevron - 3XL,1390.00,"",TOP-CC-RED-3XL,true,true,pending,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+917845783988,,,,,,,,
-#1232,672833e8a0d80960a578fd7e@blitzscale.co,paid,2026-07-26 17:32:45 +0530,unfulfilled,,no,INR,1590.00,0.00,242.54,1590.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 17:32:43 +0530,1,Rosy Mist - M,1890.00,,C-RM-PR-M,true,true,pending,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,,"Paid via: Razorpay Magic Checkout
+#1231,,,,,,,,,,,,,,,2026-07-26 16:16:13 +0530,1,Cherry Chevron - 3XL,1390.00,"",TOP-CC-RED-3XL,true,true,fulfilled,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+917845783988,,,,,,,,
+#1232,672833e8a0d80960a578fd7e@blitzscale.co,paid,2026-07-26 17:32:45 +0530,fulfilled,2026-07-27 12:12:49 +0530,no,INR,1590.00,0.00,242.54,1590.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 17:32:43 +0530,1,Rosy Mist - M,1890.00,,C-RM-PR-M,true,true,fulfilled,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI7jn5y0rhUGIX
 Device_details_IP: 35.154.22.73
 cart_token: hWNEvBDKHOx8EI9h7dUBcQ6e?key=65af7260b95e0732f5cd902440bcda77
@@ -322,7 +322,7 @@ utm_content: 120248215307290298
 utm_term: 120248215307280298
 fbclid: PAZXh0bgNhZW0BMABhZGlkAas1KghegupzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAacv9aNifE7Srnstx5pSvnrDS57EubpZ7t_3hSsuMdVKlOJtH-1Nc9KtrfbIMQ_aem_tc2RsNTM8dYMoV7v56nNsQ
 razorpay_payment_id: pay_TI7kdQY5P60YXB",,Razorpay,#1232.1,0.00,Janvi Aika,0.00,,,,16823705436531,"card, Magic",Low,399890841601,0.00,IGST 18%,242.54,,,,,,,,,+919840252735,,,Tamil Nadu,Tamil Nadu,#1232.1,,,#1232.1
-#1233,672833e8a0d80960a578fd7e@blitzscale.co,paid,2026-07-26 17:38:05 +0530,unfulfilled,,no,INR,1890.00,0.00,288.31,1890.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 17:38:04 +0530,1,Nyra Deep Green Couture Chudidhar Set - M,2190.00,,C-SSRSLK-M,true,true,pending,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,,"Paid via: Razorpay Magic Checkout
+#1233,672833e8a0d80960a578fd7e@blitzscale.co,paid,2026-07-26 17:38:05 +0530,fulfilled,2026-07-27 12:19:59 +0530,no,INR,1890.00,0.00,288.31,1890.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 17:38:04 +0530,1,Nyra Deep Green Couture Chudidhar Set - M,2190.00,,C-SSRSLK-M,true,true,fulfilled,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,Uma Ramani,"No, 5 balunagar, mogappair east","No, 5 balunagar, mogappair east",,,Chennai,'600037,TN,IN,+919840252735,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI7pPv4BqdP3kG
 Device_details_IP: 35.154.217.40
 cart_token: hWNEvBDKHOx8EI9h7dUBcQ6e?key=65af7260b95e0732f5cd902440bcda77
@@ -338,7 +338,7 @@ utm_content: Facebook_UA
 utm_term: 120248215307280298
 fbclid: PAaWdyZATS1y5leHRuA2FlbQEwAGFkaWQBqzUqCF6C6nNydGMGYXBwX2lkDzU2NzA2NzM0MzM1MjQyNwABp479ikRLKuaBV2b6VnAsgennbHzpWaA0fdWj_i5ELA3sapTb0DsTxOnnZJCL_aem_tc2RsNTM8dYMoV7v56nNsQ
 razorpay_payment_id: pay_TI7peKPMtKvQGn",,Razorpay,#1233.1,0.00,Janvi Aika,0.00,,,,16823710351731,"card, Magic",Low,399890841601,0.00,IGST 18%,288.31,,,,,,,,,+919840252735,,,Tamil Nadu,Tamil Nadu,#1233.1,,,#1233.1
-#1234,syerramreddy@spglobal.com,partially_paid,2026-07-26 18:26:50 +0530,unfulfilled,,no,INR,1390.00,0.00,212.03,1390.00,"",0.00,Standard Shipping,2026-07-26 18:26:48 +0530,1,Scarlet Grace - S,1390.00,,TOP-SG-MR-S,true,true,pending,Sangeetha Reddy,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,,,Hyderabad,'500033,TS,IN,+917331181653,Sangeetha Reddy,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,,,Hyderabad,'500033,TS,IN,+917331181653,,"Paid via: Razorpay Magic Checkout
+#1234,syerramreddy@spglobal.com,partially_paid,2026-07-26 18:26:50 +0530,fulfilled,2026-07-27 15:01:46 +0530,no,INR,1390.00,0.00,212.03,1390.00,"",0.00,Standard Shipping,2026-07-26 18:26:48 +0530,1,Scarlet Grace - S,1390.00,,TOP-SG-MR-S,true,true,fulfilled,Sangeetha Reddy,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,,,Hyderabad,'500033,TS,IN,+917331181653,Sangeetha Reddy,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,Sri Roi Villa Krishna Nagar Banjara HillsFlat no 202,,,Hyderabad,'500033,TS,IN,+917331181653,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TI8ehIjaW1xd4h
 Device_details_IP: 35.154.22.73
 cart_token: hWNEvO4DcxHeqhkfSvWL1Njw?key=6117c564199e137da174e5e6e480c7fd
@@ -350,7 +350,7 @@ utm_content: Facebook_UA
 utm_term: 120246482908400298
 fbclid: PAZXh0bgNhZW0BMABhZGlkAas1KeYi7lpzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAaeLXpme2pVUpec0ZYClqB6cx9vjcrNEJVTGN-nG_CQdopZVbxyoAs1F5FfLVg_aem_TT_q-9YWVRMaeVVHzy9TeA
 razorpay_payment_id: pay_TI8fivRlcQvpn6, pay_TI8gIf7Kfmjltx",,Razorpay,#1234.1,0.00,Janvi Aika,1291.00,,,,16823756751219,"Magic, razorpay_partial_cod, upi",Low,399890841601,0.00,IGST 18%,212.03,,,,,,,,,+917331181653,,,Telangana,Telangana,#1234.1,,,#1234.1
-#1235,,partially_paid,2026-07-26 22:28:36 +0530,unfulfilled,,no,INR,1590.00,0.00,242.54,1590.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 22:28:34 +0530,1,Pink Batik - 2XL,1890.00,,C-PB-PWW-2XL,true,true,pending,Rani Chetty,"19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64, Mother Theresa","19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64",Mother Theresa,,Mumbai Subueban,'400064,MH,IN,+919967579777,Rani Chetty,"19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64, Mother Theresa","19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64",Mother Theresa,,Mumbai Subueban,'400064,MH,IN,+919967579777,,"Paid via: Razorpay Magic Checkout
+#1235,Mschetty2510@gmail.com,partially_paid,2026-07-26 22:28:36 +0530,fulfilled,2026-07-27 15:46:42 +0530,no,INR,1590.00,0.00,242.54,1590.00,Flat 300,300.00,FREE SHIPPING,2026-07-26 22:28:34 +0530,1,Pink Batik - 2XL,1890.00,,C-PB-PWW-2XL,true,true,fulfilled,Rani Chetty,"19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64, Mother Theresa","19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64",Mother Theresa,,Mumbai Subueban,'400064,MH,IN,+919967579777,Rani Chetty,"19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64, Mother Theresa","19 th floor 1909 room no,mother Theresa housing society near Mittal college nahar nagar road malad west Mumbai 64",Mother Theresa,,Mumbai Subueban,'400064,MH,IN,+919967579777,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TICmPeIldBdLdv
 Device_details_IP: 35.154.217.40
 cart_token: hWNETMR5PhBgRCRxz0cnmFd6?key=6334327f4037f797fcbfca0ee3d6fc56
@@ -366,7 +366,7 @@ utm_content: Facebook_UA
 utm_term: 120246975099510298
 fbclid: IwcGRvZgFleHRuA2FlbQEwAGFkaWQBqzQAW-FcGnNydGMGYXBwX2lkDDM1MDY4NTUzMTcyOAABHplFpbPRpmwL3nOVsWfb1w1Pcgdrs33lmz0qv4vz-hLZrl6HiZ5f4KGKCgvX_aem_g_gb-nrf8cv0AK50CrJVmw
 razorpay_payment_id: pay_TICn9YmFS55M0B, pay_TICngMxfEcYy0F",,Razorpay,#1235.1,0.00,Janvi Aika,1491.00,,,,16824045404531,"Magic, razorpay_partial_cod, upi",Low,399890841601,0.00,IGST 18%,242.54,,,,,,,,,+919967579777,,,Maharashtra,Maharashtra,#1235.1,,,#1235.1
-#1236,sinosarathkumar@gmail.com,partially_paid,2026-07-27 05:46:26 +0530,unfulfilled,,no,INR,1290.00,0.00,196.78,1290.00,"",0.00,FREE SHIPPING,2026-07-27 05:46:24 +0530,1,Plum Pinstripe - 2XL,1290.00,,TOP-PP-WN-2XL,true,true,pending,Sino Sarathkumar,"Behind govt up school, Harithanagar west yakkara",Behind govt up school,Harithanagar west yakkara,,Palakkad,'678001,KL,IN,+919446813679,Sino Sarathkumar,"Behind govt up school, Harithanagar west yakkara",Behind govt up school,Harithanagar west yakkara,,Palakkad,'678001,KL,IN,+919446813679,,"Paid via: Razorpay Magic Checkout
+#1236,sinosarathkumar@gmail.com,partially_paid,2026-07-27 05:46:26 +0530,fulfilled,2026-07-27 16:38:21 +0530,no,INR,1290.00,0.00,196.78,1290.00,"",0.00,FREE SHIPPING,2026-07-27 05:46:24 +0530,1,Plum Pinstripe - 2XL,1290.00,,TOP-PP-WN-2XL,true,true,fulfilled,Sino Sarathkumar,"Behind govt up school, Harithanagar west yakkara",Behind govt up school,Harithanagar west yakkara,,Palakkad,'678001,KL,IN,+919446813679,Sino Sarathkumar,"Behind govt up school, Harithanagar west yakkara",Behind govt up school,Harithanagar west yakkara,,Palakkad,'678001,KL,IN,+919446813679,,"Paid via: Razorpay Magic Checkout
 razorpay_order_id: order_TIKDTENz0L20x1
 Device_details_IP: 35.154.143.15
 cart_token: hWNEsWCV6sQGlGO8RqkNL4MO?key=1d458d8923f85a9915b055bb33b36504
@@ -383,3 +383,82 @@ utm_content: Facebook_UA
 utm_term: 120246482908400298
 fbclid: PAZXh0bgNhZW0BMABhZGlkAas1KeYi7lpzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAaf_iJ1I2s6JdY1wqZ297YJjyBWNEsm6F6yFcZN0j5RfOiKgVGyIrkDAvajUdQ_aem_XERSjaX9bk5vCD3mnMxmKQ
 razorpay_payment_id: pay_TIKFcaunhZQTgX, pay_TIKGBaf5zdgKlD",,Razorpay,#1236.1,0.00,Janvi Aika,1191.00,,,,16824592105843,"Magic, razorpay_partial_cod, upi",Low,399890841601,0.00,IGST 18%,196.78,,,,,,,,,+919446813679,,,Kerala,Kerala,#1236.1,,,#1236.1
+#1237,girijayaraman10@gmail.com,paid,2026-07-27 10:45:54 +0530,fulfilled,2026-07-27 17:29:02 +0530,no,INR,5090.00,0.00,776.44,5090.00,Flat 500,500.00,FREE SHIPPING,2026-07-27 10:45:52 +0530,1,Sunbloom Anarkali Dress - M,5590.00,,A-U82124-M,true,true,fulfilled,Giri Jayaraman,"222 JJJ hotel Thirumudivakkam Sidco industrial estate Chennai, Thirumudivakkam Main Road",222 JJJ hotel Thirumudivakkam Sidco industrial estate Chennai,Thirumudivakkam Main Road,,Kanchipuram,'600132,TN,IN,+919894935383,Giri Jayaraman,"222 JJJ hotel Thirumudivakkam Sidco industrial estate Chennai, Thirumudivakkam Main Road",222 JJJ hotel Thirumudivakkam Sidco industrial estate Chennai,Thirumudivakkam Main Road,,Kanchipuram,'600132,TN,IN,+919894935383,,"Paid via: Razorpay Magic Checkout
+razorpay_order_id: order_TIPIwjhKORp0aO
+Device_details_IP: 35.154.217.40
+cart_token: hWNEtbR1KwJ55tqePWOxCMmy?key=cb7e5ad83902553614f5ad6f066480e1
+payment_method: upi
+rzp_3p_utm: utm_content:Facebook_UA||utm_source:facebook||utm_medium:paid_social||utm_campaign:anarkalis-ad||utm_id:120247740534140298||utm_term:120247740534190298
+rzp_3p_utm_ts: 1785123411162
+rzp_device_id: 1.e026c101cfb826d30efc858afb60a2a0f4fe16af.1785004975689.37291204
+rzp_pixel_id: TINXbYhYfWkQZs
+utm_source: facebook
+utm_medium: paid
+utm_campaign: 120246975099520298
+utm_content: Facebook_UA
+utm_term: 120246975099510298
+fbclid: IwZXh0bgNhZW0BMABhZGlkAas0AFvhXBpzcnRjBmFwcF9pZAwzNTA2ODU1MzE3MjgAAR5aI2HgORDXQQwD5sj3CEGL966vuZHoSdc9SQpWYXih6zpJIncBqg9NyMYHtA_aem_ROZxI1Rz6UIQXUw7RHDYtw
+razorpay_payment_id: pay_TIPLrzgS7DXcd0",,Razorpay,#1237.1,0.00,Janvi Aika,0.00,,,,16824921784691,"Magic, upi",Low,399890841601,0.00,IGST 18%,776.44,,,,,,,,,+919894935383,,,Tamil Nadu,Tamil Nadu,#1237.1,,,#1237.1
+#1238,sreechandana.yedla999@gmail.com,paid,2026-07-27 13:49:51 +0530,unfulfilled,,no,INR,2190.00,0.00,334.07,2190.00,Flat 300,300.00,FREE SHIPPING,2026-07-27 13:49:49 +0530,1,Blush Ebony Elegance - M,2490.00,,C-BE-PB-M,true,true,pending,Yedla Sree Chandana,"Flat no 205 , S.R. Paradise, Chinnakakani, Mangalagiri, Autonagar","Flat no 205 , S.R. Paradise, Chinnakakani","Mangalagiri, Autonagar",,Mangalagiri,'522508,AP,IN,+917303624769,Yedla Sree Chandana,"Flat no 205 , S.R. Paradise, Chinnakakani, Mangalagiri, Autonagar","Flat no 205 , S.R. Paradise, Chinnakakani","Mangalagiri, Autonagar",,Mangalagiri,'522508,AP,IN,+917303624769,,"Paid via: Razorpay Magic Checkout
+razorpay_order_id: order_TISM1THuhP7fQd
+Device_details_IP: 35.154.217.40
+cart_token: hWNEbhsr9HAQwTPVMg6ypVyO?key=c4720e667d057a25e8581045d83452ec
+payment_method: upi
+rzp_3p_utm: utm_source:(direct)||utm_medium:(none)
+rzp_3p_utm_ts: 1785139800881
+rzp_device_id: 1.72e3a2cd3cc5a360c8006b8e3e4028f7998cdf77.1784990331479.73124574
+rzp_pixel_id: TISKUSanAkzCfa
+wvi: 1
+razorpay_payment_id: pay_TISUN3Lmqn05hB",,Razorpay,#1238.1,0.00,Janvi Aika,0.00,,,,16825057640819,"Magic, upi",Low,399890841601,0.00,IGST 18%,334.07,,,,,,,,,+918920290983,,,Andhra Pradesh,Andhra Pradesh,#1238.1,,,#1238.1
+#1239,sreechandana.yedla999@gmail.com,paid,2026-07-27 15:46:32 +0530,unfulfilled,,no,INR,1940.00,0.00,295.93,1940.00,Flat 300,300.00,FREE SHIPPING,2026-07-27 15:46:30 +0530,1,Magenta Mist Chudidhar Set - L,2240.00,,C-MM-RP-L,true,true,pending,Yedla Sree Chandana,"Flat no 205 , S.R. Paradise, Chinnakakani, Mangalagiri, Autonagar","Flat no 205 , S.R. Paradise, Chinnakakani","Mangalagiri, Autonagar",,Mangalagiri,'522508,AP,IN,+917303624769,Yedla Sree Chandana,"Flat no 205 , S.R. Paradise, Chinnakakani, Mangalagiri, Autonagar","Flat no 205 , S.R. Paradise, Chinnakakani","Mangalagiri, Autonagar",,Mangalagiri,'522508,AP,IN,+917303624769,,"Paid via: Razorpay Magic Checkout
+razorpay_order_id: order_TIUTRonFuteFf1
+Device_details_IP: 35.154.217.40
+cart_token: hWNEbhsr9HAQwTPVMg6ypVyO?key=c4720e667d057a25e8581045d83452ec
+payment_method: upi
+rzp_3p_utm_ts: 1785147339386
+rzp_device_id: 1.72e3a2cd3cc5a360c8006b8e3e4028f7998cdf77.1784990331479.73124574
+rzp_pixel_id: TIU1IsmAFMP11v
+wvi: 1
+rzp_3p_utm: utm_source:(direct)||utm_medium:(none)
+utm_source: google
+utm_medium: Organic
+utm_campaign: Organic
+razorpay_payment_id: pay_TIUTcHlI1dD76v",,Razorpay,#1239.1,0.00,Janvi Aika,0.00,,,,16825146442099,"Magic, upi",Low,399890841601,0.00,IGST 18%,295.93,,,,,,,,,+918920290983,,,Andhra Pradesh,Andhra Pradesh,#1239.1,,,#1239.1
+#1240,sreechandana.yedla999@gmail.com,paid,2026-07-27 15:51:03 +0530,unfulfilled,,no,INR,1590.00,0.00,242.54,1590.00,Flat 300,300.00,FREE SHIPPING,2026-07-27 15:51:01 +0530,1,Mustard Marble Mist - M,1890.00,,C-MM-DM-M,true,true,pending,Yedla Sree Chandana,"Flat no 205 , S.R. Paradise, Chinnakakani, Mangalagiri, Autonagar","Flat no 205 , S.R. Paradise, Chinnakakani","Mangalagiri, Autonagar",,Mangalagiri,'522508,AP,IN,+917303624769,Yedla Sree Chandana,"Flat no 205 , S.R. Paradise, Chinnakakani, Mangalagiri, Autonagar","Flat no 205 , S.R. Paradise, Chinnakakani","Mangalagiri, Autonagar",,Mangalagiri,'522508,AP,IN,+917303624769,,"Paid via: Razorpay Magic Checkout
+razorpay_order_id: order_TIUYBBF0kzEgT0
+Device_details_IP: 35.154.22.73
+cart_token: hWNEbhsr9HAQwTPVMg6ypVyO?key=c4720e667d057a25e8581045d83452ec
+payment_method: upi
+wvi: 1
+rzp_3p_utm: utm_source:undefined||utm_medium:organic
+rzp_3p_utm_ts: 1785147531621
+rzp_device_id: 1.72e3a2cd3cc5a360c8006b8e3e4028f7998cdf77.1784990331479.73124574
+rzp_pixel_id: TIU1IsmAFMP11v
+utm_source: google
+utm_medium: Organic
+utm_campaign: Organic
+razorpay_payment_id: pay_TIUYOpwxxFMiwU",,Razorpay,#1240.1,0.00,Janvi Aika,0.00,,,,16825151160691,"Magic, upi",Low,399890841601,0.00,IGST 18%,242.54,,,,,,,,,+918920290983,,,Andhra Pradesh,Andhra Pradesh,#1240.1,,,#1240.1
+#1243,Mschetty2510@gmail.com,partially_paid,2026-07-27 22:35:29 +0530,unfulfilled,,no,INR,1590.00,0.00,242.54,1590.00,Flat 300,300.00,FREE SHIPPING,2026-07-27 22:35:26 +0530,1,Blush Garden Romance - 2XL,1890.00,,C-BG-PWW-2XL,true,true,pending,Das chetty,"A/143 Bombay takes compound near sai baba mandir malad west Mumbai, BT compound",A/143 Bombay takes compound near sai baba mandir malad west Mumbai,BT compound,,Mumbai,'400064,MH,IN,+919967579777,Das chetty,"A/143 Bombay takes compound near sai baba mandir malad west Mumbai, BT compound",A/143 Bombay takes compound near sai baba mandir malad west Mumbai,BT compound,,Mumbai,'400064,MH,IN,+919967579777,,"Paid via: Razorpay Magic Checkout
+razorpay_order_id: order_TIbNKheIgHyVSf
+Device_details_IP: 35.154.143.15
+cart_token: hWNETMR5PhBgRCRxz0cnmFd6?key=6334327f4037f797fcbfca0ee3d6fc56
+payment_method: upi
+rzp_3p_utm_ts: 1785171611606
+rzp_device_id: 1.995b91d2696602a760a5123f23977baa320d6041.1784981454452.17846914
+rzp_pixel_id: TIbKZdSe0kA7fP
+rzp_3p_utm: utm_content:Facebook_UA||utm_source:facebook||utm_medium:paid||utm_id:120246975099520298||utm_term:120246975099510298||utm_campaign:120246975099520298
+utm_source: facebook
+utm_medium: paid
+utm_campaign: 120246975099520298
+utm_content: Facebook_UA
+utm_term: 120246975099510298
+fbclid: IwcGRvZgFleHRuA2FlbQEwAGFkaWQBqzU_wCgF2nNydGMGYXBwX2lkDDM1MDY4NTUzMTcyOAABHvKP8wrg2-6-fYMIfW4vdiJenJR_KdiI3M3K83M9nTveo_EyYWmLAOEH2xwx_aem_A0j4gNlE3LtqV2bB0r34ZA
+razorpay_payment_id: pay_TIbQvBh2kbeuaQ, pay_TIbS4GGrhfxFsw",,Razorpay,#1243.1,0.00,Janvi Aika,1491.00,,,,16825630196083,"Magic, razorpay_partial_cod, upi",Low,399890841601,0.00,IGST 18%,242.54,,,,,,,,,+919967579777,,,Maharashtra,Maharashtra,#1243.1,,,#1243.1
+#1244,nvbalaji@gmail.com,paid,2026-07-28 07:28:02 +0530,unfulfilled,,no,INR,2480.00,0.00,378.30,2480.00,Flat 300,300.00,FREE SHIPPING,2026-07-28 07:28:00 +0530,1,Mint Serena Top - S,1390.00,,TOP-MS-PG-S,true,true,pending,Smruthi .,"Vp-08, Pruksa Silvana, Nimbekaipura Village road, near Budhigere Cross, Pruksa Silvana Main Road, Budigere Cross","Vp-08, Pruksa Silvana, Nimbekaipura Village road, near Budhigere Cross","Pruksa Silvana Main Road, Budigere Cross",,Bengaluru,'560049,KA,IN,+919844028762,Smruthi .,"Vp-08, Pruksa Silvana, Nimbekaipura Village road, near Budhigere Cross, Pruksa Silvana Main Road, Budigere Cross","Vp-08, Pruksa Silvana, Nimbekaipura Village road, near Budhigere Cross","Pruksa Silvana Main Road, Budigere Cross",,Bengaluru,'560049,KA,IN,+919844028762,,"Paid via: Razorpay Magic Checkout
+razorpay_order_id: order_TIkTA7BdwOPpNT
+Device_details_IP: 35.154.143.15
+cart_token: hWNEz0eXooOfaeKFpo4ve8bU?key=c0c14ffe9691db1db975c969fcd28485
+payment_method: upi
+wvi: 1
+razorpay_payment_id: pay_TIkWCQRNSmcRKG",,Razorpay,#1244.1,0.00,Janvi Aika,0.00,,,,16826383860083,"Magic, upi",Low,399890841601,0.00,CGST 9%,189.15,SGST 9%,189.15,,,,,,,+919844028762,,,Karnataka,Karnataka,#1244.1,,,#1244.1
+#1244,nvbalaji@gmail.com,,,,,,,,,,,,,,2026-07-28 07:28:00 +0530,1,Sapphire Charm Top - S,1390.00,"",TOP-SC-DB-S,true,true,pending,,,,,,,,,,,,,,,,,,,,,,,,,,,Janvi Aika,,,,,,,,,0.00,,,,,,,,,,,+919844028762,,,,,,,,

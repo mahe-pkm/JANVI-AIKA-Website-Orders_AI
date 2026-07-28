@@ -267,7 +267,7 @@ def process_and_create_excel():
             awb_code = ""
         tracking_link = f"https://shiprocket.co/tracking/{awb_code}" if awb_code else "-"
         
-        # Manual Order Overrides for orders fulfilled via external tracking (#1081, #1082, #1087)
+        # Manual Order Overrides for orders fulfilled via external tracking (#1081, #1082, #1087, #1102, #1093, #1092, #1091)
         manual_overrides = {
             "#1081": {
                 "fulfillment_status": "RTO DELIVERED",
@@ -292,6 +292,38 @@ def process_and_create_excel():
                 "comments": "Failed Delivery - Customer Denied & RTO",
                 "awb": "SF3576445793KR",
                 "tracking_link": "https://track.shadowfax.in/track?awb=SF3576445793KR"
+            },
+            "#1102": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Customer Not Available X Office Or Residence Closed",
+                "awb": "14112363521699",
+                "tracking_link": "https://shiprocket.co/tracking/14112363521699"
+            },
+            "#1093": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Customer Unavailable Delivery Attempted",
+                "awb": "370429573110",
+                "tracking_link": "https://shiprocket.co/tracking/370429573110"
+            },
+            "#1092": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Customer Not Available X Office Or Residence Closed",
+                "awb": "14112363585911",
+                "tracking_link": "https://shiprocket.co/tracking/14112363585911"
+            },
+            "#1091": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Pna|Receiver Not Available/Reachable Over Phone",
+                "awb": "7D131457369",
+                "tracking_link": "https://shiprocket.co/tracking/7D131457369"
             }
         }
         
@@ -689,8 +721,8 @@ def process_and_create_excel():
     canceled_count = len(canceled_df)
     canceled_amount = canceled_df["Total Price"].sum()
     
-    # Denied Orders (13 RTO Delivered orders = ₹18,506.00)
-    denied_mask = df_consolidated["Fulfillment Status"].str.upper().str.strip() == "RTO DELIVERED"
+    # Denied Orders (13 RTO Delivered & COD Denied orders)
+    denied_mask = ((df_consolidated["Fulfillment Status"].str.upper().str.contains("RTO|DENIED", na=False)) | (df_consolidated["COD Denies (Yes/No)"] == "Yes")) & (~df_consolidated["Fulfillment Status"].str.upper().str.contains("CANCELED|CANCELLED", na=False))
     denied_df = df_consolidated[denied_mask]
     denied_count = len(denied_df)
     denied_amount = denied_df["Total Price"].sum()
