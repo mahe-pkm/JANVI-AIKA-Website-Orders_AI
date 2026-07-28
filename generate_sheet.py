@@ -191,13 +191,16 @@ def process_and_create_excel():
         cod_str = "Yes" if is_cod else "No"
         prepaid_str = "No" if is_cod else "Yes"
         
-        # 7. Returned Status (Shopify Refund / Shiprocket RTO status)
+        # 7. Returned & Cancellation Status
         sr_status = str(row['Status']).upper().strip() if pd.notna(row['Status']) else ""
         fin_status = str(row['Financial Status']).lower().strip() if pd.notna(row['Financial Status']) else ""
         refund_amt = float(row['Refunded Amount']) if pd.notna(row['Refunded Amount']) else 0.0
+        cancelled_at_val = row['Cancelled at'] if 'Cancelled at' in row and pd.notna(row['Cancelled at']) else None
+        
+        shopify_cancelled = (cancelled_at_val is not None) or (fin_status == 'voided')
+        is_canceled = 'CANCELED' in sr_status or 'CANCELLED' in sr_status or shopify_cancelled
         
         returned = False
-        is_canceled = 'CANCELED' in sr_status or 'CANCELLED' in sr_status
         if not is_canceled:
             if 'RTO' in sr_status or fin_status == 'refunded' or refund_amt > 0:
                 returned = True
@@ -216,7 +219,10 @@ def process_and_create_excel():
         pin = str(row['Shipping Zip']).split('.')[0].strip() if pd.notna(row['Shipping Zip']) else ""
         
         # 10. Fulfillment Status (Shiprocket status falls back to Shopify status)
-        fulfillment_status = sr_status if sr_status else (str(row['Fulfillment Status']).upper().strip() if pd.notna(row['Fulfillment Status']) else "NEW ORDER")
+        if is_canceled:
+            fulfillment_status = "CANCELED"
+        else:
+            fulfillment_status = sr_status if sr_status else (str(row['Fulfillment Status']).upper().strip() if pd.notna(row['Fulfillment Status']) else "NEW ORDER")
         
         # 11. Feedback
         fb_info = feedback_map.get(order_no)
