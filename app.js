@@ -35,8 +35,10 @@ const elements = {
     kpiRevenue: document.getElementById('kpi-total-revenue'),
     kpiRevenueSub: document.getElementById('kpi-total-revenue-sub'),
     kpiReturnedCount: document.getElementById('kpi-returned-count'),
+    kpiReturnedCountSub: document.getElementById('kpi-returned-count-sub'),
     kpiRefunded: document.getElementById('kpi-total-refunded'),
     kpiSuccessfulCount: document.getElementById('kpi-successful-count'),
+    kpiSuccessfulCountSub: document.getElementById('kpi-successful-count-sub'),
     kpiSuccessfulProfit: document.getElementById('kpi-successful-profit'),
     kpiSuccessfulRate: document.getElementById('kpi-successful-rate'),
     kpiSuccessfulProgress: document.getElementById('kpi-successful-progress'),
@@ -72,6 +74,24 @@ const elements = {
     kpiDeniedCountSub: document.getElementById('kpi-denied-count-sub'),
     kpiTotalDenied: document.getElementById('kpi-total-denied'),
     kpiTotalDeniedSub: document.getElementById('kpi-total-denied-sub'),
+    
+    // 4-Column In-Progress Grid
+    kpiInProgressCount: document.getElementById('kpi-in-progress-count'),
+    kpiInProgressAmount: document.getElementById('kpi-in-progress-amount'),
+    kpiInProgressRate: document.getElementById('kpi-in-progress-rate'),
+    kpiInProgressSub: document.getElementById('kpi-in-progress-sub'),
+    kpiTransitCount: document.getElementById('kpi-transit-count'),
+    kpiTransitAmount: document.getElementById('kpi-transit-amount'),
+    kpiTransitRate: document.getElementById('kpi-transit-rate'),
+    kpiTransitSub: document.getElementById('kpi-transit-sub'),
+    kpiPickupCount: document.getElementById('kpi-pickup-count'),
+    kpiPickupAmount: document.getElementById('kpi-pickup-amount'),
+    kpiPickupRate: document.getElementById('kpi-pickup-rate'),
+    kpiPickupSub: document.getElementById('kpi-pickup-sub'),
+    kpiUnfulfilledCount: document.getElementById('kpi-unfulfilled-count'),
+    kpiUnfulfilledAmount: document.getElementById('kpi-unfulfilled-amount'),
+    kpiUnfulfilledRate: document.getElementById('kpi-unfulfilled-rate'),
+    kpiUnfulfilledSub: document.getElementById('kpi-unfulfilled-sub'),
     
     // Pipeline
     pipeUnfulfilled: document.querySelector('#step-unfulfilled .step-count'),
@@ -552,6 +572,30 @@ function formatCurrency(amount) {
     }).format(amount);
 }
 
+// Utility: Largest Remainder Method (Hare-Niemeyer) for percentage normalization
+// Guarantees that formatted percentage strings add up to exactly 100.0%
+function formatNormalizedPercentages(numbers, decimals = 1) {
+    const total = numbers.reduce((a, b) => a + b, 0);
+    if (total === 0) return numbers.map(() => (0).toFixed(decimals));
+    
+    const multiplier = Math.pow(10, decimals);
+    const targetSum = 100 * multiplier;
+    
+    const exactPct = numbers.map(val => (val / total) * targetSum);
+    const integerPct = exactPct.map(val => Math.floor(val));
+    const remainders = exactPct.map((val, idx) => ({ idx, rem: val - integerPct[idx] }));
+    
+    let sumInteger = integerPct.reduce((a, b) => a + b, 0);
+    let diff = targetSum - sumInteger;
+    
+    remainders.sort((a, b) => b.rem - a.rem);
+    for (let i = 0; i < diff; i++) {
+        integerPct[remainders[i].idx] += 1;
+    }
+    
+    return integerPct.map(val => (val / multiplier).toFixed(decimals));
+}
+
 // Render KPIs and visual metrics
 function renderDashboard() {
     // 1. Calculate general stats
@@ -624,42 +668,98 @@ function renderDashboard() {
     const netRevenueVal = netRevenueList.reduce((sum, o) => sum + o.totalPrice, 0);
 
     // Write values safely
+    const inProgressCount = netRevenueCount - successfulCount;
+    const normalized5Pcts = formatNormalizedPercentages([successfulCount, inProgressCount, allDenials, returnCount, canceledCount], 1);
+    const deliveredPctOfTotal = normalized5Pcts[0];    // 73.3%
+    const inProgressPctOfTotal = normalized5Pcts[1];   // 13.3%
+    const deniedPctOfTotal = normalized5Pcts[2];       // 7.9%
+    const returnPctOfTotal = normalized5Pcts[3];       // 1.2%
+    const canceledPctOfTotal = normalized5Pcts[4];     // 4.3%
+    const activePipelinePctOfTotal = (parseFloat(deliveredPctOfTotal) + parseFloat(inProgressPctOfTotal)).toFixed(1); // 86.6%
+
     if (elements.kpiOrders) elements.kpiOrders.textContent = totalOrders;
     if (elements.kpiRevenue) elements.kpiRevenue.textContent = formatCurrency(totalRevenue);
     if (elements.kpiRevenueSub) elements.kpiRevenueSub.textContent = `From ${totalOrders} active orders`;
     if (elements.kpiNetRevenueCount) elements.kpiNetRevenueCount.textContent = netRevenueCount;
-    if (elements.kpiNetRevenueCountSub) elements.kpiNetRevenueCountSub.textContent = `${successfulCount} delivered & ${netRevenueCount - successfulCount} in progress`;
+    if (elements.kpiNetRevenueCountSub) elements.kpiNetRevenueCountSub.textContent = `${netRevenueCount} orders (${activePipelinePctOfTotal}% of total: ${successfulCount} delivered + ${inProgressCount} in progress)`;
     if (elements.kpiReturnedCount) elements.kpiReturnedCount.textContent = returnCount;
+    if (elements.kpiReturnedCountSub) elements.kpiReturnedCountSub.textContent = `${returnCount} returned of ${totalOrders} total orders (${returnRate.toFixed(1)}% of ${successfulCount} delivered)`;
     if (elements.kpiRefunded) elements.kpiRefunded.textContent = formatCurrency(totalRefunded);
     if (elements.kpiSuccessfulCount) elements.kpiSuccessfulCount.textContent = successfulCount;
+    if (elements.kpiSuccessfulCountSub) elements.kpiSuccessfulCountSub.textContent = `${successfulCount} delivered of ${totalOrders} total orders`;
     if (elements.kpiSuccessfulProfit) elements.kpiSuccessfulProfit.textContent = formatCurrency(successfulRevenue);
-    if (elements.kpiSuccessfulRate) elements.kpiSuccessfulRate.textContent = `${successfulRate.toFixed(1)}%`;
+    if (elements.kpiSuccessfulRate) elements.kpiSuccessfulRate.textContent = `${deliveredPctOfTotal}%`;
     if (elements.kpiProfit) elements.kpiProfit.textContent = formatCurrency(totalProfit);
-    if (elements.kpiTotalProfitSub) elements.kpiTotalProfitSub.textContent = `${netRevenueCount} net orders (${successfulCount} delivered + ${netRevenueCount - successfulCount} in progress)`;
-    if (elements.kpiReturnRate) elements.kpiReturnRate.textContent = `${returnRate.toFixed(1)}%`;
-    if (elements.kpiDenialRate) elements.kpiDenialRate.textContent = `${denialRate.toFixed(1)}%`;
+    if (elements.kpiTotalProfitSub) elements.kpiTotalProfitSub.textContent = `${netRevenueCount} net orders (${activePipelinePctOfTotal}% of total: ${successfulCount} delivered + ${inProgressCount} in progress)`;
     
-    if (elements.kpiReturnRateSub) elements.kpiReturnRateSub.textContent = `${returnCount} returned of ${successfulCount} delivered`;
-    if (elements.kpiDenialRateSub) elements.kpiDenialRateSub.textContent = `${allDenials} denials of ${codOrders.length} COD orders`;
+    // Top KPI Rates derived directly from Total Orders
+    if (elements.kpiReturnRate) elements.kpiReturnRate.textContent = `${returnPctOfTotal}%`;
+    if (elements.kpiDenialRate) elements.kpiDenialRate.textContent = `${deniedPctOfTotal}%`;
+    if (elements.kpiCanceledRate) elements.kpiCanceledRate.textContent = `${canceledPctOfTotal}%`;
+    
+    if (elements.kpiReturnRateSub) elements.kpiReturnRateSub.textContent = `${returnCount} returned of ${totalOrders} total orders (${returnRate.toFixed(1)}% of ${successfulCount} delivered)`;
+    if (elements.kpiDenialRateSub) elements.kpiDenialRateSub.textContent = `${allDenials} denials of ${totalOrders} total orders (${denialRate.toFixed(1)}% of ${codOrders.length} COD)`;
+    if (elements.kpiCanceledRateSub) elements.kpiCanceledRateSub.textContent = `${canceledCount} canceled of ${totalOrders} total orders`;
     
     if (elements.kpiCanceledCount) elements.kpiCanceledCount.textContent = canceledCount;
-    if (elements.kpiCanceledCountSub) elements.kpiCanceledCountSub.textContent = `${canceledCount} orders not accepted of ${totalOrders}`;
+    if (elements.kpiCanceledCountSub) elements.kpiCanceledCountSub.textContent = `${canceledCount} canceled of ${totalOrders} total orders`;
     if (elements.kpiTotalCanceled) elements.kpiTotalCanceled.textContent = formatCurrency(totalCanceledAmount);
     if (elements.kpiTotalCanceledSub) elements.kpiTotalCanceledSub.textContent = `From ${canceledCount} orders not accepted`;
 
     if (elements.kpiDeniedCount) {
         elements.kpiDeniedCount.textContent = allDenials;
-        if (elements.kpiDeniedCountSub) elements.kpiDeniedCountSub.textContent = `${allDenials} denied of ${totalOrders}`;
+        if (elements.kpiDeniedCountSub) elements.kpiDeniedCountSub.textContent = `${allDenials} denied of ${totalOrders} total orders (${denialRate.toFixed(1)}% of ${codOrders.length} COD)`;
     }
     if (elements.kpiTotalDenied) {
         elements.kpiTotalDenied.textContent = formatCurrency(totalDeniedAmount);
         if (elements.kpiTotalDeniedSub) elements.kpiTotalDeniedSub.textContent = `From ${allDenials} denied`;
     }
 
-    if (elements.kpiCanceledRate) {
-        elements.kpiCanceledRate.textContent = `${canceledRate.toFixed(1)}%`;
-        if (elements.kpiCanceledRateSub) elements.kpiCanceledRateSub.textContent = `${canceledCount} orders not accepted of ${totalOrders}`;
-    }
+    // Render In-Progress Orders Banner
+    const inProgressList = state.monthFilteredOrders.filter(o => {
+        const s = getPipelineStage(o);
+        return s === 'transit' || s === 'pickup' || s === 'unfulfilled';
+    });
+    const inProgressVal = inProgressList.reduce((sum, o) => sum + o.totalPrice, 0);
+    
+    const transitOrders = inProgressList.filter(o => getPipelineStage(o) === 'transit');
+    const pickupOrders = inProgressList.filter(o => getPipelineStage(o) === 'pickup');
+    const unfulfilledOrders = inProgressList.filter(o => getPipelineStage(o) === 'unfulfilled');
+
+    const transitVal = transitOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+    const pickupVal = pickupOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+    const unfulfilledVal = unfulfilledOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+
+    const transitCount = transitOrders.length;
+    const pickupCount = pickupOrders.length;
+    const unfulfilledCount = unfulfilledOrders.length;
+
+    const transitPct = totalOrders > 0 ? ((transitCount / totalOrders) * 100).toFixed(1) : '0.0';
+    const pickupPct = totalOrders > 0 ? ((pickupCount / totalOrders) * 100).toFixed(1) : '0.0';
+    const unfulfilledPct = totalOrders > 0 ? ((unfulfilledCount / totalOrders) * 100).toFixed(1) : '0.0';
+
+    // Render 4-Column In-Progress KPI Cards
+    if (elements.kpiInProgressCount) elements.kpiInProgressCount.textContent = inProgressCount;
+    if (elements.kpiInProgressAmount) elements.kpiInProgressAmount.textContent = formatCurrency(inProgressVal);
+    if (elements.kpiInProgressRate) elements.kpiInProgressRate.textContent = `${inProgressPctOfTotal}%`;
+    if (elements.kpiInProgressSub) elements.kpiInProgressSub.textContent = `${inProgressCount} orders awaiting delivery of ${totalOrders}`;
+
+    if (elements.kpiTransitCount) elements.kpiTransitCount.textContent = transitCount;
+    if (elements.kpiTransitAmount) elements.kpiTransitAmount.textContent = formatCurrency(transitVal);
+    if (elements.kpiTransitRate) elements.kpiTransitRate.textContent = `${transitPct}%`;
+    if (elements.kpiTransitSub) elements.kpiTransitSub.textContent = `${transitCount} orders on the way of ${totalOrders}`;
+
+    if (elements.kpiPickupCount) elements.kpiPickupCount.textContent = pickupCount;
+    if (elements.kpiPickupAmount) elements.kpiPickupAmount.textContent = formatCurrency(pickupVal);
+    if (elements.kpiPickupRate) elements.kpiPickupRate.textContent = `${pickupPct}%`;
+    if (elements.kpiPickupSub) elements.kpiPickupSub.textContent = `${pickupCount} orders ready for pickup of ${totalOrders}`;
+
+    if (elements.kpiUnfulfilledCount) elements.kpiUnfulfilledCount.textContent = unfulfilledCount;
+    if (elements.kpiUnfulfilledAmount) elements.kpiUnfulfilledAmount.textContent = formatCurrency(unfulfilledVal);
+    if (elements.kpiUnfulfilledRate) elements.kpiUnfulfilledRate.textContent = `${unfulfilledPct}%`;
+    if (elements.kpiUnfulfilledSub) elements.kpiUnfulfilledSub.textContent = `${unfulfilledCount} orders pending shipment of ${totalOrders}`;
+
+
 
     if (elements.kpiAov) {
         elements.kpiAov.textContent = `~ ${formatCurrency(aov)}`;
@@ -749,7 +849,6 @@ function renderPaymentModeBreakdown() {
     const codOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('COD') || o.cod === 'Yes');
     const codTotal = codOrders.length;
     const codTotalVal = codOrders.reduce((sum, o) => sum + o.totalPrice, 0);
-    const codShare = totalMonthOrders > 0 ? (codTotal / totalMonthOrders) * 100 : 0;
     
     const codCounts = { delivered: 0, transit: 0, pickup: 0, unfulfilled: 0, denied: 0, returned: 0, canceled: 0 };
     codOrders.forEach(o => {
@@ -761,15 +860,28 @@ function renderPaymentModeBreakdown() {
     const prepaidOrders = state.monthFilteredOrders.filter(o => (o.paymentMethod || '').toUpperCase().includes('PREPAID') || o.prepaid === 'Yes');
     const prepaidTotal = prepaidOrders.length;
     const prepaidTotalVal = prepaidOrders.reduce((sum, o) => sum + o.totalPrice, 0);
-    const prepaidShare = totalMonthOrders > 0 ? (prepaidTotal / totalMonthOrders) * 100 : 0;
     
     const prepaidCounts = { delivered: 0, transit: 0, pickup: 0, unfulfilled: 0, denied: 0, returned: 0, canceled: 0 };
     prepaidOrders.forEach(o => {
         const stage = getPipelineStage(o);
         if (prepaidCounts.hasOwnProperty(stage)) prepaidCounts[stage]++;
     });
+
+    // Normalized Payment Mode Shares (ensuring COD + Prepaid Share = 100.0%)
+    const paymentModeNormalized = formatNormalizedPercentages([codTotal, prepaidTotal], 1);
+    const codShareFormatted = paymentModeNormalized[0];
+    const prepaidShareFormatted = paymentModeNormalized[1];
+
+    // Normalized COD Stage Breakdown Percentages (ensuring sum = 100.0%)
+    const stageKeys = ['delivered', 'transit', 'pickup', 'unfulfilled', 'denied', 'returned', 'canceled'];
+    const codStageCounts = stageKeys.map(s => codCounts[s]);
+    const codNormalizedStagePcts = formatNormalizedPercentages(codStageCounts, 1);
+
+    // Normalized Prepaid Stage Breakdown Percentages (ensuring sum = 100.0%)
+    const prepaidStageCounts = stageKeys.map(s => prepaidCounts[s]);
+    const prepaidNormalizedStagePcts = formatNormalizedPercentages(prepaidStageCounts, 1);
     
-    // Calculate Pcts
+    // Calculate Pcts helper for individual fallback
     const getPct = (cnt, tot) => tot > 0 ? ((cnt / tot) * 100).toFixed(1) : '0.0';
     
     // Update DOM Elements
@@ -783,46 +895,46 @@ function renderPaymentModeBreakdown() {
     };
     
     // COD Card DOM values
-    setTxt('payment-cod-share', `${codShare.toFixed(1)}% of total`);
+    setTxt('payment-cod-share', `${codShareFormatted}% of total`);
     setTxt('payment-cod-total', codTotal);
     setTxt('payment-cod-total-val', formatCurrency(codTotalVal));
     setTxt('payment-cod-delivered', codCounts.delivered);
-    setTxt('payment-cod-delivered-pct', `${getPct(codCounts.delivered, codTotal)}%`);
+    setTxt('payment-cod-delivered-pct', `${codNormalizedStagePcts[0]}%`);
     setTxt('payment-cod-transit', codCounts.transit);
-    setTxt('payment-cod-transit-pct', `${getPct(codCounts.transit, codTotal)}%`);
+    setTxt('payment-cod-transit-pct', `${codNormalizedStagePcts[1]}%`);
     setTxt('payment-cod-pickup', codCounts.pickup);
-    setTxt('payment-cod-pickup-pct', `${getPct(codCounts.pickup, codTotal)}%`);
+    setTxt('payment-cod-pickup-pct', `${codNormalizedStagePcts[2]}%`);
     setTxt('payment-cod-unfulfilled', codCounts.unfulfilled);
-    setTxt('payment-cod-unfulfilled-pct', `${getPct(codCounts.unfulfilled, codTotal)}%`);
+    setTxt('payment-cod-unfulfilled-pct', `${codNormalizedStagePcts[3]}%`);
     setTxt('payment-cod-denied', codCounts.denied);
-    setTxt('payment-cod-denied-pct', `${getPct(codCounts.denied, codTotal)}%`);
+    setTxt('payment-cod-denied-pct', `${codNormalizedStagePcts[4]}%`);
     setTxt('payment-cod-returned', codCounts.returned);
-    setTxt('payment-cod-returned-pct', `${getPct(codCounts.returned, codTotal)}%`);
+    setTxt('payment-cod-returned-pct', `${codNormalizedStagePcts[5]}%`);
     setTxt('payment-cod-canceled', codCounts.canceled);
-    setTxt('payment-cod-canceled-pct', `${getPct(codCounts.canceled, codTotal)}%`);
+    setTxt('payment-cod-canceled-pct', `${codNormalizedStagePcts[6]}%`);
     
     const codDenialRate = getPct(codCounts.denied, codTotal);
     setTxt('payment-cod-progress-text', `${codDenialRate}%`);
     setWidth('payment-cod-progress-bar', parseFloat(codDenialRate));
     
     // Prepaid Card DOM values
-    setTxt('payment-prepaid-share', `${prepaidShare.toFixed(1)}% of total`);
+    setTxt('payment-prepaid-share', `${prepaidShareFormatted}% of total`);
     setTxt('payment-prepaid-total', prepaidTotal);
     setTxt('payment-prepaid-total-val', formatCurrency(prepaidTotalVal));
     setTxt('payment-prepaid-delivered', prepaidCounts.delivered);
-    setTxt('payment-prepaid-delivered-pct', `${getPct(prepaidCounts.delivered, prepaidTotal)}%`);
+    setTxt('payment-prepaid-delivered-pct', `${prepaidNormalizedStagePcts[0]}%`);
     setTxt('payment-prepaid-transit', prepaidCounts.transit);
-    setTxt('payment-prepaid-transit-pct', `${getPct(prepaidCounts.transit, prepaidTotal)}%`);
+    setTxt('payment-prepaid-transit-pct', `${prepaidNormalizedStagePcts[1]}%`);
     setTxt('payment-prepaid-pickup', prepaidCounts.pickup);
-    setTxt('payment-prepaid-pickup-pct', `${getPct(prepaidCounts.pickup, prepaidTotal)}%`);
+    setTxt('payment-prepaid-pickup-pct', `${prepaidNormalizedStagePcts[2]}%`);
     setTxt('payment-prepaid-unfulfilled', prepaidCounts.unfulfilled);
-    setTxt('payment-prepaid-unfulfilled-pct', `${getPct(prepaidCounts.unfulfilled, prepaidTotal)}%`);
+    setTxt('payment-prepaid-unfulfilled-pct', `${prepaidNormalizedStagePcts[3]}%`);
     setTxt('payment-prepaid-denied', prepaidCounts.denied);
-    setTxt('payment-prepaid-denied-pct', `${getPct(prepaidCounts.denied, prepaidTotal)}%`);
+    setTxt('payment-prepaid-denied-pct', `${prepaidNormalizedStagePcts[4]}%`);
     setTxt('payment-prepaid-returned', prepaidCounts.returned);
-    setTxt('payment-prepaid-returned-pct', `${getPct(prepaidCounts.returned, prepaidTotal)}%`);
+    setTxt('payment-prepaid-returned-pct', `${prepaidNormalizedStagePcts[5]}%`);
     setTxt('payment-prepaid-canceled', prepaidCounts.canceled);
-    setTxt('payment-prepaid-canceled-pct', `${getPct(prepaidCounts.canceled, prepaidTotal)}%`);
+    setTxt('payment-prepaid-canceled-pct', `${prepaidNormalizedStagePcts[6]}%`);
     
     const prepaidReturnRate = getPct(prepaidCounts.returned, prepaidTotal);
     setTxt('payment-prepaid-progress-text', `${prepaidReturnRate}%`);
@@ -1020,6 +1132,8 @@ const donutLabelsLinePlugin = {
             const GAP     = 4;    // px between tick end and text
             const MINGAP  = 15;   // min px between adjacent label Y positions
 
+            const normalizedPcts = formatNormalizedPercentages(dataset.data, 1);
+
             // Build label positions from midAngle
             const items = [];
             meta.data.forEach((el, idx) => {
@@ -1029,7 +1143,7 @@ const donutLabelsLinePlugin = {
                 const mid  = startAngle + (endAngle - startAngle) / 2;
                 const cosM = Math.cos(mid);
                 const sinM = Math.sin(mid);
-                const pct  = (val * 100 / sum).toFixed(1) + '%';
+                const pct  = normalizedPcts[idx] + '%';
                 const name = labels[idx] || '';
 
                 // Anchor: outer ring midpoint

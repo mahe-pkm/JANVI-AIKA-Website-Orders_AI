@@ -288,10 +288,16 @@
             </div>
         </section>
 
-        <!-- Consolidated Category Performance Grid (4 items) -->
-        <section class="kpi-grid kpi-grid-consolidated">
-            <!-- Successful Orders (Consolidated Card) -->
-            <div class="kpi-card multi-metric-card" id="card-successful-consolidated">
+        <!-- Order Breakdown Details & Performance Metrics (8 Cards) -->
+        <section class="dashboard-section" style="margin-bottom: 24px;">
+            <div class="section-header">
+                <h2>Order Breakdown Details & Performance Metrics</h2>
+                <span class="badge">Master Lifecycle Overview</span>
+            </div>
+            
+            <div class="kpi-grid kpi-grid-consolidated" style="margin-bottom: 16px;">
+                <!-- Successful Orders (Consolidated Card) -->
+                <div class="kpi-card multi-metric-card" id="card-successful-consolidated">
                 <div class="kpi-card-header">
                     <div class="kpi-icon-wrapper green">
                         <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -348,7 +354,7 @@
                         <span class="sub-metric-val" id="kpi-total-denied">--</span>
                     </div>
                     <div class="kpi-sub-metric">
-                        <span class="sub-metric-label">Denial Rate</span>
+                        <span class="sub-metric-label">Denied Rate (of Total)</span>
                         <span class="sub-metric-val text-danger" id="kpi-denial-rate">--%</span>
                     </div>
                 </div>
@@ -381,7 +387,7 @@
                         <span class="sub-metric-val" id="kpi-total-refunded">--</span>
                     </div>
                     <div class="kpi-sub-metric">
-                        <span class="sub-metric-label">Return Rate</span>
+                        <span class="sub-metric-label">Return Rate (of Total)</span>
                         <span class="sub-metric-val text-warning" id="kpi-return-rate">--%</span>
                     </div>
                 </div>
@@ -414,13 +420,153 @@
                         <span class="sub-metric-val" id="kpi-total-canceled">--</span>
                     </div>
                     <div class="kpi-sub-metric">
-                        <span class="sub-metric-label">Canceled Rate</span>
+                        <span class="sub-metric-label">Canceled Rate (of Total)</span>
                         <span class="sub-metric-val text-warning" id="kpi-canceled-rate">--%</span>
                     </div>
                 </div>
                 <div class="kpi-progress-bar orange">
                     <div class="progress-fill" id="kpi-canceled-progress" style="width: 100%;"></div>
                 </div>
+            </div>
+            </div>
+
+            <!-- In-Progress Active Pipeline Grid (4 Columns) -->
+            <div class="kpi-grid kpi-grid-consolidated">
+            <!-- Total In-Progress Card -->
+            <div class="kpi-card multi-metric-card" id="card-in-progress-total">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper blue">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="3" width="15" height="13"/>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Total In-Progress</p>
+                        <p class="kpi-subtext" id="kpi-in-progress-sub">Awaiting final delivery</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-in-progress-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Amount</span>
+                        <span class="sub-metric-val" id="kpi-in-progress-amount">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Active Rate</span>
+                        <span class="sub-metric-val text-blue" id="kpi-in-progress-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar blue">
+                    <div class="progress-fill" id="kpi-in-progress-progress" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- In Transit Card -->
+            <div class="kpi-card multi-metric-card" id="card-in-transit">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper blue">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="13 17 18 12 13 7"/>
+                            <polyline points="6 17 11 12 6 7"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">In Transit</p>
+                        <p class="kpi-subtext" id="kpi-transit-sub">On the way to customer</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-transit-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Amount</span>
+                        <span class="sub-metric-val" id="kpi-transit-amount">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Transit Rate</span>
+                        <span class="sub-metric-val text-blue" id="kpi-transit-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar blue">
+                    <div class="progress-fill" id="kpi-transit-progress" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Pickup Scheduled Card -->
+            <div class="kpi-card multi-metric-card" id="card-pickup-scheduled">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper purple">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Pickup Scheduled</p>
+                        <p class="kpi-subtext" id="kpi-pickup-sub">Ready for courier pickup</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-pickup-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Amount</span>
+                        <span class="sub-metric-val" id="kpi-pickup-amount">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Pickup Rate</span>
+                        <span class="sub-metric-val text-purple" id="kpi-pickup-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar purple">
+                    <div class="progress-fill" id="kpi-pickup-progress" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Unfulfilled Card -->
+            <div class="kpi-card multi-metric-card" id="card-unfulfilled-orders">
+                <div class="kpi-card-header">
+                    <div class="kpi-icon-wrapper orange">
+                        <svg class="kpi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <div class="kpi-header-titles">
+                        <p class="kpi-label">Unfulfilled</p>
+                        <p class="kpi-subtext" id="kpi-unfulfilled-sub">Awaiting processing</p>
+                    </div>
+                </div>
+                <div class="kpi-metrics-row">
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Count</span>
+                        <span class="sub-metric-val" id="kpi-unfulfilled-count">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Total Amount</span>
+                        <span class="sub-metric-val" id="kpi-unfulfilled-amount">--</span>
+                    </div>
+                    <div class="kpi-sub-metric">
+                        <span class="sub-metric-label">Unfulfilled Rate</span>
+                        <span class="sub-metric-val text-warning" id="kpi-unfulfilled-rate">--%</span>
+                    </div>
+                </div>
+                <div class="kpi-progress-bar orange">
+                    <div class="progress-fill" id="kpi-unfulfilled-progress" style="width: 100%;"></div>
+                </div>
+            </div>
             </div>
         </section>
 
