@@ -171,11 +171,16 @@ def process_and_create_excel():
         # 6. Payment & COD
         pay_method_s = str(row['Payment Method_x']).lower() if pd.notna(row['Payment Method_x']) else ""
         pay_method_sr = str(row['Payment Method_y']).lower() if pd.notna(row['Payment Method_y']) else ""
+        fin_status_lower = str(row['Financial Status']).lower().strip() if pd.notna(row['Financial Status']) else ""
+        tags_lower = str(row['Tags']).lower().strip() if 'Tags' in row and pd.notna(row['Tags']) else ""
         
         is_cod = False
         pay_method = "Prepaid"
         
-        if 'cash' in pay_method_s or 'cod' in pay_method_s or 'cod' in pay_method_sr:
+        if 'partially' in fin_status_lower or 'partial' in tags_lower:
+            is_cod = True
+            pay_method = "Partial COD"
+        elif 'cash' in pay_method_s or 'cod' in pay_method_s or 'cod' in pay_method_sr:
             is_cod = True
             pay_method = "COD"
         elif 'razorpay' in pay_method_s or 'upi' in pay_method_s or 'card' in pay_method_s or 'prepaid' in pay_method_sr:
@@ -183,8 +188,7 @@ def process_and_create_excel():
             pay_method = "Prepaid (Razorpay)"
         elif pay_method_s == "" and pay_method_sr == "":
             # Check financial status as fallback
-            fin_status = str(row['Financial Status']).lower()
-            if fin_status == 'pending':
+            if fin_status_lower == 'pending':
                 is_cod = True
                 pay_method = "COD"
                 
