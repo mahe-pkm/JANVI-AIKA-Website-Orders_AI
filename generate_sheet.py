@@ -334,6 +334,30 @@ def process_and_create_excel():
                 "comments": "Pna|Receiver Not Available/Reachable Over Phone",
                 "awb": "7D131457369",
                 "tracking_link": "https://shiprocket.co/tracking/7D131457369"
+            },
+            "#1108": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Shiprocket RTO",
+                "awb": "SRSC0319007800",
+                "tracking_link": "https://shiprocket.co/tracking/SRSC0319007800"
+            },
+            "#1107": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Customer Cancelled O T P Verified",
+                "awb": "SF3593208175KR",
+                "tracking_link": "https://shiprocket.co/tracking/SF3593208175KR"
+            },
+            "#1105": {
+                "fulfillment_status": "RTO DELIVERED",
+                "cod_denied": "Yes",
+                "returned": True,
+                "comments": "Customer Refused To Accept O T P Verified",
+                "awb": "14112364415189",
+                "tracking_link": "https://shiprocket.co/tracking/14112364415189"
             }
         }
         
