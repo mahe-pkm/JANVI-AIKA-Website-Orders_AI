@@ -786,12 +786,32 @@ def process_and_create_excel():
     cod_successful_count = len(cod_successful_df)
     cod_net_revenue = cod_successful_df["Total Price"].sum()
     cod_aov = (cod_net_revenue / cod_successful_count) if cod_successful_count > 0 else 0
-    
-    # Prepaid Net Revenue (76 delivered Prepaid orders = ₹124,076.00)
+# Prepaid Net Revenue (76 delivered Prepaid orders = ₹124,076.00)
     prepaid_successful_df = successful_df[successful_df["Prepaid (Yes/No)"] == "Yes"]
     prepaid_successful_count = len(prepaid_successful_df)
     prepaid_net_revenue = prepaid_successful_df["Total Price"].sum()
     prepaid_aov = (prepaid_net_revenue / prepaid_successful_count) if prepaid_successful_count > 0 else 0
+    
+    # Active Shipping Pipeline Calculations for Row 4 KPIs
+    in_progress_statuses = ['IN TRANSIT', 'IN TRANSIT-EN-ROUTE', 'SHIPPED', 'PICKED UP', 'REACHED DESTINATION HUB', 'OUT FOR DELIVERY', 'UNDELIVERED-1ST ATTEMPT', 'IN TRANSIT-AT DESTINATION HUB', 'PICKUP SCHEDULED', 'NEW ORDER']
+    in_transit_statuses = ['IN TRANSIT', 'IN TRANSIT-EN-ROUTE', 'SHIPPED', 'PICKED UP', 'REACHED DESTINATION HUB', 'OUT FOR DELIVERY', 'UNDELIVERED-1ST ATTEMPT', 'IN TRANSIT-AT DESTINATION HUB']
+    pickup_statuses = ['PICKUP SCHEDULED', 'NEW ORDER']
+    
+    in_progress_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(in_progress_statuses)]
+    in_progress_count = len(in_progress_df)
+    in_progress_amount = in_progress_df["Total Price"].sum()
+    
+    in_transit_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(in_transit_statuses)]
+    in_transit_count = len(in_transit_df)
+    in_transit_amount = in_transit_df["Total Price"].sum()
+    
+    pickup_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip().isin(pickup_statuses)]
+    pickup_count = len(pickup_df)
+    pickup_amount = pickup_df["Total Price"].sum()
+    
+    unfulfilled_df = df_consolidated[df_consolidated["Fulfillment Status"].str.upper().str.strip() == 'UNFULFILLED']
+    unfulfilled_count = len(unfulfilled_df)
+    unfulfilled_amount = unfulfilled_df["Total Price"].sum()
     
     # ----------------------------------------------------
     # ROW 1 OF KPIs: Primary Overview (Cols B, C, D, E)
@@ -842,7 +862,7 @@ def process_and_create_excel():
     dash_sheet["E4"].fill = card_fill
     
     # ----------------------------------------------------
-    # ROW 2 OF KPIs: Payment Performance (Cols B, C, D, E)
+    # ROW 2 OF KPIs: Revenue Stream Breakdown (Cols B, C, D, E)
     # ----------------------------------------------------
     
     # KPI 5: COD Net Revenue
@@ -896,10 +916,9 @@ def process_and_create_excel():
     dash_sheet["B9"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["B9"].alignment = align_center
     dash_sheet["B9"].fill = card_fill
-    dash_sheet["B10"] = successful_count
-    dash_sheet["B10"].font = Font(name=font_family, size=16, bold=True, color="1E8449")
+    dash_sheet["B10"] = f"{successful_count} (₹{df_consolidated[successful_mask]['Total Price'].sum():,.2f})"
+    dash_sheet["B10"].font = Font(name=font_family, size=14, bold=True, color="1E8449")
     dash_sheet["B10"].alignment = align_center
-    dash_sheet["B10"].number_format = '#,##0'
     dash_sheet["B10"].fill = card_fill
     
     # KPI 10: Denied Orders
@@ -907,10 +926,9 @@ def process_and_create_excel():
     dash_sheet["C9"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["C9"].alignment = align_center
     dash_sheet["C9"].fill = card_fill
-    dash_sheet["C10"] = denied_count
-    dash_sheet["C10"].font = Font(name=font_family, size=16, bold=True, color="922B21")
+    dash_sheet["C10"] = f"{denied_count} (₹{denied_amount:,.2f})"
+    dash_sheet["C10"].font = Font(name=font_family, size=14, bold=True, color="922B21")
     dash_sheet["C10"].alignment = align_center
-    dash_sheet["C10"].number_format = '#,##0'
     dash_sheet["C10"].fill = card_fill
     
     # KPI 11: Returned Orders
@@ -918,10 +936,9 @@ def process_and_create_excel():
     dash_sheet["D9"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["D9"].alignment = align_center
     dash_sheet["D9"].fill = card_fill
-    dash_sheet["D10"] = returned_count
-    dash_sheet["D10"].font = Font(name=font_family, size=16, bold=True, color="BA4A00")
+    dash_sheet["D10"] = f"{returned_count} (₹{returned_amount:,.2f})"
+    dash_sheet["D10"].font = Font(name=font_family, size=14, bold=True, color="BA4A00")
     dash_sheet["D10"].alignment = align_center
-    dash_sheet["D10"].number_format = '#,##0'
     dash_sheet["D10"].fill = card_fill
     
     # KPI 12: Canceled Orders
@@ -929,13 +946,56 @@ def process_and_create_excel():
     dash_sheet["E9"].font = Font(name=font_family, size=9, bold=True, color="555555")
     dash_sheet["E9"].alignment = align_center
     dash_sheet["E9"].fill = card_fill
-    dash_sheet["E10"] = canceled_count
-    dash_sheet["E10"].font = Font(name=font_family, size=16, bold=True, color="922B21")
+    dash_sheet["E10"] = f"{canceled_count} (₹{canceled_amount:,.2f})"
+    dash_sheet["E10"].font = Font(name=font_family, size=14, bold=True, color="922B21")
     dash_sheet["E10"].alignment = align_center
-    dash_sheet["E10"].number_format = '#,##0'
     dash_sheet["E10"].fill = card_fill
+
+    # ----------------------------------------------------
+    # ROW 4 OF KPIs: Active Shipping Pipeline Breakdown (Cols B, C, D, E)
+    # ----------------------------------------------------
     
-    # KPI Card Borders (3 rows of 4 cards: Cols B, C, D, E)
+    # KPI 13: Total In-Progress
+    dash_sheet["B12"] = "TOTAL IN-PROGRESS"
+    dash_sheet["B12"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["B12"].alignment = align_center
+    dash_sheet["B12"].fill = card_fill
+    dash_sheet["B13"] = f"{in_progress_count} (₹{in_progress_amount:,.2f})"
+    dash_sheet["B13"].font = Font(name=font_family, size=14, bold=True, color="2980B9")
+    dash_sheet["B13"].alignment = align_center
+    dash_sheet["B13"].fill = card_fill
+    
+    # KPI 14: In Transit
+    dash_sheet["C12"] = "IN TRANSIT"
+    dash_sheet["C12"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["C12"].alignment = align_center
+    dash_sheet["C12"].fill = card_fill
+    dash_sheet["C13"] = f"{in_transit_count} (₹{in_transit_amount:,.2f})"
+    dash_sheet["C13"].font = Font(name=font_family, size=14, bold=True, color="2980B9")
+    dash_sheet["C13"].alignment = align_center
+    dash_sheet["C13"].fill = card_fill
+    
+    # KPI 15: Pickup Scheduled
+    dash_sheet["D12"] = "PICKUP SCHEDULED"
+    dash_sheet["D12"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["D12"].alignment = align_center
+    dash_sheet["D12"].fill = card_fill
+    dash_sheet["D13"] = f"{pickup_count} (₹{pickup_amount:,.2f})"
+    dash_sheet["D13"].font = Font(name=font_family, size=14, bold=True, color="8E44AD")
+    dash_sheet["D13"].alignment = align_center
+    dash_sheet["D13"].fill = card_fill
+    
+    # KPI 16: Unfulfilled
+    dash_sheet["E12"] = "UNFULFILLED"
+    dash_sheet["E12"].font = Font(name=font_family, size=9, bold=True, color="555555")
+    dash_sheet["E12"].alignment = align_center
+    dash_sheet["E12"].fill = card_fill
+    dash_sheet["E13"] = f"{unfulfilled_count} (₹{unfulfilled_amount:,.2f})"
+    dash_sheet["E13"].font = Font(name=font_family, size=14, bold=True, color="7F8C8D")
+    dash_sheet["E13"].alignment = align_center
+    dash_sheet["E13"].fill = card_fill
+    
+    # KPI Card Borders (4 rows of 4 cards: Cols B, C, D, E)
     for col in ["B", "C", "D", "E"]:
         # Clear spacer rows
         dash_sheet[f"{col}5"].value = None
@@ -944,6 +1004,9 @@ def process_and_create_excel():
         dash_sheet[f"{col}8"].value = None
         dash_sheet[f"{col}8"].fill = PatternFill(fill_type=None)
         dash_sheet[f"{col}8"].border = Border()
+        dash_sheet[f"{col}11"].value = None
+        dash_sheet[f"{col}11"].fill = PatternFill(fill_type=None)
+        dash_sheet[f"{col}11"].border = Border()
         
         # Row 1 borders
         dash_sheet[f"{col}3"].border = Border(left=thin_side, right=thin_side, top=thin_side)
@@ -954,6 +1017,9 @@ def process_and_create_excel():
         # Row 3 borders
         dash_sheet[f"{col}9"].border = Border(left=thin_side, right=thin_side, top=thin_side)
         dash_sheet[f"{col}10"].border = Border(left=thin_side, right=thin_side, bottom=thin_side)
+        # Row 4 borders
+        dash_sheet[f"{col}12"].border = Border(left=thin_side, right=thin_side, top=thin_side)
+        dash_sheet[f"{col}13"].border = Border(left=thin_side, right=thin_side, bottom=thin_side)
         
     dash_sheet.row_dimensions[3].height = 18
     dash_sheet.row_dimensions[4].height = 26
@@ -963,25 +1029,28 @@ def process_and_create_excel():
     dash_sheet.row_dimensions[8].height = 12  # Spacer Row
     dash_sheet.row_dimensions[9].height = 18
     dash_sheet.row_dimensions[10].height = 26
-    dash_sheet.row_dimensions[11].height = 15 # Spacer Row
+    dash_sheet.row_dimensions[11].height = 12 # Spacer Row
+    dash_sheet.row_dimensions[12].height = 18
+    dash_sheet.row_dimensions[13].height = 26
+    dash_sheet.row_dimensions[14].height = 15 # Spacer Row
     
-    # Daily Table Title (shifted down to row 12)
-    dash_sheet["B12"] = "DAILY ORDERS COUNT SUMMARY"
-    dash_sheet["B12"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
+    # Daily Table Title (shifted down to row 15)
+    dash_sheet["B15"] = "DAILY ORDERS COUNT SUMMARY"
+    dash_sheet["B15"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
     
-    # Table headers (shifted down to row 14)
+    # Table headers (shifted down to row 17)
     dash_headers = ["Date of Order", "Total Orders Count", "Total Sales"]
-    dash_sheet.row_dimensions[14].height = 25
+    dash_sheet.row_dimensions[17].height = 25
     for col_idx, text in enumerate(dash_headers, start=2): # Col B to Col D
-        cell = dash_sheet.cell(row=14, column=col_idx)
+        cell = dash_sheet.cell(row=17, column=col_idx)
         cell.value = text
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = header_align
         cell.border = border_all
         
-    # Table data (shifted down to row 15)
-    start_row = 15
+    # Table data (shifted down to row 18)
+    start_row = 18
     df_daily_output = df_daily.copy()
     df_daily_output['Date of Order'] = pd.to_datetime(df_daily_output['Date of Order']).dt.strftime('%d-%m-%Y')
     
@@ -1020,24 +1089,24 @@ def process_and_create_excel():
     # ----------------------------------------------------
     # SECTION 8: WRITE MONTHLY SUMMARY TABLE TO DASHBOARD
     # ----------------------------------------------------
-    # Table Title (shifted down to row 12)
-    dash_sheet["F12"] = "MONTHLY ORDERS SUMMARY"
-    dash_sheet["F12"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
-    dash_sheet.merge_cells("F12:H12")
+    # Table Title (shifted down to row 15)
+    dash_sheet["F15"] = "MONTHLY ORDERS SUMMARY"
+    dash_sheet["F15"].font = Font(name=font_family, size=12, bold=True, color=color_primary)
+    dash_sheet.merge_cells("F15:H15")
     
-    # Table headers (shifted down to row 14)
+    # Table headers (shifted down to row 17)
     monthly_headers = ["Month", "Total Orders Count", "Total Sales"]
     for col_offset, text in enumerate(monthly_headers):
         col_idx = 6 + col_offset  # F, G, H
-        cell = dash_sheet.cell(row=14, column=col_idx)
+        cell = dash_sheet.cell(row=17, column=col_idx)
         cell.value = text
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = header_align
         cell.border = border_all
         
-    # Table data (shifted down to row 15)
-    start_row_monthly = 15
+    # Table data (shifted down to row 18)
+    start_row_monthly = 18
     for idx, row in df_monthly_summary.iterrows():
         current_row = start_row_monthly + idx
         row_fill = zebra_fill if current_row % 2 == 1 else white_fill
