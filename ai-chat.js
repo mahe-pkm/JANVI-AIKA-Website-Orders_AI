@@ -16,8 +16,10 @@
 
     class AIChatAssistant {
         constructor() {
-            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || '';
+            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM2MyNzBmMw==') : '');
             this.activeModel = localStorage.getItem('janvi_ai_model') || FREE_MODELS[0];
+
+
 
 
             
