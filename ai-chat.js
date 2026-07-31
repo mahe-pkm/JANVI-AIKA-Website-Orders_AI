@@ -485,6 +485,30 @@ ${contextText}`;
                 ...this.history.slice(-6)
             ];
 
+            // 1. Try Vercel Serverless Proxy (/api/chat)
+            try {
+                const proxyResp = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messagesPayload })
+                });
+
+                if (proxyResp.ok) {
+                    const data = await proxyResp.json();
+                    const choice = data.choices && data.choices[0];
+                    if (choice && choice.message && choice.message.content) {
+                        const usedModel = data.model || FREE_MODELS[0];
+                        if (this.elements.activeModelBadge) {
+                            this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
+                        }
+                        return choice.message.content;
+                    }
+                }
+            } catch (proxyErr) {
+                console.warn('Serverless proxy endpoint unavailable, falling back to client fetch:', proxyErr.message);
+            }
+
+            // 2. Client-side fallback if serverless route unavailable
             let modelQueue = [...FREE_MODELS];
             let lastError = null;
 
@@ -548,6 +572,10 @@ ${contextText}`;
                             <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                             <span>Copy</span>
                         </button>
+                        <button class="ai-action-btn ai-snip-btn" title="Save Response as HD Image">
+                            <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Snip</span>
+                        </button>
                         <button class="ai-action-btn ai-regen-btn" title="Regenerate Response">
                             <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                             <span>Regenerate</span>
@@ -592,6 +620,14 @@ ${contextText}`;
                 });
             }
 
+            // Attach Snip Button Listener
+            const snipBtn = msgDiv.querySelector('.ai-snip-btn');
+            if (snipBtn) {
+                snipBtn.addEventListener('click', () => {
+                    this.snipResponseAsImage(msgDiv.querySelector('.ai-bubble'), snipBtn);
+                });
+            }
+
             // Attach Regenerate Listener
             const regenBtn = msgDiv.querySelector('.ai-regen-btn');
             if (regenBtn) {
@@ -623,6 +659,48 @@ ${contextText}`;
             container.appendChild(msgDiv);
             container.scrollTop = container.scrollHeight;
             return msgDiv;
+        }
+
+        async snipResponseAsImage(bubbleEl, snipBtn) {
+            if (!bubbleEl || typeof html2canvas === 'undefined') {
+                alert('Image Snip library loading... Please try again in a moment.');
+                return;
+            }
+
+            const actionBar = bubbleEl.querySelector('.ai-action-bar');
+            if (actionBar) actionBar.style.display = 'none';
+
+            try {
+                const canvas = await html2canvas(bubbleEl, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                // 1-Click File Download
+                const link = document.createElement('a');
+                const now = new Date();
+                const dateStr = now.toISOString().slice(0, 10);
+                link.download = `janvi-ai-report-${dateStr}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                // Visual feedback
+                if (snipBtn) {
+                    const btnSpan = snipBtn.querySelector('span');
+                    if (btnSpan) btnSpan.textContent = 'Snipped!';
+                    snipBtn.classList.add('copied');
+                    setTimeout(() => {
+                        if (btnSpan) btnSpan.textContent = 'Snip';
+                        snipBtn.classList.remove('copied');
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Image Snip failed:', err);
+            } finally {
+                if (actionBar) actionBar.style.display = 'flex';
+            }
         }
 
         appendLoadingIndicator() {
