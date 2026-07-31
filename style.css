@@ -3434,20 +3434,42 @@ body.dark-mode .banner-count-tag {
         padding-bottom: 80px !important;
     }
 
+    /* Sleek Compact Mobile Pill Trigger Button */
     .ai-chat-trigger {
+        position: fixed !important;
         bottom: 16px !important;
         right: 16px !important;
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
-        border-radius: 50% !important;
-        padding: 0 !important;
-        justify-content: center !important;
+        z-index: 9999 !important;
+        display: inline-flex !important;
         align-items: center !important;
-        box-shadow: 0 8px 24px rgba(128, 0, 32, 0.45) !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        width: auto !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        background: linear-gradient(135deg, var(--color-brand) 0%, #a00028 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 6px 20px rgba(128, 0, 32, 0.45) !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
-    .ai-trigger-text, 
+    .ai-chat-trigger.open {
+        display: none !important;
+    }
+
+    .ai-trigger-text {
+        display: inline-block !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        color: #ffffff !important;
+    }
+
     #ai-key-status-badge {
         display: none !important;
     }
@@ -3460,8 +3482,9 @@ body.dark-mode .banner-count-tag {
     }
 
     .ai-trigger-icon svg {
-        width: 22px !important;
-        height: 22px !important;
+        width: 16px !important;
+        height: 16px !important;
+        stroke: #ffffff !important;
     }
 
     .ai-chat-drawer {
