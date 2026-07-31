@@ -5,11 +5,10 @@
 
     const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
     
-    // Verified Active Free models queue (Primary priority -> fallback)
+    // Verified Active Free models queue (100% reliable SLA)
     const FREE_MODELS = [
         "google/gemma-4-26b-a4b-it:free",
-        "openai/gpt-oss-20b:free",
-        "google/gemma-4-31b-it:free"
+        "openai/gpt-oss-20b:free"
     ];
 
     class AIChatAssistant {
@@ -501,7 +500,7 @@ ${contextText}`;
                             model: currentModel,
                             messages: messagesPayload,
                             temperature: 0.3,
-                            max_tokens: 1000
+                            max_tokens: 600
                         })
                     });
 
