@@ -3,12 +3,11 @@
 
 const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
 
-// Verified 100% Active Free Models Queue
+// Verified Active Free Models Queue
 const FREE_MODELS = [
-    "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
     "openai/gpt-oss-20b:free",
-    "inclusionai/ling-3.0-flash:free"
+    "google/gemma-4-31b-it:free"
 ];
 
 module.exports = async (req, res) => {

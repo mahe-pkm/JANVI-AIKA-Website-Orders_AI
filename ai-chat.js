@@ -7,10 +7,9 @@
     
     // Verified Active Free models queue (Primary priority -> fallback)
     const FREE_MODELS = [
-        "google/gemma-4-31b-it:free",
         "google/gemma-4-26b-a4b-it:free",
         "openai/gpt-oss-20b:free",
-        "inclusionai/ling-3.0-flash:free"
+        "google/gemma-4-31b-it:free"
     ];
 
     class AIChatAssistant {
@@ -500,7 +499,6 @@ ${contextText}`;
                         },
                         body: JSON.stringify({
                             model: currentModel,
-                            models: modelQueue.slice(i, i + 3),
                             messages: messagesPayload,
                             temperature: 0.3,
                             max_tokens: 1000
