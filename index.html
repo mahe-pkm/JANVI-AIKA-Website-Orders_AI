@@ -1037,11 +1037,115 @@
             </div>
         </div>
 
+    <!-- AI Chatbot Floating Trigger Button -->
+    <button id="ai-chat-toggle-btn" class="ai-chat-trigger" aria-label="Toggle AI Assistant" title="JANVI AI Analytics Assistant">
+        <span class="ai-trigger-icon">✨</span>
+        <span class="ai-trigger-text">AI Assistant</span>
+        <span id="ai-key-status-badge" class="ai-badge warning">Protected</span>
+    </button>
+
+    <!-- AI Authentication Login Modal -->
+    <div id="ai-login-modal" class="ai-modal-backdrop">
+        <div class="ai-modal-card ai-login-card">
+            <div class="ai-modal-header">
+                <h4>🔒 AI Assistant Access Control</h4>
+                <button id="ai-login-close-btn" class="ai-icon-btn">✕</button>
+            </div>
+            <form id="ai-login-form" class="ai-modal-body">
+                <div class="ai-auth-badge-icon">🔐</div>
+                <p class="ai-auth-desc">Please log in with authorized credentials to access the JANVI AI Chatbot Assistant.</p>
+                <div id="ai-login-error" class="ai-auth-error-msg" style="display: none;"></div>
+                <div class="ai-form-group">
+                    <label for="ai-login-user">Username:</label>
+                    <input type="text" id="ai-login-user" placeholder="Enter username..." required autocomplete="username" />
+                </div>
+                <div class="ai-form-group">
+                    <label for="ai-login-pass">Password:</label>
+                    <input type="password" id="ai-login-pass" placeholder="Enter password..." required autocomplete="current-password" />
+                </div>
+                <button type="submit" id="ai-login-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Unlock AI Assistant</button>
+            </form>
+        </div>
     </div>
+
+    <!-- AI Chatbot Drawer -->
+    <div id="ai-chat-drawer" class="ai-chat-drawer">
+        <div class="ai-chat-header">
+            <div class="ai-chat-header-title">
+                <span class="ai-chat-sparkle">✨</span>
+                <div>
+                    <h3>JANVI AI Analytics Assistant</h3>
+                    <span id="ai-active-model-badge" class="ai-model-tag">Auto-Fallback Free</span>
+                </div>
+            </div>
+            <div class="ai-chat-header-actions">
+                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout & Lock AI Assistant">🔒</button>
+                <button id="ai-clear-chat-btn" class="ai-icon-btn" title="Clear Chat History">🗑️</button>
+                <button id="ai-settings-btn" class="ai-icon-btn" title="AI Settings">⚙️</button>
+                <button id="ai-chat-close-btn" class="ai-icon-btn" title="Close Drawer">✕</button>
+            </div>
+        </div>
+
+        <!-- Quick Prompts Pill Bar -->
+        <div class="ai-quick-pills-bar">
+            <button class="ai-pill-btn" data-prompt="Summarize current performance &amp; revenue">📊 Summary</button>
+            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown?">🚚 Deliveries</button>
+            <button class="ai-pill-btn" data-prompt="Top 5 performing states by revenue">🗺️ Top States</button>
+            <button class="ai-pill-btn" data-prompt="Analyze cancellation and return risks">⚠️ Return Risks</button>
+        </div>
+
+        <!-- Chat Messages Scroll Container -->
+        <div id="ai-chat-messages" class="ai-chat-messages">
+            <!-- Messages populated dynamically -->
+        </div>
+
+        <!-- Chat Input Footer -->
+        <form id="ai-chat-form" class="ai-chat-footer">
+            <input type="text" id="ai-chat-input" placeholder="Ask questions about your orders, sales, or trends..." autocomplete="off" />
+            <button type="submit" id="ai-chat-send-btn" class="ai-send-btn">
+                <span>Send</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+        </form>
+
+        <!-- Settings Modal -->
+        <div id="ai-settings-modal" class="ai-modal-backdrop">
+            <div class="ai-modal-card">
+                <div class="ai-modal-header">
+                    <h4>⚙️ AI Assistant Settings</h4>
+                    <button id="ai-settings-close-btn" class="ai-icon-btn">✕</button>
+                </div>
+                <div class="ai-modal-body">
+                    <div class="ai-form-group">
+                        <label for="ai-api-key-input">OpenRouter API Key:</label>
+                        <input type="password" id="ai-api-key-input" placeholder="sk-or-v1-..." />
+                        <small class="ai-form-hint">Get a 100% free API Key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>. Stored securely in browser localStorage.</small>
+                    </div>
+                    <div class="ai-form-group">
+                        <label for="ai-model-select">AI Model Preference:</label>
+                        <select id="ai-model-select">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;" />
+                    <div class="ai-form-group">
+                        <label for="ai-change-pass">Change Access Password (Optional):</label>
+                        <input type="password" id="ai-change-pass" placeholder="Enter new password to update..." />
+                    </div>
+                </div>
+                <div class="ai-modal-footer">
+                    <button id="ai-save-settings-btn" class="btn btn-primary" style="width: 100%;">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Script -->
     <script src="data.js"></script>
     <script src="config.js"></script>
     <script src="app.js?v=4.0"></script>
+    <script src="ai-chat.js?v=1.0"></script>
 </body>
 </html>
+

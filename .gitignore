@@ -2,6 +2,11 @@
 .agents/
 .gemini/
 
+# Environment keys & Secrets
+.env
+.env*.local
+.vercel
+
 # Python caches
 __pycache__/
 *.pyc

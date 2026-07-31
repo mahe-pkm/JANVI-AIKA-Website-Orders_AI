@@ -23,6 +23,8 @@ const state = {
         delivery: null
     }
 };
+window.state = state;
+
 
 // DOM Elements
 const elements = {
