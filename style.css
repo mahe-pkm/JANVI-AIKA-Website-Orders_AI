@@ -3000,6 +3000,9 @@ body.dark-mode .banner-count-tag {
     line-height: 1.5;
     color: var(--text-primary);
     word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: calc(100% - 36px);
+    box-sizing: border-box;
 }
 
 .ai-message-user .ai-bubble {
@@ -3281,10 +3284,14 @@ body.dark-mode .banner-count-tag {
 /* HTML Table Styles inside Chat Bubbles */
 .ai-table-container {
     width: 100%;
+    max-width: 100%;
+    display: block;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     margin: 8px 0;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
+    box-sizing: border-box;
 }
 
 .ai-table {
@@ -3534,17 +3541,26 @@ body.dark-mode .banner-count-tag {
     /* Chat Messages Stream on Mobile */
     .ai-chat-messages {
         -webkit-overflow-scrolling: touch;
-        padding: 10px !important;
+        padding: 8px !important;
+        overflow-x: hidden !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .ai-message {
-        max-width: 98% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
     }
 
     .ai-bubble {
-        padding: 10px 12px !important;
-        font-size: 13.5px !important;
+        max-width: calc(100vw - 56px) !important;
+        padding: 8px 10px !important;
+        font-size: 13px !important;
         line-height: 1.45 !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
     }
 
     .ai-avatar {
