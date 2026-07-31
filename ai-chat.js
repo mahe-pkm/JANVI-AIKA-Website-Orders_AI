@@ -481,10 +481,33 @@ ${contextText}`;
                 ...this.history.slice(-6)
             ];
 
+            // 1. Try Vercel Serverless Function Proxy Endpoint (/api/chat)
+            try {
+                const proxyResp = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messagesPayload })
+                });
+
+                if (proxyResp.ok) {
+                    const data = await proxyResp.json();
+                    const choice = data.choices && data.choices[0];
+                    if (choice && choice.message && choice.message.content) {
+                        const usedModel = data.model || FREE_MODELS[0];
+                        if (this.elements.activeModelBadge) {
+                            this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
+                        }
+                        return choice.message.content;
+                    }
+                }
+            } catch (proxyErr) {
+                console.warn('Vercel serverless proxy endpoint unavailable, attempting direct fetch:', proxyErr.message);
+            }
+
+            // 2. Direct Browser Fetch across verified free models queue
             let modelQueue = [...FREE_MODELS];
             let lastError = null;
 
-            // Direct Browser Fetch across verified free models queue
             for (let i = 0; i < modelQueue.length; i++) {
                 const currentModel = modelQueue[i];
                 try {
@@ -504,27 +527,29 @@ ${contextText}`;
                         })
                     });
 
-                    if (!response.ok) {
-                        const errData = await response.json().catch(() => ({}));
-                        throw new Error(`Model ${currentModel} returned ${response.status}: ${errData.error?.message || response.statusText}`);
-                    }
-
-                    const data = await response.json();
-                    const choice = data.choices && data.choices[0];
-                    if (choice && choice.message && choice.message.content) {
-                        const usedModel = data.model || currentModel;
-                        if (this.elements.activeModelBadge) {
-                            this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
+                    if (response.ok) {
+                        const data = await response.json();
+                        const choice = data.choices && data.choices[0];
+                        if (choice && choice.message && choice.message.content) {
+                            const usedModel = data.model || currentModel;
+                            if (this.elements.activeModelBadge) {
+                                this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
+                            }
+                            return choice.message.content;
                         }
-                        return choice.message.content;
+                    } else {
+                        const errData = await response.json().catch(() => ({}));
+                        console.warn(`Model ${currentModel} returned ${response.status}:`, errData.error?.message);
+                        lastError = new Error(errData.error?.message || `Status ${response.status}`);
                     }
                 } catch (err) {
-                    console.warn(`Model ${currentModel} failed:`, err.message);
+                    console.warn(`Model ${currentModel} connection failed:`, err.message);
                     lastError = err;
                 }
             }
 
-            throw lastError || new Error('All free AI models were temporarily busy. Please try again in a few seconds.');
+            // 3. User-friendly fallback if all free providers are momentarily congested
+            return `### ⚡ Server Traffic Pause\n\nThe free AI provider servers are currently experiencing high request volume. Please click **Regenerate** below or try your query again in a few seconds.`;
         }
 
         appendMessage(role, content) {
