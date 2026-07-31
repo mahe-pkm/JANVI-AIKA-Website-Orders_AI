@@ -2722,7 +2722,50 @@ body.dark-mode .banner-count-tag {
    AI Assistant Chatbot Widget Styles
    ========================================================================== */
 
+/* SVG Vector Icon Styling */
+.ai-svg-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
+    display: inline-block;
+    transition: all 150ms ease;
+}
+
+.ai-svg-icon.maroon-icon {
+    stroke: var(--color-brand);
+}
+
+.ai-svg-icon.brand-icon {
+    stroke: var(--color-brand);
+    width: 18px;
+    height: 18px;
+}
+
+.ai-svg-icon.lg-icon {
+    width: 36px;
+    height: 36px;
+    stroke: var(--color-brand);
+}
+
+.ai-svg-icon.avatar-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+}
+
+.ai-svg-icon.pill-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+}
+
 /* Floating Trigger Button */
+
 .ai-chat-trigger {
     position: fixed;
     bottom: 24px;

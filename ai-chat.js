@@ -137,19 +137,22 @@
             this.isDocked = forceState !== undefined ? forceState : !this.isDocked;
             localStorage.setItem('janvi_ai_docked', this.isDocked ? 'true' : 'false');
 
+            const dockIconSvg = `<svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>`;
+            const floatIconSvg = `<svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+
             if (this.isDocked) {
                 if (this.isMaximized) this.toggleMaximize(false);
                 this.elements.chatDrawer.classList.add('docked-sidebar');
                 document.body.classList.add('ai-sidebar-docked');
                 if (this.elements.dockBtn) {
-                    this.elements.dockBtn.textContent = '💬';
+                    this.elements.dockBtn.innerHTML = floatIconSvg;
                     this.elements.dockBtn.title = 'Floating Overlay Mode';
                 }
             } else {
                 this.elements.chatDrawer.classList.remove('docked-sidebar');
                 document.body.classList.remove('ai-sidebar-docked');
                 if (this.elements.dockBtn) {
-                    this.elements.dockBtn.textContent = '📌';
+                    this.elements.dockBtn.innerHTML = dockIconSvg;
                     this.elements.dockBtn.title = 'Dock Sidebar Mode';
                 }
             }
@@ -160,6 +163,9 @@
 
         toggleMaximize(forceState) {
             this.isMaximized = forceState !== undefined ? forceState : !this.isMaximized;
+            const maxIconSvg = `<svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+            const minIconSvg = `<svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="10" y1="14" x2="3" y2="21"/></svg>`;
+
             if (this.isMaximized) {
                 if (this.isDocked) {
                     this.elements.chatDrawer.classList.remove('docked-sidebar');
@@ -167,7 +173,7 @@
                 }
                 this.elements.chatDrawer.classList.add('maximized');
                 if (this.elements.maximizeBtn) {
-                    this.elements.maximizeBtn.textContent = '🗗';
+                    this.elements.maximizeBtn.innerHTML = minIconSvg;
                     this.elements.maximizeBtn.title = 'Restore Window';
                 }
             } else {
@@ -177,7 +183,7 @@
                     document.body.classList.add('ai-sidebar-docked');
                 }
                 if (this.elements.maximizeBtn) {
-                    this.elements.maximizeBtn.textContent = '🗖';
+                    this.elements.maximizeBtn.innerHTML = maxIconSvg;
                     this.elements.maximizeBtn.title = 'Maximize Window';
                 }
             }
@@ -259,7 +265,7 @@
             }
             if (this.elements.keyStatusBadge) {
                 if (!this.isAuthenticated) {
-                    this.elements.keyStatusBadge.textContent = '🔒 Locked';
+                    this.elements.keyStatusBadge.textContent = 'Locked';
                     this.elements.keyStatusBadge.className = 'ai-badge warning';
                 } else {
                     this.elements.keyStatusBadge.textContent = 'Ready';
@@ -538,16 +544,32 @@ ${contextText}`;
             if (role === 'assistant') {
                 actionBarHtml = `
                     <div class="ai-action-bar">
-                        <button class="ai-action-btn ai-copy-btn" title="Copy Response">📋 Copy</button>
-                        <button class="ai-action-btn ai-regen-btn" title="Regenerate Response">🔄 Regenerate</button>
-                        <button class="ai-action-btn ai-thumb-up" title="Helpful">👍</button>
-                        <button class="ai-action-btn ai-thumb-down" title="Not Helpful">👎</button>
+                        <button class="ai-action-btn ai-copy-btn" title="Copy Response">
+                            <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <span>Copy</span>
+                        </button>
+                        <button class="ai-action-btn ai-regen-btn" title="Regenerate Response">
+                            <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            <span>Regenerate</span>
+                        </button>
+                        <button class="ai-action-btn ai-thumb-up" title="Helpful">
+                            <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                        </button>
+                        <button class="ai-action-btn ai-thumb-down" title="Not Helpful">
+                            <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg>
+                        </button>
                     </div>
                 `;
             }
 
+            const userAvatarSvg = `<svg class="ai-svg-icon avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+            const assistantAvatarSvg = `<svg class="ai-svg-icon avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.4L12 21.6l-2.4-7.2L2.4 12l7.2-2.4z"/></svg>`;
+            const systemAvatarSvg = `<svg class="ai-svg-icon avatar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
+
+            const avatarMarkup = role === 'user' ? userAvatarSvg : (role === 'system' ? systemAvatarSvg : assistantAvatarSvg);
+
             msgDiv.innerHTML = `
-                <div class="ai-avatar">${role === 'user' ? '👤' : (role === 'system' ? '⚙️' : '✨')}</div>
+                <div class="ai-avatar">${avatarMarkup}</div>
                 <div class="ai-bubble">
                     ${formattedContent}
                     ${actionBarHtml}
@@ -558,11 +580,12 @@ ${contextText}`;
             const copyBtn = msgDiv.querySelector('.ai-copy-btn');
             if (copyBtn) {
                 copyBtn.addEventListener('click', () => {
+                    const btnSpan = copyBtn.querySelector('span');
                     navigator.clipboard.writeText(content).then(() => {
-                        copyBtn.textContent = '✓ Copied!';
+                        if (btnSpan) btnSpan.textContent = 'Copied!';
                         copyBtn.classList.add('copied');
                         setTimeout(() => {
-                            copyBtn.textContent = '📋 Copy';
+                            if (btnSpan) btnSpan.textContent = 'Copy';
                             copyBtn.classList.remove('copied');
                         }, 2000);
                     });

@@ -1039,7 +1039,9 @@
 
     <!-- AI Chatbot Floating Trigger Button -->
     <button id="ai-chat-toggle-btn" class="ai-chat-trigger" aria-label="Toggle AI Assistant" title="Janvi AI Assistance">
-        <span class="ai-trigger-icon">✨</span>
+        <span class="ai-trigger-icon">
+            <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.4L12 21.6l-2.4-7.2L2.4 12l7.2-2.4z"/></svg>
+        </span>
         <span class="ai-trigger-text">Janvi AI Assistance</span>
         <span id="ai-key-status-badge" class="ai-badge warning">Protected</span>
     </button>
@@ -1048,11 +1050,18 @@
     <div id="ai-login-modal" class="ai-modal-backdrop">
         <div class="ai-modal-card ai-login-card">
             <div class="ai-modal-header">
-                <h4>🔒 Janvi AI Assistance Access Control</h4>
-                <button id="ai-login-close-btn" class="ai-icon-btn">✕</button>
+                <h4>
+                    <svg class="ai-svg-icon maroon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Janvi AI Assistance Access Control
+                </h4>
+                <button id="ai-login-close-btn" class="ai-icon-btn" aria-label="Close">
+                    <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
             </div>
             <form id="ai-login-form" class="ai-modal-body">
-                <div class="ai-auth-badge-icon">🔐</div>
+                <div class="ai-auth-badge-icon">
+                    <svg class="ai-svg-icon lg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
                 <p class="ai-auth-desc">Please log in with authorized credentials to access Janvi AI Assistance.</p>
                 <div id="ai-login-error" class="ai-auth-error-msg" style="display: none;"></div>
                 <div class="ai-form-group">
@@ -1072,7 +1081,9 @@
     <div id="ai-chat-drawer" class="ai-chat-drawer">
         <div class="ai-chat-header">
             <div class="ai-chat-header-title">
-                <span class="ai-chat-sparkle">✨</span>
+                <span class="ai-chat-sparkle">
+                    <svg class="ai-svg-icon brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.4L12 21.6l-2.4-7.2L2.4 12l7.2-2.4z"/></svg>
+                </span>
                 <div>
                     <div class="ai-header-title-row">
                         <h3>Janvi AI Assistance</h3>
@@ -1082,20 +1093,42 @@
                 </div>
             </div>
             <div class="ai-chat-header-actions">
-                <button id="ai-dock-btn" class="ai-icon-btn" title="Dock Sidebar Mode">📌</button>
-                <button id="ai-maximize-btn" class="ai-icon-btn" title="Maximize Window">🗖</button>
-                <button id="ai-clear-chat-btn" class="ai-icon-btn" title="Clear Chat History">🗑️</button>
-                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout & Lock AI Assistant">🔒</button>
-                <button id="ai-chat-close-btn" class="ai-icon-btn" title="Close Drawer">✕</button>
+                <button id="ai-dock-btn" class="ai-icon-btn" title="Dock Sidebar Mode">
+                    <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                </button>
+                <button id="ai-maximize-btn" class="ai-icon-btn" title="Maximize Window">
+                    <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                </button>
+                <button id="ai-clear-chat-btn" class="ai-icon-btn" title="Clear Chat History">
+                    <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout & Lock AI Assistant">
+                    <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </button>
+                <button id="ai-chat-close-btn" class="ai-icon-btn" title="Close Drawer">
+                    <svg class="ai-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
             </div>
         </div>
 
         <!-- Quick Prompts Pill Bar -->
         <div class="ai-quick-pills-bar">
-            <button class="ai-pill-btn" data-prompt="Summarize current performance &amp; revenue">📊 Summary</button>
-            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown in a table?">🚚 Deliveries Table</button>
-            <button class="ai-pill-btn" data-prompt="Top 5 performing states by revenue">🗺️ Top States</button>
-            <button class="ai-pill-btn" data-prompt="Analyze cancellation and return risks">⚠️ Return Risks</button>
+            <button class="ai-pill-btn" data-prompt="Summarize current performance &amp; revenue">
+                <svg class="ai-svg-icon pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Summary
+            </button>
+            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown in a table?">
+                <svg class="ai-svg-icon pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                Deliveries Table
+            </button>
+            <button class="ai-pill-btn" data-prompt="Top 5 performing states by revenue">
+                <svg class="ai-svg-icon pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Top States
+            </button>
+            <button class="ai-pill-btn" data-prompt="Analyze cancellation and return risks">
+                <svg class="ai-svg-icon pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Return Risks
+            </button>
         </div>
 
         <!-- Chat Messages Scroll Container -->
