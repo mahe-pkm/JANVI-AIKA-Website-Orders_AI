@@ -1034,11 +1034,12 @@
                         <p id="det-comments" class="items-text">--</p>
                     </div>
                 </div>
-    </div>
+            </div>
+        </div>
 
     <!-- AI Chatbot Floating Trigger Button -->
     <button id="ai-chat-toggle-btn" class="ai-chat-trigger" aria-label="Toggle AI Assistant" title="JANVI AI Analytics Assistant">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span class="ai-trigger-icon">✨</span>
         <span class="ai-trigger-text">AI Assistant</span>
         <span id="ai-key-status-badge" class="ai-badge warning">Protected</span>
     </button>
@@ -1047,10 +1048,11 @@
     <div id="ai-login-modal" class="ai-modal-backdrop">
         <div class="ai-modal-card ai-login-card">
             <div class="ai-modal-header">
-                <h4>AI Assistant Access Control</h4>
-                <button id="ai-login-close-btn" class="ai-icon-btn" aria-label="Close">✕</button>
+                <h4>🔒 AI Assistant Access Control</h4>
+                <button id="ai-login-close-btn" class="ai-icon-btn">✕</button>
             </div>
             <form id="ai-login-form" class="ai-modal-body">
+                <div class="ai-auth-badge-icon">🔐</div>
                 <p class="ai-auth-desc">Please log in with authorized credentials to access the JANVI AI Chatbot Assistant.</p>
                 <div id="ai-login-error" class="ai-auth-error-msg" style="display: none;"></div>
                 <div class="ai-form-group">
@@ -1070,31 +1072,26 @@
     <div id="ai-chat-drawer" class="ai-chat-drawer">
         <div class="ai-chat-header">
             <div class="ai-chat-header-title">
+                <span class="ai-chat-sparkle">✨</span>
                 <div>
                     <h3>JANVI AI Analytics Assistant</h3>
                     <span id="ai-active-model-badge" class="ai-model-tag">Auto-Fallback Free</span>
                 </div>
             </div>
             <div class="ai-chat-header-actions">
-                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout &amp; Lock AI Assistant" aria-label="Logout">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </button>
-                <button id="ai-clear-chat-btn" class="ai-icon-btn" title="Clear Chat History" aria-label="Clear History">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
-                <button id="ai-settings-btn" class="ai-icon-btn" title="AI Settings" aria-label="Settings">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                </button>
-                <button id="ai-chat-close-btn" class="ai-icon-btn" title="Close Drawer" aria-label="Close">✕</button>
+                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout & Lock AI Assistant">🔒</button>
+                <button id="ai-clear-chat-btn" class="ai-icon-btn" title="Clear Chat History">🗑️</button>
+                <button id="ai-settings-btn" class="ai-icon-btn" title="AI Settings">⚙️</button>
+                <button id="ai-chat-close-btn" class="ai-icon-btn" title="Close Drawer">✕</button>
             </div>
         </div>
 
         <!-- Quick Prompts Pill Bar -->
         <div class="ai-quick-pills-bar">
-            <button class="ai-pill-btn" data-prompt="Summarize current performance &amp; revenue">Summary</button>
-            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown?">Deliveries</button>
-            <button class="ai-pill-btn" data-prompt="Top 5 performing states by revenue">Top States</button>
-            <button class="ai-pill-btn" data-prompt="Analyze cancellation and return risks">Return Risks</button>
+            <button class="ai-pill-btn" data-prompt="Summarize current performance &amp; revenue">📊 Summary</button>
+            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown?">🚚 Deliveries</button>
+            <button class="ai-pill-btn" data-prompt="Top 5 performing states by revenue">🗺️ Top States</button>
+            <button class="ai-pill-btn" data-prompt="Analyze cancellation and return risks">⚠️ Return Risks</button>
         </div>
 
         <!-- Chat Messages Scroll Container -->
@@ -1115,7 +1112,7 @@
         <div id="ai-settings-modal" class="ai-modal-backdrop">
             <div class="ai-modal-card">
                 <div class="ai-modal-header">
-                    <h4>AI Assistant Settings</h4>
+                    <h4>⚙️ AI Assistant Settings</h4>
                     <button id="ai-settings-close-btn" class="ai-icon-btn">✕</button>
                 </div>
                 <div class="ai-modal-body">
@@ -1143,6 +1140,7 @@
         </div>
     </div>
 
+
     <!-- Script -->
     <script src="data.js"></script>
     <script src="config.js"></script>
@@ -1150,6 +1148,4 @@
     <script src="ai-chat.js?v=1.0"></script>
 </body>
 </html>
-
-
 

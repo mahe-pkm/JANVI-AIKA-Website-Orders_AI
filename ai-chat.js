@@ -1,23 +1,24 @@
-// JANVI AIKA Dashboard - AI Chatbot Assistant Engine (OpenRouter with Auto-Fallback & Clean Formatting)
+// JANVI AIKA Dashboard - AI Chatbot Assistant Engine (OpenRouter with Auto-Fallback & Authentication)
 
 (function () {
     'use strict';
 
     const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
     
-    // Verified free models ordered by primary priority -> fallback
+    // Expanded Free models queue ordered by primary priority -> fallback (Max 3 per REST request payload)
     const FREE_MODELS = [
-        "openai/gpt-oss-20b:free",
+        "google/gemma-4-31b-it:free",
         "google/gemma-4-26b-a4b-it:free",
+        "openai/gpt-oss-20b:free",
         "inclusionai/ling-3.0-flash:free",
-        "cohere/north-mini-code:free"
+        "cohere/north-mini-code:free",
+        "nvidia/nemotron-3-nano-30b-a3b:free"
     ];
 
     class AIChatAssistant {
         constructor() {
-            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM3MyNzBmMw==') : '');
+            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM2MyNzBmMw==') : '');
             this.activeModel = localStorage.getItem('janvi_ai_model') || FREE_MODELS[0];
-
 
             // Authentication state
             this.authUsername = (localStorage.getItem('janvi_ai_auth_user') || 'admin').toLowerCase();
@@ -68,7 +69,7 @@
             if (this.elements.modelSelect) {
                 this.elements.modelSelect.innerHTML = FREE_MODELS.map(m => 
                     `<option value="${m}" ${m === this.activeModel ? 'selected' : ''}>${m.replace(':free', ' (Free)')}</option>`
-                ).join('') + `<option value="auto">Auto Fallback Queue (Recommended)</option>`;
+                ).join('') + `<option value="auto">⚡ Auto Fallback Queue (Recommended)</option>`;
             }
         }
 
@@ -126,12 +127,12 @@
                         this.authPassword = newPass;
                         localStorage.setItem('janvi_ai_auth_pass', newPass);
                         this.elements.changePassInput.value = '';
-                        this.addSystemMessage("Access Password updated successfully!");
+                        this.addSystemMessage("🔑 Access Password updated successfully!");
                     }
 
                     this.updateKeyBadge();
                     this.elements.settingsModal.classList.remove('active');
-                    this.addSystemMessage("AI Settings updated successfully!");
+                    this.addSystemMessage("✅ AI Settings updated successfully!");
                 });
             }
 
@@ -192,7 +193,7 @@
                 this.updateKeyBadge();
                 this.toggleDrawer(true);
             } else {
-                this.elements.loginError.textContent = 'Invalid Username or Password. Access Denied.';
+                this.elements.loginError.textContent = '❌ Invalid Username or Password. Access Denied.';
                 this.elements.loginError.style.display = 'block';
                 this.elements.loginPass.value = '';
                 this.elements.loginPass.focus();
@@ -233,26 +234,26 @@
             }
             if (this.elements.keyStatusBadge) {
                 if (!this.isAuthenticated) {
-                    this.elements.keyStatusBadge.textContent = 'Locked';
+                    this.elements.keyStatusBadge.textContent = '🔒 Locked';
                     this.elements.keyStatusBadge.className = 'ai-badge warning';
                 } else if (this.apiKey) {
                     this.elements.keyStatusBadge.textContent = 'Ready';
                     this.elements.keyStatusBadge.className = 'ai-badge ready';
                 } else {
-                    this.elements.keyStatusBadge.textContent = 'Set Key';
+                    this.elements.keyStatusBadge.textContent = 'Set Key ⚙️';
                     this.elements.keyStatusBadge.className = 'ai-badge warning';
                 }
             }
         }
 
         addWelcomeMessage() {
-            const welcomeText = `Hello! I am your **JANVI AIKA Dashboard Assistant**.
+            const welcomeText = `👋 Hello! I am your **JANVI AIKA Dashboard Assistant**.
 
 I analyze real-time website orders, financial performance, and delivery metrics. Ask me anything or try one of these quick prompts:
-- *"Summarize current performance & revenue"*
-- *"What is our delivery vs return breakdown?"*
-- *"Top performing states by revenue"*
-- *"Analyze cancellation & return risks"*`;
+- 📊 *"Summarize current performance & revenue"*
+- 🚚 *"What is our delivery vs return breakdown?"*
+- 🗺️ *"Top performing states by revenue"*
+- ⚠️ *"Analyze cancellation & return risks"*`;
 
             this.appendMessage('assistant', welcomeText);
         }
@@ -288,6 +289,7 @@ I analyze real-time website orders, financial performance, and delivery metrics.
             const masterOrders = (window.state && Array.isArray(window.state.orders)) ? window.state.orders : [];
             const filteredOrders = (window.state && Array.isArray(window.state.filteredOrders)) ? window.state.filteredOrders : masterOrders;
 
+            // Fallback to raw sheet data if app state not parsed yet
             let sourceOrders = filteredOrders;
             if (sourceOrders.length === 0 && window.DASHBOARD_DATA && window.DASHBOARD_DATA.sheets && window.DASHBOARD_DATA.sheets["Master Sheet"]) {
                 const rows = window.DASHBOARD_DATA.sheets["Master Sheet"];
@@ -331,14 +333,16 @@ I analyze real-time website orders, financial performance, and delivery metrics.
                 pipelineCounts[stage] = (pipelineCounts[stage] || 0) + 1;
             });
 
+            // Active Filters in Master Table UI
             const searchQuery = document.getElementById('search-input')?.value.trim() || 'None';
             const monthFilter = document.getElementById('top-filter-month')?.value || document.getElementById('filter-month')?.value || 'All Months';
             const paymentFilter = document.getElementById('filter-payment')?.value || 'All Payment Methods';
             const categoryFilter = document.getElementById('filter-category')?.value || 'All Categories';
             const statusFilter = document.getElementById('filter-status')?.value || 'All Statuses';
 
+            // Sample active matching orders from the table for detailed answers
             const sampleOrders = sourceOrders.slice(0, 10).map(o => 
-                `| ${o.orderNo} | ${o.customerName} | ₹${o.totalPrice} | ${o.paymentMethod} | ${this.getPipelineStage(o).toUpperCase()} (${o.logisticsStatus || o.fulfillmentStatus}) | ${o.city} | ${o.itemsOrdered} |`
+                `• Order ${o.orderNo} | ${o.customerName} | ₹${o.totalPrice} | Date: ${o.dateOfOrder} | Payment: ${o.paymentMethod} | Stage: ${this.getPipelineStage(o).toUpperCase()} (${o.logisticsStatus || o.fulfillmentStatus}) | City: ${o.city} | Items: ${o.itemsOrdered}`
             ).join('\n');
 
             const delPct = activeTableCount ? ((pipelineCounts.delivered / activeTableCount) * 100).toFixed(1) : 0;
@@ -364,9 +368,7 @@ Exact Pipeline Metrics Breakdown:
 - New / Unfulfilled / Pending: ${pipelineCounts.unfulfilled + pipelineCounts.pickup} (${unfPct}%)
 
 Sample Matching Orders in Active Master Table:
-| Order ID | Customer | Amount | Payment | Status | City | Item |
-| --- | --- | --- | --- | --- | --- | --- |
-${sampleOrders || '| N/A | N/A | N/A | N/A | N/A | N/A | N/A |'}
+${sampleOrders || 'No matching orders in active view.'}
 =====================================================
 `;
         }
@@ -385,7 +387,7 @@ ${sampleOrders || '| N/A | N/A | N/A | N/A | N/A | N/A | N/A |'}
             if (!this.apiKey) {
                 this.appendMessage('user', text);
                 this.elements.userInput.value = '';
-                this.appendMessage('assistant', `API Key Required: Please click Settings at the top right of this chat window and enter your OpenRouter API Key.`);
+                this.appendMessage('assistant', `⚠️ **API Key Required**: Please click the **⚙️ Settings** icon at the top right of this chat window and enter your **OpenRouter API Key** (or get a free key at [openrouter.ai](https://openrouter.ai/keys)).`);
                 return;
             }
 
@@ -403,7 +405,7 @@ ${sampleOrders || '| N/A | N/A | N/A | N/A | N/A | N/A | N/A |'}
                 this.history.push({ role: 'assistant', content: responseText });
             } catch (err) {
                 loaderEl.remove();
-                this.appendMessage('assistant', `API Error: ${err.message || 'Failed to connect to OpenRouter.'}\n\nPlease verify your API key in Settings.`);
+                this.appendMessage('assistant', `❌ **API Error**: ${err.message || 'Failed to connect to OpenRouter.'}\n\nPlease verify your API key in **⚙️ Settings** or check your connection.`);
             } finally {
                 this.isGenerating = false;
             }
@@ -414,19 +416,20 @@ ${sampleOrders || '| N/A | N/A | N/A | N/A | N/A | N/A | N/A |'}
             const systemPrompt = `You are the expert AI Analytics Assistant for JANVI AIKA, a premium clothing & e-commerce brand.
 Your job is to answer user questions, summarize live order statistics, explain trends, and offer actionable insights based strictly on the provided Live Dashboard Context.
 
-CRITICAL FORMATTING RULES:
-1. Always format order lists, breakdowns, and summaries using clean Markdown tables with column headers:
-| Order ID | Customer | Amount | Payment | Status | City | Item |
-2. Do NOT output raw unformatted pipe strings, raw debug objects, or raw JSON.
-3. Keep explanations professional, concise, clearly formatted with bolding and bullet points, and use Indian Rupee (₹) formatting.
+STRICT RESPONSE FORMATTING RULES:
+1. NEVER output raw JSON objects, JSON strings, or code blocks in your responses.
+2. For tabular data, status breakdowns, or multi-column comparisons, ALWAYS format as clean Markdown tables with column headers (| Header 1 | Header 2 |).
+3. Use bolding (**text**) for key figures and bullet points (- item) for summaries.
+4. Always use Indian Rupee (₹) formatting for currency.
 
 ${contextText}`;
 
             const messagesPayload = [
                 { role: 'system', content: systemPrompt },
-                ...this.history.slice(-6)
+                ...this.history.slice(-6) // Keep last 3 conversation turns for context
             ];
 
+            // Determine models queue
             let modelQueue = [];
             if (this.activeModel === 'auto') {
                 modelQueue = [...FREE_MODELS];
@@ -443,16 +446,16 @@ ${contextText}`;
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.apiKey}`,
-                            'HTTP-Referer': window.location.href || 'http://localhost:8000',
+                            'HTTP-Referer': window.location.href || 'https://janvi-aika-dashboard.vercel.app',
                             'X-Title': 'JANVI AIKA Dashboard Assistant',
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             model: currentModel,
-                            models: modelQueue.slice(0, 3),
+                            models: modelQueue.slice(i, i + 3), // OpenRouter limit: max 3 items per payload
                             messages: messagesPayload,
                             temperature: 0.3,
-                            max_tokens: 1200
+                            max_tokens: 1000
                         })
                     });
 
@@ -496,37 +499,42 @@ ${contextText}`;
             msgDiv.className = `ai-message ai-message-${role}`;
 
             const formattedContent = this.formatMarkdown(content);
-            const avatarLabel = role === 'user' ? 'YOU' : (role === 'system' ? 'SYS' : 'AI');
-
-            let copyBtnHtml = '';
-            if (role === 'assistant') {
-                copyBtnHtml = `<button class="ai-copy-btn" title="Copy response">Copy</button>`;
-            }
+            const copyBtnHtml = role === 'assistant' ? `<button class="ai-copy-btn" title="Copy Response">📋 Copy</button>` : '';
 
             msgDiv.innerHTML = `
-                <div class="ai-avatar ai-avatar-${role}">${avatarLabel}</div>
-                <div class="ai-bubble">${copyBtnHtml}${formattedContent}</div>
+                <div class="ai-avatar">${role === 'user' ? '👤' : (role === 'system' ? '⚙️' : '✨')}</div>
+                <div class="ai-bubble">
+                    ${copyBtnHtml}
+                    ${formattedContent}
+                </div>
             `;
 
-            if (role === 'assistant') {
-                const copyBtn = msgDiv.querySelector('.ai-copy-btn');
-                if (copyBtn) {
-                    copyBtn.addEventListener('click', () => {
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = formattedContent;
-                        const textToCopy = tempDiv.innerText || tempDiv.textContent || content;
-                        navigator.clipboard.writeText(textToCopy).then(() => {
-                            copyBtn.textContent = 'Copied!';
-                            copyBtn.classList.add('copied');
-                            setTimeout(() => {
-                                copyBtn.textContent = 'Copy';
-                                copyBtn.classList.remove('copied');
-                            }, 2000);
-                        }).catch(err => {
-                            console.error('Copy failed:', err);
-                        });
+            // Attach Copy Button Listener
+            const copyBtn = msgDiv.querySelector('.ai-copy-btn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    navigator.clipboard.writeText(content).then(() => {
+                        copyBtn.textContent = '✓ Copied!';
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => {
+                            copyBtn.textContent = '📋 Copy';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    }).catch(() => {
+                        const ta = document.createElement('textarea');
+                        ta.value = content;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        ta.remove();
+                        copyBtn.textContent = '✓ Copied!';
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => {
+                            copyBtn.textContent = '📋 Copy';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
                     });
-                }
+                });
             }
 
             container.appendChild(msgDiv);
@@ -539,7 +547,7 @@ ${contextText}`;
             const loaderDiv = document.createElement('div');
             loaderDiv.className = 'ai-message ai-message-assistant ai-loading';
             loaderDiv.innerHTML = `
-                <div class="ai-avatar ai-avatar-assistant">AI</div>
+                <div class="ai-avatar">✨</div>
                 <div class="ai-bubble">
                     <div class="ai-typing-dots">
                         <span></span><span></span><span></span>
@@ -555,89 +563,112 @@ ${contextText}`;
         formatMarkdown(text) {
             if (!text) return '';
 
-            let cleanText = text;
-            if (cleanText.trim().startsWith('{') && cleanText.trim().endsWith('}')) {
-                try {
-                    const parsed = JSON.parse(cleanText);
-                    cleanText = Object.entries(parsed).map(([k, v]) => `**${k}**: ${JSON.stringify(v)}`).join('\n\n');
-                } catch(e) {}
-            }
-
-            let html = cleanText
+            // Sanitization
+            let clean = text
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
+                .replace(/>/g, '&gt;');
+
+            // 1. Process Markdown Tables (| col 1 | col 2 |)
+            const lines = clean.split('\n');
+            let processedLines = [];
+            let inTable = false;
+            let tableHeader = [];
+            let tableBody = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                const isTableLine = line.startsWith('|') && line.endsWith('|');
+
+                if (isTableLine) {
+                    const cells = line.split('|').slice(1, -1).map(c => c.trim());
+                    // Check if divider line (|---|---|)
+                    const isDivider = cells.every(c => /^:?-+:?$/.test(c));
+
+                    if (isDivider) {
+                        continue; // Skip divider row
+                    }
+
+                    if (!inTable) {
+                        inTable = true;
+                        tableHeader = cells;
+                        tableBody = [];
+                    } else {
+                        tableBody.push(cells);
+                    }
+                } else {
+                    if (inTable) {
+                        // Flush table HTML
+                        processedLines.push(this.renderHtmlTable(tableHeader, tableBody));
+                        inTable = false;
+                        tableHeader = [];
+                        tableBody = [];
+                    }
+                    processedLines.push(line);
+                }
+            }
+
+            if (inTable) {
+                processedLines.push(this.renderHtmlTable(tableHeader, tableBody));
+            }
+
+            let html = processedLines.join('\n');
+
+            // 2. Bold, Italics, Code, Links
+            html = html
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/`([^`]+)`/g, '<code>$1</code>')
                 .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 
-            const lines = html.split('\n');
-            let resultHtml = '';
-            let inTable = false;
-            let tableHtml = '';
+            // 3. Lists and Paragraphs
+            const outputLines = html.split('\n');
+            let result = '';
             let inList = false;
 
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-
-                if (line.startsWith('|') && line.endsWith('|')) {
+            outputLines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('<ul>') || trimmed.startsWith('<div class="ai-table-container">')) {
+                    if (inList) { result += '</ul>'; inList = false; }
+                    result += line;
+                } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+                    if (!inList) {
+                        result += '<ul>';
+                        inList = true;
+                    }
+                    result += `<li>${trimmed.substring(2)}</li>`;
+                } else {
                     if (inList) {
-                        resultHtml += '</ul>';
+                        result += '</ul>';
                         inList = false;
                     }
-
-                    const cells = line.split('|').map(c => c.trim()).slice(1, -1);
-                    
-                    if (cells.every(c => /^[-:\s]+$/.test(c))) {
-                        continue;
-                    }
-
-                    if (!inTable) {
-                        inTable = true;
-                        tableHtml = '<div class="ai-table-wrapper"><table class="ai-table"><thead><tr>';
-                        cells.forEach(c => { tableHtml += `<th>${c}</th>`; });
-                        tableHtml += '</tr></thead><tbody>';
-                    } else {
-                        tableHtml += '<tr>';
-                        cells.forEach(c => { tableHtml += `<td>${c}</td>`; });
-                        tableHtml += '</tr>';
-                    }
-                } else {
-                    if (inTable) {
-                        inTable = false;
-                        tableHtml += '</tbody></table></div>';
-                        resultHtml += tableHtml;
-                        tableHtml = '';
-                    }
-
-                    if (line.startsWith('- ') || line.startsWith('* ')) {
-                        if (!inList) {
-                            resultHtml += '<ul>';
-                            inList = true;
-                        }
-                        resultHtml += `<li>${line.substring(2)}</li>`;
-                    } else {
-                        if (inList) {
-                            resultHtml += '</ul>';
-                            inList = false;
-                        }
-                        if (line.length > 0) {
-                            resultHtml += `<p>${line}</p>`;
-                        }
+                    if (trimmed.length > 0) {
+                        result += `<p>${line}</p>`;
                     }
                 }
-            }
+            });
 
-            if (inTable) {
-                tableHtml += '</tbody></table></div>';
-                resultHtml += tableHtml;
-            }
-            if (inList) {
-                resultHtml += '</ul>';
-            }
+            if (inList) result += '</ul>';
+            return result;
+        }
 
-            return resultHtml;
+        renderHtmlTable(headerCells, bodyRows) {
+            let html = '<div class="ai-table-container"><table class="ai-table"><thead><tr>';
+            headerCells.forEach(cell => {
+                html += `<th>${cell}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            bodyRows.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += `<td>${cell}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div>';
+            return html;
         }
     }
 
