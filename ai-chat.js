@@ -307,12 +307,12 @@ I analyze real-time website orders, financial performance, and delivery metrics.
         }
 
         // Extracts live summarized context from Active Orders Master Table and window.state
-        getDashboardContext() {
+        getDashboardContext(userQuery = '') {
             const masterOrders = (window.state && Array.isArray(window.state.orders)) ? window.state.orders : [];
             const filteredOrders = (window.state && Array.isArray(window.state.filteredOrders)) ? window.state.filteredOrders : masterOrders;
 
             // Fallback to raw sheet data if app state not parsed yet
-            let sourceOrders = filteredOrders;
+            let sourceOrders = filteredOrders.length > 0 ? filteredOrders : masterOrders;
             if (sourceOrders.length === 0 && window.DASHBOARD_DATA && window.DASHBOARD_DATA.sheets && window.DASHBOARD_DATA.sheets["Master Sheet"]) {
                 const rows = window.DASHBOARD_DATA.sheets["Master Sheet"];
                 if (rows.length > 1) {
@@ -355,16 +355,51 @@ I analyze real-time website orders, financial performance, and delivery metrics.
                 pipelineCounts[stage] = (pipelineCounts[stage] || 0) + 1;
             });
 
-            // Active Filters in Master Table UI
-            const searchQuery = document.getElementById('search-input')?.value.trim() || 'None';
-            const monthFilter = document.getElementById('top-filter-month')?.value || document.getElementById('filter-month')?.value || 'All Months';
-            const paymentFilter = document.getElementById('filter-payment')?.value || 'All Payment Methods';
-            const categoryFilter = document.getElementById('filter-category')?.value || 'All Categories';
-            const statusFilter = document.getElementById('filter-status')?.value || 'All Statuses';
+            // Smart Exact Match Extractor for user query (Customer Name, Order #, City, Product, etc.)
+            let exactMatches = [];
+            const q = (userQuery || '').trim().toLowerCase();
+            
+            if (q) {
+                // Extract search terms (ignore generic words)
+                const terms = q.replace(/[^a-zA-Z0-9\s#]/g, '')
+                               .split(/\s+/)
+                               .filter(t => t.length >= 2 && !['get', 'me', 'the', 'order', 'details', 'of', 'for', 'show', 'what', 'is', 'where', 'status', 'find'].includes(t));
 
-            // Sample active matching orders from the table for detailed answers
-            const sampleOrders = sourceOrders.slice(0, 10).map(o => 
-                `• Order ${o.orderNo} | ${o.customerName} | ₹${o.totalPrice} | Date: ${o.dateOfOrder} | Payment: ${o.paymentMethod} | Stage: ${this.getPipelineStage(o).toUpperCase()} (${o.logisticsStatus || o.fulfillmentStatus}) | City: ${o.city} | Items: ${o.itemsOrdered}`
+                exactMatches = sourceOrders.filter(o => {
+                    const orderIdStr = String(o.orderNo || o.order_id || '').toLowerCase();
+                    const custNameStr = String(o.customerName || o.customer || '').toLowerCase();
+                    const cityStr = String(o.city || '').toLowerCase();
+                    const itemStr = String(o.itemsOrdered || o.items || '').toLowerCase();
+                    const skuStr = String(o.sku || '').toLowerCase();
+                    const catStr = String(o.category || '').toLowerCase();
+
+                    // Check exact or partial term match
+                    return terms.some(t => {
+                        const cleanT = t.replace('#', '');
+                        return orderIdStr.includes(cleanT) ||
+                               custNameStr.includes(t) ||
+                               cityStr.includes(t) ||
+                               itemStr.includes(t) ||
+                               skuStr.includes(t) ||
+                               catStr.includes(t);
+                    });
+                });
+            }
+
+            let exactMatchSection = '';
+            if (exactMatches.length > 0) {
+                const matchRows = exactMatches.slice(0, 15).map(o => 
+                    `• ORDER #${o.orderNo} | Customer Name: "${o.customerName}" | Date: ${o.dateOfOrder} | Price: ₹${o.totalPrice} | Payment: ${o.paymentMethod} | Logistics Status: ${o.logisticsStatus || o.fulfillmentStatus || 'UNKNOWN'} | Stage: ${this.getPipelineStage(o).toUpperCase()} | City: ${o.city} | PIN: ${o.pincode || o.pin || '-'} | Items: ${o.itemsOrdered} | SKU: ${o.sku || '-'} | Category: ${o.category || '-'} | Returned: ${o.returned ? 'Yes' : 'No'}`
+                ).join('\n');
+                exactMatchSection = `
+🎯 EXACT HIGH-PRIORITY SEARCH MATCHES FOUND FOR USER QUERY ("${userQuery}"):
+${matchRows}
+`;
+            }
+
+            // Compact Index of ALL 173 Orders in Master Dataset
+            const allOrdersCompactIndex = sourceOrders.map(o => 
+                `• #${o.orderNo} | ${o.customerName} | ₹${o.totalPrice} | ${o.dateOfOrder} | ${o.paymentMethod} | ${this.getPipelineStage(o).toUpperCase()} (${o.logisticsStatus || o.fulfillmentStatus}) | ${o.city} | ${o.itemsOrdered}`
             ).join('\n');
 
             const delPct = activeTableCount ? ((pipelineCounts.delivered / activeTableCount) * 100).toFixed(1) : 0;
@@ -378,7 +413,6 @@ I analyze real-time website orders, financial performance, and delivery metrics.
 === ACTIVE ORDERS MASTER TABLE & PIPELINE CONTEXT ===
 Total Master Dataset Orders: ${totalMasterCount}
 Active Matching Orders in View: ${activeTableCount}
-Active Table Filters: Search="${searchQuery}", Month="${monthFilter}", Payment="${paymentFilter}", Category="${categoryFilter}", Status="${statusFilter}"
 Filtered View Total Revenue: ₹${Math.round(totalRevenue).toLocaleString('en-IN')}
 
 Exact Pipeline Metrics Breakdown:
@@ -388,9 +422,9 @@ Exact Pipeline Metrics Breakdown:
 - RTO / Denied Orders: ${pipelineCounts.denied} (${rtoPct}%)
 - Canceled Orders: ${pipelineCounts.canceled} (${canPct}%)
 - New / Unfulfilled / Pending: ${pipelineCounts.unfulfilled + pipelineCounts.pickup} (${unfPct}%)
-
-Sample Matching Orders in Active Master Table:
-${sampleOrders || 'No matching orders in active view.'}
+${exactMatchSection}
+=== COMPLETE MASTER DATASET COMPACT INDEX (${sourceOrders.length} TOTAL ORDERS) ===
+${allOrdersCompactIndex}
 =====================================================
 `;
         }
@@ -427,7 +461,7 @@ ${sampleOrders || 'No matching orders in active view.'}
         }
 
         async callOpenRouterWithFallback(userPrompt) {
-            const contextText = this.getDashboardContext();
+            const contextText = this.getDashboardContext(userPrompt);
             const systemPrompt = `You are the expert AI Analytics Assistant named "Janvi AI Assistance" for JANVI AIKA, a premium clothing & e-commerce brand.
 Your job is to answer user questions, summarize live order statistics, explain trends, and offer actionable insights based strictly on the provided Live Dashboard Context.
 
