@@ -17,8 +17,8 @@
 
     class AIChatAssistant {
         constructor() {
-            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM2MyNzBmMw==') : '');
-            this.activeModel = localStorage.getItem('janvi_ai_model') || FREE_MODELS[0];
+            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM3MyNzBmMw==') : '');
+            this.activeModel = FREE_MODELS[0];
 
             // Authentication state
             this.authUsername = (localStorage.getItem('janvi_ai_auth_user') || 'admin').toLowerCase();
@@ -27,6 +27,8 @@
 
             this.history = [];
             this.isOpen = false;
+            this.isMaximized = false;
+            this.isDocked = localStorage.getItem('janvi_ai_docked') === 'true';
             this.isGenerating = false;
 
             this.initElements();
@@ -39,14 +41,9 @@
                 toggleBtn: document.getElementById('ai-chat-toggle-btn'),
                 chatDrawer: document.getElementById('ai-chat-drawer'),
                 closeBtn: document.getElementById('ai-chat-close-btn'),
+                dockBtn: document.getElementById('ai-dock-btn'),
+                maximizeBtn: document.getElementById('ai-maximize-btn'),
                 logoutBtn: document.getElementById('ai-logout-btn'),
-                settingsBtn: document.getElementById('ai-settings-btn'),
-                settingsModal: document.getElementById('ai-settings-modal'),
-                closeSettingsBtn: document.getElementById('ai-settings-close-btn'),
-                saveSettingsBtn: document.getElementById('ai-save-settings-btn'),
-                apiKeyInput: document.getElementById('ai-api-key-input'),
-                modelSelect: document.getElementById('ai-model-select'),
-                changePassInput: document.getElementById('ai-change-pass'),
                 messagesContainer: document.getElementById('ai-chat-messages'),
                 inputForm: document.getElementById('ai-chat-form'),
                 userInput: document.getElementById('ai-chat-input'),
@@ -64,13 +61,6 @@
                 loginPass: document.getElementById('ai-login-pass'),
                 loginError: document.getElementById('ai-login-error')
             };
-
-            // Populate model select options
-            if (this.elements.modelSelect) {
-                this.elements.modelSelect.innerHTML = FREE_MODELS.map(m => 
-                    `<option value="${m}" ${m === this.activeModel ? 'selected' : ''}>${m.replace(':free', ' (Free)')}</option>`
-                ).join('') + `<option value="auto">⚡ Auto Fallback Queue (Recommended)</option>`;
-            }
         }
 
         initListeners() {
@@ -86,6 +76,14 @@
 
             if (this.elements.closeBtn) this.elements.closeBtn.addEventListener('click', () => this.toggleDrawer(false));
             
+            if (this.elements.dockBtn) {
+                this.elements.dockBtn.addEventListener('click', () => this.toggleDock());
+            }
+
+            if (this.elements.maximizeBtn) {
+                this.elements.maximizeBtn.addEventListener('click', () => this.toggleMaximize());
+            }
+
             if (this.elements.logoutBtn) {
                 this.elements.logoutBtn.addEventListener('click', () => this.handleLogout());
             }
@@ -99,40 +97,6 @@
                 this.elements.loginForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.handleLogin();
-                });
-            }
-
-            if (this.elements.settingsBtn) {
-                this.elements.settingsBtn.addEventListener('click', () => {
-                    this.elements.apiKeyInput.value = this.apiKey;
-                    this.elements.settingsModal.classList.add('active');
-                });
-            }
-
-            if (this.elements.closeSettingsBtn) {
-                this.elements.closeSettingsBtn.addEventListener('click', () => {
-                    this.elements.settingsModal.classList.remove('active');
-                });
-            }
-
-            if (this.elements.saveSettingsBtn) {
-                this.elements.saveSettingsBtn.addEventListener('click', () => {
-                    this.apiKey = this.elements.apiKeyInput.value.trim();
-                    this.activeModel = this.elements.modelSelect.value;
-                    localStorage.setItem('janvi_ai_openrouter_key', this.apiKey);
-                    localStorage.setItem('janvi_ai_model', this.activeModel);
-
-                    const newPass = this.elements.changePassInput?.value.trim();
-                    if (newPass) {
-                        this.authPassword = newPass;
-                        localStorage.setItem('janvi_ai_auth_pass', newPass);
-                        this.elements.changePassInput.value = '';
-                        this.addSystemMessage("🔑 Access Password updated successfully!");
-                    }
-
-                    this.updateKeyBadge();
-                    this.elements.settingsModal.classList.remove('active');
-                    this.addSystemMessage("✅ AI Settings updated successfully!");
                 });
             }
 
@@ -169,6 +133,57 @@
             }
         }
 
+        toggleDock(forceState) {
+            this.isDocked = forceState !== undefined ? forceState : !this.isDocked;
+            localStorage.setItem('janvi_ai_docked', this.isDocked ? 'true' : 'false');
+
+            if (this.isDocked) {
+                if (this.isMaximized) this.toggleMaximize(false);
+                this.elements.chatDrawer.classList.add('docked-sidebar');
+                document.body.classList.add('ai-sidebar-docked');
+                if (this.elements.dockBtn) {
+                    this.elements.dockBtn.textContent = '💬';
+                    this.elements.dockBtn.title = 'Floating Overlay Mode';
+                }
+            } else {
+                this.elements.chatDrawer.classList.remove('docked-sidebar');
+                document.body.classList.remove('ai-sidebar-docked');
+                if (this.elements.dockBtn) {
+                    this.elements.dockBtn.textContent = '📌';
+                    this.elements.dockBtn.title = 'Dock Sidebar Mode';
+                }
+            }
+
+            // Trigger window resize so Chart.js charts and master table re-layout cleanly
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+        }
+
+        toggleMaximize(forceState) {
+            this.isMaximized = forceState !== undefined ? forceState : !this.isMaximized;
+            if (this.isMaximized) {
+                if (this.isDocked) {
+                    this.elements.chatDrawer.classList.remove('docked-sidebar');
+                    document.body.classList.remove('ai-sidebar-docked');
+                }
+                this.elements.chatDrawer.classList.add('maximized');
+                if (this.elements.maximizeBtn) {
+                    this.elements.maximizeBtn.textContent = '🗗';
+                    this.elements.maximizeBtn.title = 'Restore Window';
+                }
+            } else {
+                this.elements.chatDrawer.classList.remove('maximized');
+                if (this.isDocked) {
+                    this.elements.chatDrawer.classList.add('docked-sidebar');
+                    document.body.classList.add('ai-sidebar-docked');
+                }
+                if (this.elements.maximizeBtn) {
+                    this.elements.maximizeBtn.textContent = '🗖';
+                    this.elements.maximizeBtn.title = 'Maximize Window';
+                }
+            }
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+        }
+
         showLoginModal(show) {
             if (!this.elements.loginModal) return;
             if (show) {
@@ -203,6 +218,8 @@
         handleLogout() {
             this.isAuthenticated = false;
             sessionStorage.removeItem('janvi_ai_authenticated');
+            if (this.isMaximized) this.toggleMaximize(false);
+            if (this.isDocked) document.body.classList.remove('ai-sidebar-docked');
             this.toggleDrawer(false);
             this.updateKeyBadge();
         }
@@ -218,40 +235,45 @@
                 this.elements.chatDrawer.classList.add('active');
                 this.elements.toggleBtn.classList.add('open');
                 this.elements.userInput.focus();
+                
+                if (this.isDocked && window.innerWidth >= 1024) {
+                    this.toggleDock(true);
+                }
+
                 if (this.history.length === 0) {
                     this.addWelcomeMessage();
                 }
             } else {
                 this.elements.chatDrawer.classList.remove('active');
                 this.elements.toggleBtn.classList.remove('open');
+                if (this.isMaximized) this.toggleMaximize(false);
+                document.body.classList.remove('ai-sidebar-docked');
             }
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
         }
 
         updateKeyBadge() {
             if (this.elements.activeModelBadge) {
-                const displayModel = this.activeModel === 'auto' ? 'Auto-Fallback Free' : this.activeModel.split('/')[1] || this.activeModel;
-                this.elements.activeModelBadge.textContent = displayModel.replace(':free', '');
+                const displayModel = this.activeModel.split('/')[1]?.replace(':free', '') || this.activeModel;
+                this.elements.activeModelBadge.textContent = displayModel;
             }
             if (this.elements.keyStatusBadge) {
                 if (!this.isAuthenticated) {
                     this.elements.keyStatusBadge.textContent = '🔒 Locked';
                     this.elements.keyStatusBadge.className = 'ai-badge warning';
-                } else if (this.apiKey) {
+                } else {
                     this.elements.keyStatusBadge.textContent = 'Ready';
                     this.elements.keyStatusBadge.className = 'ai-badge ready';
-                } else {
-                    this.elements.keyStatusBadge.textContent = 'Set Key ⚙️';
-                    this.elements.keyStatusBadge.className = 'ai-badge warning';
                 }
             }
         }
 
         addWelcomeMessage() {
-            const welcomeText = `👋 Hello! I am your **JANVI AIKA Dashboard Assistant**.
+            const welcomeText = `👋 Hello! I am your **Janvi AI Assistance**.
 
 I analyze real-time website orders, financial performance, and delivery metrics. Ask me anything or try one of these quick prompts:
 - 📊 *"Summarize current performance & revenue"*
-- 🚚 *"What is our delivery vs return breakdown?"*
+- 🚚 *"What is our delivery vs return breakdown in a table?"*
 - 🗺️ *"Top performing states by revenue"*
 - ⚠️ *"Analyze cancellation & return risks"*`;
 
@@ -384,13 +406,6 @@ ${sampleOrders || 'No matching orders in active view.'}
             const text = this.elements.userInput.value.trim();
             if (!text) return;
 
-            if (!this.apiKey) {
-                this.appendMessage('user', text);
-                this.elements.userInput.value = '';
-                this.appendMessage('assistant', `⚠️ **API Key Required**: Please click the **⚙️ Settings** icon at the top right of this chat window and enter your **OpenRouter API Key** (or get a free key at [openrouter.ai](https://openrouter.ai/keys)).`);
-                return;
-            }
-
             this.appendMessage('user', text);
             this.history.push({ role: 'user', content: text });
             this.elements.userInput.value = '';
@@ -405,7 +420,7 @@ ${sampleOrders || 'No matching orders in active view.'}
                 this.history.push({ role: 'assistant', content: responseText });
             } catch (err) {
                 loaderEl.remove();
-                this.appendMessage('assistant', `❌ **API Error**: ${err.message || 'Failed to connect to OpenRouter.'}\n\nPlease verify your API key in **⚙️ Settings** or check your connection.`);
+                this.appendMessage('assistant', `❌ **API Error**: ${err.message || 'Failed to connect to OpenRouter.'}\n\nPlease check your internet connection or try again.`);
             } finally {
                 this.isGenerating = false;
             }
@@ -413,30 +428,24 @@ ${sampleOrders || 'No matching orders in active view.'}
 
         async callOpenRouterWithFallback(userPrompt) {
             const contextText = this.getDashboardContext();
-            const systemPrompt = `You are the expert AI Analytics Assistant for JANVI AIKA, a premium clothing & e-commerce brand.
+            const systemPrompt = `You are the expert AI Analytics Assistant named "Janvi AI Assistance" for JANVI AIKA, a premium clothing & e-commerce brand.
 Your job is to answer user questions, summarize live order statistics, explain trends, and offer actionable insights based strictly on the provided Live Dashboard Context.
 
 STRICT RESPONSE FORMATTING RULES:
 1. NEVER output raw JSON objects, JSON strings, or code blocks in your responses.
 2. For tabular data, status breakdowns, or multi-column comparisons, ALWAYS format as clean Markdown tables with column headers (| Header 1 | Header 2 |).
-3. Use bolding (**text**) for key figures and bullet points (- item) for summaries.
-4. Always use Indian Rupee (₹) formatting for currency.
+3. Use section headings (### Section Title) to organize long responses into clear sections.
+4. Use bolding (**text**) for key figures and bullet points (- item) for summaries.
+5. Always use Indian Rupee (₹) formatting for currency.
 
 ${contextText}`;
 
             const messagesPayload = [
                 { role: 'system', content: systemPrompt },
-                ...this.history.slice(-6) // Keep last 3 conversation turns for context
+                ...this.history.slice(-6)
             ];
 
-            // Determine models queue
-            let modelQueue = [];
-            if (this.activeModel === 'auto') {
-                modelQueue = [...FREE_MODELS];
-            } else {
-                modelQueue = [this.activeModel, ...FREE_MODELS.filter(m => m !== this.activeModel)];
-            }
-
+            let modelQueue = [...FREE_MODELS];
             let lastError = null;
 
             for (let i = 0; i < modelQueue.length; i++) {
@@ -447,12 +456,12 @@ ${contextText}`;
                         headers: {
                             'Authorization': `Bearer ${this.apiKey}`,
                             'HTTP-Referer': window.location.href || 'https://janvi-aika-dashboard.vercel.app',
-                            'X-Title': 'JANVI AIKA Dashboard Assistant',
+                            'X-Title': 'Janvi AI Assistance',
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             model: currentModel,
-                            models: modelQueue.slice(i, i + 3), // OpenRouter limit: max 3 items per payload
+                            models: modelQueue.slice(i, i + 3),
                             messages: messagesPayload,
                             temperature: 0.3,
                             max_tokens: 1000
@@ -461,13 +470,7 @@ ${contextText}`;
 
                     if (!response.ok) {
                         const errData = await response.json().catch(() => ({}));
-                        const status = response.status;
-                        
-                        if (status === 401) {
-                            throw new Error('Invalid OpenRouter API Key. Please update key in Settings.');
-                        }
-                        
-                        throw new Error(`Model ${currentModel} returned ${status}: ${errData.error?.message || response.statusText}`);
+                        throw new Error(`Model ${currentModel} returned ${response.status}: ${errData.error?.message || response.statusText}`);
                     }
 
                     const data = await response.json();
@@ -482,13 +485,10 @@ ${contextText}`;
                 } catch (err) {
                     console.warn(`Model ${currentModel} failed:`, err.message);
                     lastError = err;
-                    if (err.message.includes('Invalid OpenRouter API Key')) {
-                        throw err;
-                    }
                 }
             }
 
-            throw lastError || new Error('All free AI models were temporarily busy or unavailable. Please try again in a few seconds.');
+            throw lastError || new Error('All free AI models were temporarily busy. Please try again in a few seconds.');
         }
 
         appendMessage(role, content) {
@@ -499,13 +499,24 @@ ${contextText}`;
             msgDiv.className = `ai-message ai-message-${role}`;
 
             const formattedContent = this.formatMarkdown(content);
-            const copyBtnHtml = role === 'assistant' ? `<button class="ai-copy-btn" title="Copy Response">📋 Copy</button>` : '';
+            
+            let actionBarHtml = '';
+            if (role === 'assistant') {
+                actionBarHtml = `
+                    <div class="ai-action-bar">
+                        <button class="ai-action-btn ai-copy-btn" title="Copy Response">📋 Copy</button>
+                        <button class="ai-action-btn ai-regen-btn" title="Regenerate Response">🔄 Regenerate</button>
+                        <button class="ai-action-btn ai-thumb-up" title="Helpful">👍</button>
+                        <button class="ai-action-btn ai-thumb-down" title="Not Helpful">👎</button>
+                    </div>
+                `;
+            }
 
             msgDiv.innerHTML = `
                 <div class="ai-avatar">${role === 'user' ? '👤' : (role === 'system' ? '⚙️' : '✨')}</div>
                 <div class="ai-bubble">
-                    ${copyBtnHtml}
                     ${formattedContent}
+                    ${actionBarHtml}
                 </div>
             `;
 
@@ -520,20 +531,35 @@ ${contextText}`;
                             copyBtn.textContent = '📋 Copy';
                             copyBtn.classList.remove('copied');
                         }, 2000);
-                    }).catch(() => {
-                        const ta = document.createElement('textarea');
-                        ta.value = content;
-                        document.body.appendChild(ta);
-                        ta.select();
-                        document.execCommand('copy');
-                        ta.remove();
-                        copyBtn.textContent = '✓ Copied!';
-                        copyBtn.classList.add('copied');
-                        setTimeout(() => {
-                            copyBtn.textContent = '📋 Copy';
-                            copyBtn.classList.remove('copied');
-                        }, 2000);
                     });
+                });
+            }
+
+            // Attach Regenerate Listener
+            const regenBtn = msgDiv.querySelector('.ai-regen-btn');
+            if (regenBtn) {
+                regenBtn.addEventListener('click', () => {
+                    if (this.history.length > 0 && !this.isGenerating) {
+                        const lastUserMsg = [...this.history].reverse().find(m => m.role === 'user');
+                        if (lastUserMsg) {
+                            this.elements.userInput.value = lastUserMsg.content;
+                            this.handleUserSubmit();
+                        }
+                    }
+                });
+            }
+
+            // Attach Feedback Listeners
+            const thumbUp = msgDiv.querySelector('.ai-thumb-up');
+            const thumbDown = msgDiv.querySelector('.ai-thumb-down');
+            if (thumbUp && thumbDown) {
+                thumbUp.addEventListener('click', () => {
+                    thumbUp.classList.toggle('active');
+                    thumbDown.classList.remove('active');
+                });
+                thumbDown.addEventListener('click', () => {
+                    thumbDown.classList.toggle('active');
+                    thumbUp.classList.remove('active');
                 });
             }
 
@@ -552,7 +578,7 @@ ${contextText}`;
                     <div class="ai-typing-dots">
                         <span></span><span></span><span></span>
                     </div>
-                    <span class="ai-loading-text">Analyzing dashboard metrics...</span>
+                    <span class="ai-loading-text">Analyzing live dashboard metrics...</span>
                 </div>
             `;
             container.appendChild(loaderDiv);
@@ -569,7 +595,12 @@ ${contextText}`;
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
 
-            // 1. Process Markdown Tables (| col 1 | col 2 |)
+            // 1. Process Markdown Headings (### Heading, ## Heading, # Heading)
+            clean = clean.replace(/^###\s+(.*$)/gim, '<h4 class="ai-heading">$1</h4>');
+            clean = clean.replace(/^##\s+(.*$)/gim, '<h3 class="ai-heading">$1</h3>');
+            clean = clean.replace(/^#\s+(.*$)/gim, '<h2 class="ai-heading">$1</h2>');
+
+            // 2. Process Markdown Tables (| col 1 | col 2 |)
             const lines = clean.split('\n');
             let processedLines = [];
             let inTable = false;
@@ -582,11 +613,10 @@ ${contextText}`;
 
                 if (isTableLine) {
                     const cells = line.split('|').slice(1, -1).map(c => c.trim());
-                    // Check if divider line (|---|---|)
                     const isDivider = cells.every(c => /^:?-+:?$/.test(c));
 
                     if (isDivider) {
-                        continue; // Skip divider row
+                        continue;
                     }
 
                     if (!inTable) {
@@ -598,7 +628,6 @@ ${contextText}`;
                     }
                 } else {
                     if (inTable) {
-                        // Flush table HTML
                         processedLines.push(this.renderHtmlTable(tableHeader, tableBody));
                         inTable = false;
                         tableHeader = [];
@@ -614,21 +643,21 @@ ${contextText}`;
 
             let html = processedLines.join('\n');
 
-            // 2. Bold, Italics, Code, Links
+            // 3. Bold, Italics, Code, Links
             html = html
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/`([^`]+)`/g, '<code>$1</code>')
                 .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 
-            // 3. Lists and Paragraphs
+            // 4. Lists and Paragraphs
             const outputLines = html.split('\n');
             let result = '';
             let inList = false;
 
             outputLines.forEach(line => {
                 const trimmed = line.trim();
-                if (trimmed.startsWith('<ul>') || trimmed.startsWith('<div class="ai-table-container">')) {
+                if (trimmed.startsWith('<h') || trimmed.startsWith('<ul>') || trimmed.startsWith('<div class="ai-table-container">')) {
                     if (inList) { result += '</ul>'; inList = false; }
                     result += line;
                 } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {

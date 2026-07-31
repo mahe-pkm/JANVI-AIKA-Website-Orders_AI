@@ -1038,9 +1038,9 @@
         </div>
 
     <!-- AI Chatbot Floating Trigger Button -->
-    <button id="ai-chat-toggle-btn" class="ai-chat-trigger" aria-label="Toggle AI Assistant" title="JANVI AI Analytics Assistant">
+    <button id="ai-chat-toggle-btn" class="ai-chat-trigger" aria-label="Toggle AI Assistant" title="Janvi AI Assistance">
         <span class="ai-trigger-icon">✨</span>
-        <span class="ai-trigger-text">AI Assistant</span>
+        <span class="ai-trigger-text">Janvi AI Assistance</span>
         <span id="ai-key-status-badge" class="ai-badge warning">Protected</span>
     </button>
 
@@ -1048,12 +1048,12 @@
     <div id="ai-login-modal" class="ai-modal-backdrop">
         <div class="ai-modal-card ai-login-card">
             <div class="ai-modal-header">
-                <h4>🔒 AI Assistant Access Control</h4>
+                <h4>🔒 Janvi AI Assistance Access Control</h4>
                 <button id="ai-login-close-btn" class="ai-icon-btn">✕</button>
             </div>
             <form id="ai-login-form" class="ai-modal-body">
                 <div class="ai-auth-badge-icon">🔐</div>
-                <p class="ai-auth-desc">Please log in with authorized credentials to access the JANVI AI Chatbot Assistant.</p>
+                <p class="ai-auth-desc">Please log in with authorized credentials to access Janvi AI Assistance.</p>
                 <div id="ai-login-error" class="ai-auth-error-msg" style="display: none;"></div>
                 <div class="ai-form-group">
                     <label for="ai-login-user">Username:</label>
@@ -1074,14 +1074,18 @@
             <div class="ai-chat-header-title">
                 <span class="ai-chat-sparkle">✨</span>
                 <div>
-                    <h3>JANVI AI Analytics Assistant</h3>
-                    <span id="ai-active-model-badge" class="ai-model-tag">Auto-Fallback Free</span>
+                    <div class="ai-header-title-row">
+                        <h3>Janvi AI Assistance</h3>
+                        <span class="ai-online-status"><span class="ai-status-dot"></span> Online</span>
+                    </div>
+                    <span id="ai-active-model-badge" class="ai-model-tag">Gemma 4 AI</span>
                 </div>
             </div>
             <div class="ai-chat-header-actions">
-                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout & Lock AI Assistant">🔒</button>
+                <button id="ai-dock-btn" class="ai-icon-btn" title="Dock Sidebar Mode">📌</button>
+                <button id="ai-maximize-btn" class="ai-icon-btn" title="Maximize Window">🗖</button>
                 <button id="ai-clear-chat-btn" class="ai-icon-btn" title="Clear Chat History">🗑️</button>
-                <button id="ai-settings-btn" class="ai-icon-btn" title="AI Settings">⚙️</button>
+                <button id="ai-logout-btn" class="ai-icon-btn" title="Logout & Lock AI Assistant">🔒</button>
                 <button id="ai-chat-close-btn" class="ai-icon-btn" title="Close Drawer">✕</button>
             </div>
         </div>
@@ -1089,7 +1093,7 @@
         <!-- Quick Prompts Pill Bar -->
         <div class="ai-quick-pills-bar">
             <button class="ai-pill-btn" data-prompt="Summarize current performance &amp; revenue">📊 Summary</button>
-            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown?">🚚 Deliveries</button>
+            <button class="ai-pill-btn" data-prompt="What is our delivery vs return breakdown in a table?">🚚 Deliveries Table</button>
             <button class="ai-pill-btn" data-prompt="Top 5 performing states by revenue">🗺️ Top States</button>
             <button class="ai-pill-btn" data-prompt="Analyze cancellation and return risks">⚠️ Return Risks</button>
         </div>
@@ -1107,38 +1111,8 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
         </form>
-
-        <!-- Settings Modal -->
-        <div id="ai-settings-modal" class="ai-modal-backdrop">
-            <div class="ai-modal-card">
-                <div class="ai-modal-header">
-                    <h4>⚙️ AI Assistant Settings</h4>
-                    <button id="ai-settings-close-btn" class="ai-icon-btn">✕</button>
-                </div>
-                <div class="ai-modal-body">
-                    <div class="ai-form-group">
-                        <label for="ai-api-key-input">OpenRouter API Key:</label>
-                        <input type="password" id="ai-api-key-input" placeholder="sk-or-v1-..." />
-                        <small class="ai-form-hint">Get a 100% free API Key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>. Stored securely in browser localStorage.</small>
-                    </div>
-                    <div class="ai-form-group">
-                        <label for="ai-model-select">AI Model Preference:</label>
-                        <select id="ai-model-select">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;" />
-                    <div class="ai-form-group">
-                        <label for="ai-change-pass">Change Access Password (Optional):</label>
-                        <input type="password" id="ai-change-pass" placeholder="Enter new password to update..." />
-                    </div>
-                </div>
-                <div class="ai-modal-footer">
-                    <button id="ai-save-settings-btn" class="btn btn-primary" style="width: 100%;">Save Settings</button>
-                </div>
-            </div>
-        </div>
     </div>
+
 
 
     <!-- Script -->
