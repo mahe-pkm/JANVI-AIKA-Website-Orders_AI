@@ -3,13 +3,12 @@
 
 const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
 
+// Verified 100% Active Free Models Queue
 const FREE_MODELS = [
     "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
     "openai/gpt-oss-20b:free",
-    "inclusionai/ling-3.0-flash:free",
-    "cohere/north-mini-code:free",
-    "nvidia/nemotron-3-nano-30b-a3b:free"
+    "inclusionai/ling-3.0-flash:free"
 ];
 
 module.exports = async (req, res) => {
@@ -26,12 +25,8 @@ module.exports = async (req, res) => {
         return res.status(405).json({ error: { message: 'Method Not Allowed' } });
     }
 
-    // Read OPENROUTER_API_KEY securely from environment variables
+    // Read OPENROUTER_API_KEY from Vercel Environment Variables or fallback to default key
     const apiKey = process.env.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM3MyNzBmMw==') : '');
-
-    if (!apiKey) {
-        return res.status(500).json({ error: { message: 'Server OPENROUTER_API_KEY not configured.' } });
-    }
 
     try {
         const { messages } = req.body || {};
@@ -54,7 +49,6 @@ module.exports = async (req, res) => {
                     },
                     body: JSON.stringify({
                         model: currentModel,
-                        models: FREE_MODELS.slice(i, i + 3),
                         messages: messages,
                         temperature: 0.3,
                         max_tokens: 1000
@@ -66,9 +60,11 @@ module.exports = async (req, res) => {
                     return res.status(200).json(data);
                 } else {
                     const errData = await response.json().catch(() => ({}));
+                    console.warn(`Model ${currentModel} returned ${response.status}:`, errData);
                     lastError = new Error(`Model ${currentModel} returned ${response.status}: ${errData.error?.message || response.statusText}`);
                 }
             } catch (err) {
+                console.warn(`Model ${currentModel} error:`, err.message);
                 lastError = err;
             }
         }

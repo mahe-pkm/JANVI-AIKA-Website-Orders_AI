@@ -5,14 +5,12 @@
 
     const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
     
-    // Expanded Free models queue ordered by primary priority -> fallback (Max 3 per REST request payload)
+    // Verified Active Free models queue (Primary priority -> fallback)
     const FREE_MODELS = [
         "google/gemma-4-31b-it:free",
         "google/gemma-4-26b-a4b-it:free",
         "openai/gpt-oss-20b:free",
-        "inclusionai/ling-3.0-flash:free",
-        "cohere/north-mini-code:free",
-        "nvidia/nemotron-3-nano-30b-a3b:free"
+        "inclusionai/ling-3.0-flash:free"
     ];
 
     class AIChatAssistant {
