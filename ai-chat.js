@@ -483,33 +483,10 @@ ${contextText}`;
                 ...this.history.slice(-6)
             ];
 
-            // 1. Try Vercel Serverless Proxy (/api/chat)
-            try {
-                const proxyResp = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messagesPayload })
-                });
-
-                if (proxyResp.ok) {
-                    const data = await proxyResp.json();
-                    const choice = data.choices && data.choices[0];
-                    if (choice && choice.message && choice.message.content) {
-                        const usedModel = data.model || FREE_MODELS[0];
-                        if (this.elements.activeModelBadge) {
-                            this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
-                        }
-                        return choice.message.content;
-                    }
-                }
-            } catch (proxyErr) {
-                console.warn('Serverless proxy endpoint unavailable, falling back to client fetch:', proxyErr.message);
-            }
-
-            // 2. Client-side fallback if serverless route unavailable
             let modelQueue = [...FREE_MODELS];
             let lastError = null;
 
+            // Direct Browser Fetch across verified free models queue
             for (let i = 0; i < modelQueue.length; i++) {
                 const currentModel = modelQueue[i];
                 try {
@@ -517,7 +494,7 @@ ${contextText}`;
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.apiKey}`,
-                            'HTTP-Referer': window.location.href || 'https://janvi-aika-dashboard.vercel.app',
+                            'HTTP-Referer': window.location.origin || 'https://janvi-aika-dashboard.vercel.app',
                             'X-Title': 'Janvi AI Assistance',
                             'Content-Type': 'application/json'
                         },
