@@ -18,6 +18,7 @@
             this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM3MyNzBmMw==') : '');
             this.activeModel = localStorage.getItem('janvi_ai_model') || FREE_MODELS[0];
 
+
             // Authentication state
             this.authUsername = (localStorage.getItem('janvi_ai_auth_user') || 'admin').toLowerCase();
             this.authPassword = localStorage.getItem('janvi_ai_auth_pass') || 'aika2026';
