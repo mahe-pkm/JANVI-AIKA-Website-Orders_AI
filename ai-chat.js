@@ -431,6 +431,40 @@ ${allOrdersCompactIndex}
 `;
         }
 
+        queryLocalAnalyticsEngine(userQuery) {
+            if (!userQuery) return null;
+            const q = userQuery.toLowerCase().trim();
+            const sourceOrders = window.state?.orders || window.DASHBOARD_DATA?.masterOrders || [];
+            if (!sourceOrders || !sourceOrders.length) return null;
+
+            // 1. Exact Order Number Search (e.g. #1079 or 1079)
+            const orderMatch = q.match(/#?(\d{4})/);
+            if (orderMatch) {
+                const targetId = `#${orderMatch[1]}`;
+                const found = sourceOrders.find(o => String(o.orderNo || '').trim() === targetId || String(o.id || '').trim() === targetId);
+                if (found) {
+                    const priceFormatted = Math.round(Number(found.totalPrice || found.price || 0)).toLocaleString('en-IN');
+                    return `### 📦 Order Details for ${found.orderNo}
+
+| Attribute | Details |
+| :--- | :--- |
+| **Order Number** | **${found.orderNo}** |
+| **Customer Name** | **${found.customerName || 'N/A'}** |
+| **Order Status** | \`${String(found.orderStatus || found.status || 'UNKNOWN').toUpperCase()}\` |
+| **Total Price** | **₹${priceFormatted}** |
+| **Payment Mode** | **${found.paymentMode || 'COD'}** |
+| **City / State** | ${found.shippingCity || found.city || 'N/A'}, ${found.shippingState || found.state || 'N/A'} |
+| **SKU / Product** | ${found.sku || 'N/A'} |
+| **Order Date** | ${found.orderDate || 'N/A'} |
+| **Logistics Carrier** | ${found.courierName || found.logistics || 'Standard Shipping'} |
+
+*Order retrieved directly from Live Master Table.*`;
+                }
+            }
+
+            return null;
+        }
+
         async handleUserSubmit() {
             if (!this.isAuthenticated) {
                 this.showLoginModal(true);
@@ -447,6 +481,15 @@ ${allOrdersCompactIndex}
             this.elements.userInput.value = '';
             this.isGenerating = true;
 
+            // Check Local 0ms Analytics Engine first
+            const localResponse = this.queryLocalAnalyticsEngine(text);
+            if (localResponse) {
+                this.appendMessage('assistant', localResponse);
+                this.history.push({ role: 'assistant', content: localResponse });
+                this.isGenerating = false;
+                return;
+            }
+
             const loaderEl = this.appendLoadingIndicator();
 
             try {
@@ -456,7 +499,7 @@ ${allOrdersCompactIndex}
                 this.history.push({ role: 'assistant', content: responseText });
             } catch (err) {
                 loaderEl.remove();
-                this.appendMessage('assistant', `❌ **API Error**: ${err.message || 'Failed to connect to OpenRouter.'}\n\nPlease check your internet connection or try again.`);
+                this.appendMessage('assistant', `❌ **API Error**: ${err.message || 'Failed to connect to AI server.'}\n\nPlease check your internet connection or try again.`);
             } finally {
                 this.isGenerating = false;
             }
