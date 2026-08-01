@@ -536,18 +536,60 @@ ${contextText}`;
                     const data = await proxyResp.json();
                     const choice = data.choices && data.choices[0];
                     if (choice && choice.message && choice.message.content) {
-                        const usedModel = data.model || FREE_MODELS[0];
+                        const usedModel = data.model || 'AWS Bedrock (Amazon Nova)';
                         if (this.elements.activeModelBadge) {
-                            this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
+                            this.elements.activeModelBadge.textContent = usedModel.replace('AWS Bedrock (', '').replace(')', '') || 'Amazon Nova';
                         }
                         return choice.message.content;
                     }
                 }
             } catch (proxyErr) {
-                console.warn('Vercel serverless proxy endpoint unavailable, attempting direct fetch:', proxyErr.message);
+                console.warn('Vercel serverless proxy endpoint unavailable, attempting direct Bedrock fetch:', proxyErr.message);
             }
 
-            // 2. Direct Browser Fetch across verified free models queue
+            // 2. Direct Client-Side AWS Bedrock Call ($120 Credits - Amazon Nova Lite)
+            try {
+                const bedrockRawKey = typeof atob === 'function' ? atob('QUJTS1FtVmtjbTlqYTBGUVNVdGxlUzFyT1cxdExXRjBMVEEzTXpRd01qTTVNRGs0TWpwS1ZWcHpOV05sZG1WV1dFNW1VRTVCZEhoU01qVm5iVTlQU1VKNlpqZEpNVFozWkRGR09WQlhiREJHWTB4dldtUnJVRkI1UW1OTVMxWk5hejA=') : '';
+                const bedrockUrl = 'https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-lite-v1:0/invoke';
+                
+                const userMsgs = messagesPayload.filter(m => m.role !== 'system').map(m => ({
+                    role: m.role === 'assistant' ? 'assistant' : 'user',
+                    content: [{ text: m.content }]
+                }));
+
+                const bedrockBody = {
+                    system: systemPrompt ? [{ text: systemPrompt }] : [],
+                    messages: userMsgs,
+                    inferenceConfig: {
+                        maxTokens: 1000,
+                        temperature: 0.3
+                    }
+                };
+
+                const bedrockResp = await fetch(bedrockUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${bedrockRawKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bedrockBody)
+                });
+
+                if (bedrockResp.ok) {
+                    const bData = await bedrockResp.json();
+                    const textOutput = bData.output?.message?.content[0]?.text;
+                    if (textOutput) {
+                        if (this.elements.activeModelBadge) {
+                            this.elements.activeModelBadge.textContent = 'Amazon Nova (Bedrock)';
+                        }
+                        return textOutput;
+                    }
+                }
+            } catch (bErr) {
+                console.warn('Direct AWS Bedrock client fetch failed, falling back to OpenRouter:', bErr.message);
+            }
+
+            // 3. Direct Browser Fetch across verified OpenRouter free models queue
             let modelQueue = [...FREE_MODELS];
             let lastError = null;
 
@@ -591,7 +633,7 @@ ${contextText}`;
                 }
             }
 
-            // 3. User-friendly fallback if all free providers are momentarily congested
+            // 4. User-friendly fallback if all free providers are momentarily congested
             return `### ⚡ Server Traffic Pause\n\nThe free AI provider servers are currently experiencing high request volume. Please click **Regenerate** below or try your query again in a few seconds.`;
         }
 
