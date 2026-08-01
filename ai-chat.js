@@ -3,18 +3,12 @@
 (function () {
     'use strict';
 
-    const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
-    
-    // Verified Active Free models queue (100% reliable SLA)
-    const FREE_MODELS = [
-        "google/gemma-4-26b-a4b-it:free",
-        "openai/gpt-oss-20b:free"
-    ];
+    // AWS Bedrock Primary Model Configuration
+    const BEDROCK_DEFAULT_MODEL = 'Amazon Nova (Bedrock)';
 
     class AIChatAssistant {
         constructor() {
-            this.apiKey = localStorage.getItem('janvi_ai_openrouter_key') || window.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob('c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM3MyNzBmMw==') : '');
-            this.activeModel = FREE_MODELS[0];
+            this.activeModel = BEDROCK_DEFAULT_MODEL;
 
             // Authentication state
             this.authUsername = (localStorage.getItem('janvi_ai_auth_user') || 'admin').toLowerCase();
@@ -493,19 +487,19 @@ ${allOrdersCompactIndex}
             const loaderEl = this.appendLoadingIndicator();
 
             try {
-                const responseText = await this.callOpenRouterWithFallback(text);
+                const responseText = await this.callAWSBedrockWithFallback(text);
                 loaderEl.remove();
                 this.appendMessage('assistant', responseText);
                 this.history.push({ role: 'assistant', content: responseText });
             } catch (err) {
                 loaderEl.remove();
-                this.appendMessage('assistant', `❌ **API Error**: ${err.message || 'Failed to connect to AI server.'}\n\nPlease check your internet connection or try again.`);
+                this.appendMessage('assistant', `❌ **AWS Bedrock Error**: ${err.message || 'Failed to connect to AWS Bedrock service.'}\n\nPlease check your internet connection or try again.`);
             } finally {
                 this.isGenerating = false;
             }
         }
 
-        async callOpenRouterWithFallback(userPrompt) {
+        async callAWSBedrockWithFallback(userPrompt) {
             const contextText = this.getDashboardContext(userPrompt);
             const systemPrompt = `You are the expert AI Analytics Assistant named "Janvi AI Assistance" for JANVI AIKA, a premium clothing & e-commerce brand.
 Your job is to answer user questions, summarize live order statistics, explain trends, and offer actionable insights based strictly on the provided Live Dashboard Context.
@@ -524,7 +518,7 @@ ${contextText}`;
                 ...this.history.slice(-6)
             ];
 
-            // 1. Try Vercel Serverless Function Proxy Endpoint (/api/chat)
+            // 1. Primary: Vercel Serverless Function Proxy Endpoint (/api/chat) -> AWS Bedrock
             try {
                 const proxyResp = await fetch('/api/chat', {
                     method: 'POST',
@@ -547,94 +541,59 @@ ${contextText}`;
                 console.warn('Vercel serverless proxy endpoint unavailable, attempting direct Bedrock fetch:', proxyErr.message);
             }
 
-            // 2. Direct Client-Side AWS Bedrock Call ($120 Credits - Amazon Nova Lite)
-            try {
-                const bedrockRawKey = typeof atob === 'function' ? atob('QUJTS1FtVmtjbTlqYTBGUVNVdGxlUzFyT1cxdExXRjBMVEEzTXpRd01qTTVNRGs0TWpwS1ZWcHpOV05sZG1WV1dFNW1VRTVCZEhoU01qVm5iVTlQU1VKNlpqZEpNVFozWkRGR09WQlhiREJHWTB4dldtUnJVRkI1UW1OTVMxWk5hejA=') : '';
-                const bedrockUrl = 'https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-lite-v1:0/invoke';
-                
-                const userMsgs = messagesPayload.filter(m => m.role !== 'system').map(m => ({
-                    role: m.role === 'assistant' ? 'assistant' : 'user',
-                    content: [{ text: m.content }]
-                }));
+            // 2. Fallback: Direct Client-Side AWS Bedrock API Call ($120 Credits - Amazon Nova Queue)
+            const bedrockKey = typeof atob === 'function' ? atob('QUJTS1FtVmtjbTlqYTBGUVNVdGxlUzFyT1cxdExXRjBMVEEzTXpRd01qTTVNRGs0TWpwS1ZWcHpOV05sZG1WV1dFNW1VRTVCZEhoU01qVm5iVTlQU1VKNlpqZEpNVFozWkRGR09WQlhiREJHWTB4dldtUnJVRkI1UW1OTVMxWk5hejA=') : '';
+            const bedrockModels = ['amazon.nova-lite-v1:0', 'amazon.nova-pro-v1:0', 'amazon.nova-micro-v1:0'];
+            let lastErr = null;
 
-                const bedrockBody = {
-                    system: systemPrompt ? [{ text: systemPrompt }] : [],
-                    messages: userMsgs,
-                    inferenceConfig: {
-                        maxTokens: 1000,
-                        temperature: 0.3
-                    }
-                };
-
-                const bedrockResp = await fetch(bedrockUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${bedrockRawKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(bedrockBody)
-                });
-
-                if (bedrockResp.ok) {
-                    const bData = await bedrockResp.json();
-                    const textOutput = bData.output?.message?.content[0]?.text;
-                    if (textOutput) {
-                        if (this.elements.activeModelBadge) {
-                            this.elements.activeModelBadge.textContent = 'Amazon Nova (Bedrock)';
-                        }
-                        return textOutput;
-                    }
-                }
-            } catch (bErr) {
-                console.warn('Direct AWS Bedrock client fetch failed, falling back to OpenRouter:', bErr.message);
-            }
-
-            // 3. Direct Browser Fetch across verified OpenRouter free models queue
-            let modelQueue = [...FREE_MODELS];
-            let lastError = null;
-
-            for (let i = 0; i < modelQueue.length; i++) {
-                const currentModel = modelQueue[i];
+            for (let i = 0; i < bedrockModels.length; i++) {
+                const modelId = bedrockModels[i];
                 try {
-                    const response = await fetch(OPENROUTER_ENDPOINT, {
+                    const bedrockUrl = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${modelId}/invoke`;
+                    const userMsgs = messagesPayload.filter(m => m.role !== 'system').map(m => ({
+                        role: m.role === 'assistant' ? 'assistant' : 'user',
+                        content: [{ text: m.content }]
+                    }));
+
+                    const bedrockBody = {
+                        system: systemPrompt ? [{ text: systemPrompt }] : [],
+                        messages: userMsgs,
+                        inferenceConfig: {
+                            maxTokens: 1000,
+                            temperature: 0.3
+                        }
+                    };
+
+                    const bedrockResp = await fetch(bedrockUrl, {
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${this.apiKey}`,
-                            'HTTP-Referer': window.location.origin || 'https://janvi-aika-dashboard.vercel.app',
-                            'X-Title': 'Janvi AI Assistance',
+                            'Authorization': `Bearer ${bedrockKey}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            model: currentModel,
-                            messages: messagesPayload,
-                            temperature: 0.3,
-                            max_tokens: 600
-                        })
+                        body: JSON.stringify(bedrockBody)
                     });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        const choice = data.choices && data.choices[0];
-                        if (choice && choice.message && choice.message.content) {
-                            const usedModel = data.model || currentModel;
+                    if (bedrockResp.ok) {
+                        const bData = await bedrockResp.json();
+                        const textOutput = bData.output?.message?.content[0]?.text;
+                        if (textOutput) {
                             if (this.elements.activeModelBadge) {
-                                this.elements.activeModelBadge.textContent = usedModel.split('/')[1]?.replace(':free', '') || usedModel;
+                                this.elements.activeModelBadge.textContent = 'Amazon Nova (Bedrock)';
                             }
-                            return choice.message.content;
+                            return textOutput;
                         }
                     } else {
-                        const errData = await response.json().catch(() => ({}));
-                        console.warn(`Model ${currentModel} returned ${response.status}:`, errData.error?.message);
-                        lastError = new Error(errData.error?.message || `Status ${response.status}`);
+                        const errTxt = await bedrockResp.text().catch(() => '');
+                        console.warn(`Direct Bedrock model ${modelId} status ${bedrockResp.status}:`, errTxt);
+                        lastErr = new Error(`Bedrock ${modelId} status ${bedrockResp.status}`);
                     }
-                } catch (err) {
-                    console.warn(`Model ${currentModel} connection failed:`, err.message);
-                    lastError = err;
+                } catch (bErr) {
+                    console.warn(`Direct AWS Bedrock fetch error with ${modelId}:`, bErr.message);
+                    lastErr = bErr;
                 }
             }
 
-            // 4. User-friendly fallback if all free providers are momentarily congested
-            return `### ⚡ Server Traffic Pause\n\nThe free AI provider servers are currently experiencing high request volume. Please click **Regenerate** below or try your query again in a few seconds.`;
+            throw lastErr || new Error('AWS Bedrock service is temporarily busy. Please click Regenerate to try again.');
         }
 
         appendMessage(role, content) {

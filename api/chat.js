@@ -1,15 +1,13 @@
-// Vercel Serverless API Proxy Function for AWS Bedrock & OpenRouter AI
+// Vercel Serverless API Proxy Function for AWS Bedrock ONLY ($120 Credits)
 // Endpoint: POST /api/chat
 
-const BEDROCK_ENDPOINT = 'https://bedrock-runtime.us-east-1.amazonaws.com/model/amazon.nova-lite-v1:0/invoke';
 const BEDROCK_KEY_B64 = 'QUJTS1FtVmtjbTlqYTBGUVNVdGxlUzFyT1cxdExXRjBMVEEzTXpRd01qTTVNRGs0TWpwS1ZWcHpOV05sZG1WV1dFNW1VRTVCZEhoU01qVm5iVTlQU1VKNlpqZEpNVFozWkRGR09WQlhiREJHWTB4dldtUnJVRkI1UW1OTVMxWk5hejA=';
 
-const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
-const OPENROUTER_KEY_B64 = 'c2stb3ItdjEtNjY2MTY3NTFlYzJhYjM0NWE2ZDg2ZDY5NzE0Njc5ODRlZTc2Yjc0NTNjYTllNzMxMmE5NjRkNmRkM3MyNzBmMw==';
-
-const FREE_MODELS = [
-    "google/gemma-4-26b-a4b-it:free",
-    "openai/gpt-oss-20b:free"
+const BEDROCK_MODELS = [
+    { id: 'amazon.nova-lite-v1:0', type: 'nova', name: 'AWS Bedrock (Amazon Nova Lite)' },
+    { id: 'amazon.nova-pro-v1:0', type: 'nova', name: 'AWS Bedrock (Amazon Nova Pro)' },
+    { id: 'amazon.nova-micro-v1:0', type: 'nova', name: 'AWS Bedrock (Amazon Nova Micro)' },
+    { id: 'meta.llama3-70b-instruct-v1:0', type: 'llama', name: 'AWS Bedrock (Meta LLaMA 3 70B)' }
 ];
 
 module.exports = async (req, res) => {
@@ -33,88 +31,77 @@ module.exports = async (req, res) => {
         }
 
         const bedrockKey = process.env.AWS_BEDROCK_KEY || (typeof atob === 'function' ? atob(BEDROCK_KEY_B64) : '');
-        const openrouterKey = process.env.OPENROUTER_API_KEY || (typeof atob === 'function' ? atob(OPENROUTER_KEY_B64) : '');
 
-        // 1. Primary Priority: AWS Bedrock ($120 Credits - Amazon Nova Lite)
-        try {
-            const systemMsg = messages.find(m => m.role === 'system')?.content || '';
-            const userMsgs = messages.filter(m => m.role !== 'system').map(m => ({
-                role: m.role === 'assistant' ? 'assistant' : 'user',
-                content: [{ text: m.content }]
-            }));
-
-            const bedrockBody = {
-                system: systemMsg ? [{ text: systemMsg }] : [],
-                messages: userMsgs,
-                inferenceConfig: {
-                    maxTokens: 1000,
-                    temperature: 0.3
-                }
-            };
-
-            const bedrockResp = await fetch(BEDROCK_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${bedrockKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(bedrockBody)
-            });
-
-            if (bedrockResp.ok) {
-                const bData = await bedrockResp.json();
-                const textOutput = bData.output?.message?.content[0]?.text;
-                if (textOutput) {
-                    return res.status(200).json({
-                        model: 'AWS Bedrock (Amazon Nova)',
-                        choices: [{ message: { role: 'assistant', content: textOutput } }]
-                    });
-                }
-            } else {
-                const bErr = await bedrockResp.text().catch(() => '');
-                console.warn('AWS Bedrock returned non-200:', bedrockResp.status, bErr);
-            }
-        } catch (bedrockErr) {
-            console.warn('AWS Bedrock error, falling back to OpenRouter:', bedrockErr.message);
-        }
-
-        // 2. Secondary Fallback: OpenRouter Free Models
         let lastError = null;
 
-        for (let i = 0; i < FREE_MODELS.length; i++) {
-            const currentModel = FREE_MODELS[i];
+        // Iterate through AWS Bedrock Models Queue
+        for (let i = 0; i < BEDROCK_MODELS.length; i++) {
+            const targetModel = BEDROCK_MODELS[i];
             try {
-                const response = await fetch(OPENROUTER_ENDPOINT, {
+                const endpoint = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${targetModel.id}/invoke`;
+                let bodyPayload = {};
+
+                if (targetModel.type === 'nova') {
+                    const systemMsg = messages.find(m => m.role === 'system')?.content || '';
+                    const userMsgs = messages.filter(m => m.role !== 'system').map(m => ({
+                        role: m.role === 'assistant' ? 'assistant' : 'user',
+                        content: [{ text: m.content }]
+                    }));
+
+                    bodyPayload = {
+                        system: systemMsg ? [{ text: systemMsg }] : [],
+                        messages: userMsgs,
+                        inferenceConfig: {
+                            maxTokens: 1000,
+                            temperature: 0.3
+                        }
+                    };
+                } else {
+                    // Prompt formatting for LLaMA 3
+                    const fullPrompt = messages.map(m => `<|start_header_id|>${m.role}<|end_header_id|>\n\n${m.content}<|eot_id|>`).join('\n') + '\n<|start_header_id|>assistant<|end_header_id|>\n\n';
+                    bodyPayload = {
+                        prompt: fullPrompt,
+                        max_gen_len: 1000,
+                        temperature: 0.3
+                    };
+                }
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${openrouterKey}`,
-                        'HTTP-Referer': req.headers.referer || 'https://janvi-aika-dashboard.vercel.app',
-                        'X-Title': 'Janvi AI Assistance',
+                        'Authorization': `Bearer ${bedrockKey}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        model: currentModel,
-                        messages: messages,
-                        temperature: 0.3,
-                        max_tokens: 600
-                    })
+                    body: JSON.stringify(bodyPayload)
                 });
 
                 if (response.ok) {
                     const data = await response.json();
-                    return res.status(200).json(data);
+                    let textOutput = '';
+                    if (targetModel.type === 'nova') {
+                        textOutput = data.output?.message?.content[0]?.text;
+                    } else {
+                        textOutput = data.generation;
+                    }
+
+                    if (textOutput) {
+                        return res.status(200).json({
+                            model: targetModel.name,
+                            choices: [{ message: { role: 'assistant', content: textOutput } }]
+                        });
+                    }
                 } else {
-                    const errData = await response.json().catch(() => ({}));
-                    console.warn(`Model ${currentModel} returned ${response.status}:`, errData);
-                    lastError = new Error(`Model ${currentModel} returned ${response.status}: ${errData.error?.message || response.statusText}`);
+                    const errTxt = await response.text().catch(() => '');
+                    console.warn(`AWS Bedrock model ${targetModel.id} returned ${response.status}:`, errTxt);
+                    lastError = new Error(`AWS Bedrock model ${targetModel.id} status ${response.status}`);
                 }
             } catch (err) {
-                console.warn(`Model ${currentModel} error:`, err.message);
+                console.warn(`AWS Bedrock error with ${targetModel.id}:`, err.message);
                 lastError = err;
             }
         }
 
-        return res.status(502).json({ error: { message: lastError ? lastError.message : 'All AI models were temporarily busy.' } });
+        return res.status(502).json({ error: { message: lastError ? lastError.message : 'AWS Bedrock service temporarily unavailable.' } });
     } catch (err) {
         return res.status(500).json({ error: { message: err.message || 'Server Internal Error' } });
     }
