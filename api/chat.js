@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
                         system: [{ text: systemMsg }],
                         messages: userMsgs,
                         inferenceConfig: {
-                            maxTokens: 1000,
+                            maxTokens: 3500,
                             temperature: 0.3
                         }
                     };
@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
                     const fullPrompt = messages.map(m => `<|start_header_id|>${m.role}<|end_header_id|>\n\n${m.content}<|eot_id|>`).join('\n') + '\n<|start_header_id|>assistant<|end_header_id|>\n\n';
                     bodyPayload = {
                         prompt: fullPrompt,
-                        max_gen_len: 1000,
+                        max_gen_len: 3500,
                         temperature: 0.3
                     };
                 }

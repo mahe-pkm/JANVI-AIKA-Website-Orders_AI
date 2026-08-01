@@ -735,7 +735,7 @@ ${contextText}`;
                         system: [{ text: systemPrompt || 'You are Janvi AI Assistance' }],
                         messages: userMsgs,
                         inferenceConfig: {
-                            maxTokens: 1000,
+                            maxTokens: 3500,
                             temperature: 0.3
                         }
                     };
@@ -964,7 +964,13 @@ ${contextText}`;
             let tableBody = [];
 
             for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
+                let line = lines[i].trim();
+
+                // Table Auto-Repair Engine: Auto-append missing trailing pipe for dangles or cutoff rows
+                if (line.startsWith('|') && !line.endsWith('|')) {
+                    line = line + ' |';
+                }
+
                 const isTableLine = line.startsWith('|') && line.endsWith('|');
 
                 if (isTableLine) {
