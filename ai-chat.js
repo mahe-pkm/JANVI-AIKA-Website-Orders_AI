@@ -24,6 +24,44 @@
             this.initElements();
             this.initListeners();
             this.updateKeyBadge();
+            if (this.isAuthenticated) {
+                this.loadChatHistory();
+            }
+        }
+
+        saveChatHistory() {
+            try {
+                // Persist up to 40 previous turns in browser localStorage
+                const historyToSave = this.history.slice(-40);
+                localStorage.setItem('janvi_ai_chat_history', JSON.stringify(historyToSave));
+            } catch (e) {
+                console.warn('Failed to save chat history to localStorage:', e);
+            }
+        }
+
+        loadChatHistory() {
+            try {
+                const saved = localStorage.getItem('janvi_ai_chat_history');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        this.history = parsed;
+                        if (this.elements.messagesContainer) {
+                            this.elements.messagesContainer.innerHTML = '';
+                            this.addWelcomeMessage();
+                            parsed.forEach(msg => {
+                                if (msg.role && msg.content) {
+                                    this.appendMessage(msg.role, msg.content, false);
+                                }
+                            });
+                        }
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to load chat history from localStorage:', e);
+            }
+            return false;
         }
 
         initElements() {
@@ -100,7 +138,10 @@
             if (this.elements.clearBtn) {
                 this.elements.clearBtn.addEventListener('click', () => {
                     this.history = [];
-                    this.elements.messagesContainer.innerHTML = '';
+                    localStorage.removeItem('janvi_ai_chat_history');
+                    if (this.elements.messagesContainer) {
+                        this.elements.messagesContainer.innerHTML = '';
+                    }
                     this.addWelcomeMessage();
                 });
             }
@@ -731,9 +772,13 @@ ${contextText}`;
             throw lastErr || new Error('AWS Bedrock service is temporarily busy. Please click Regenerate to try again.');
         }
 
-        appendMessage(role, content) {
+        appendMessage(role, content, shouldSave = true) {
             const container = this.elements.messagesContainer;
             if (!container) return;
+
+            if (shouldSave) {
+                this.saveChatHistory();
+            }
 
             const msgDiv = document.createElement('div');
             msgDiv.className = `ai-message ai-message-${role}`;
