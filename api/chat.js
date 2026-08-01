@@ -42,15 +42,15 @@ module.exports = async (req, res) => {
                 let bodyPayload = {};
 
                 if (targetModel.type === 'nova') {
-                    const systemMsg = messages.find(m => m.role === 'system')?.content || '';
+                    const systemMsg = messages.find(m => m.role === 'system')?.content || 'You are the expert AI Analytics Assistant named Janvi AI Assistance for JANVI AIKA.';
                     const userMsgs = messages.filter(m => m.role !== 'system').map(m => ({
                         role: m.role === 'assistant' ? 'assistant' : 'user',
-                        content: [{ text: m.content }]
+                        content: [{ text: m.content || ' ' }]
                     }));
 
                     bodyPayload = {
-                        system: systemMsg ? [{ text: systemMsg }] : [],
-                        messages: userMsgs,
+                        system: [{ text: systemMsg }],
+                        messages: userMsgs.length ? userMsgs : [{ role: 'user', content: [{ text: 'Hello' }] }],
                         inferenceConfig: {
                             maxTokens: 1000,
                             temperature: 0.3
