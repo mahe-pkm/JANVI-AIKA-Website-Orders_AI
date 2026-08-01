@@ -676,14 +676,23 @@ ${contextText}`;
                 const modelId = bedrockModels[i];
                 try {
                     const bedrockUrl = `https://bedrock-runtime.us-east-1.amazonaws.com/model/${modelId}/invoke`;
-                    const userMsgs = messagesPayload.filter(m => m.role !== 'system').map(m => ({
+                    let userMsgs = messagesPayload.filter(m => m.role !== 'system').map(m => ({
                         role: m.role === 'assistant' ? 'assistant' : 'user',
-                        content: [{ text: m.content || ' ' }]
+                        content: [{ text: (m.content || ' ').trim() || ' ' }]
                     }));
+
+                    // Amazon Nova Requirement: First message MUST use 'user' role
+                    while (userMsgs.length > 0 && userMsgs[0].role !== 'user') {
+                        userMsgs.shift();
+                    }
+
+                    if (userMsgs.length === 0) {
+                        userMsgs = [{ role: 'user', content: [{ text: 'Hello' }] }];
+                    }
 
                     const bedrockBody = {
                         system: [{ text: systemPrompt || 'You are Janvi AI Assistance' }],
-                        messages: userMsgs.length ? userMsgs : [{ role: 'user', content: [{ text: 'Hello' }] }],
+                        messages: userMsgs,
                         inferenceConfig: {
                             maxTokens: 1000,
                             temperature: 0.3
