@@ -302,6 +302,50 @@ I analyze real-time website orders, financial performance, and delivery metrics.
             }
         }
 
+        parseOrderItems(order) {
+            const rawItems = String(order.itemsOrdered || order.items || '').split(',').map(s => s.trim()).filter(Boolean);
+            const rawSkus = String(order.sku || '').split(',').map(s => s.trim()).filter(Boolean);
+            const rawCats = String(order.category || '').split(',').map(s => s.trim()).filter(Boolean);
+
+            const count = Math.max(rawItems.length, rawSkus.length, rawCats.length, 1);
+            const items = [];
+
+            for (let i = 0; i < count; i++) {
+                items.push({
+                    name: rawItems[i] || rawItems[0] || 'Product Item',
+                    sku: rawSkus[i] || rawSkus[0] || 'N/A',
+                    category: (rawCats[i] || rawCats[0] || 'GENERAL').toUpperCase()
+                });
+            }
+
+            return items;
+        }
+
+        getCarrierDetails(order) {
+            const awb = String(order.awbCode || '').trim();
+            const link = String(order.trackingLink || '').trim();
+            const comments = String(order.shiprocketComments || '').trim();
+            const linkLower = link.toLowerCase();
+
+            let carrier = 'Shiprocket Partner';
+            if (linkLower.includes('shadowfax') || awb.startsWith('SF')) {
+                carrier = 'Shadowfax Express';
+            } else if (awb.startsWith('SRSP') || awb.startsWith('SRSC') || linkLower.includes('shiprocket')) {
+                carrier = 'Shiprocket Direct';
+            } else if (awb.startsWith('7D') || awb.startsWith('1904') || awb.startsWith('1411') || awb.startsWith('1432') || awb.startsWith('371')) {
+                carrier = 'Delhivery Express';
+            } else if (awb.startsWith('370')) {
+                carrier = 'DTDC Express';
+            }
+
+            return {
+                carrier,
+                awb: awb && awb !== '-' ? awb : 'Not Assigned',
+                trackingUrl: link && link !== '-' ? link : null,
+                comments: comments && comments !== '-' ? comments : null
+            };
+        }
+
         // Extracts live summarized context from Active Orders Master Table and window.state
         getDashboardContext(userQuery = '') {
             const masterOrders = (window.state && Array.isArray(window.state.orders)) ? window.state.orders : [];
@@ -329,10 +373,19 @@ I analyze real-time website orders, financial performance, and delivery metrics.
                 }
             }
 
+            if (!sourceOrders || !sourceOrders.length) {
+                return "No order data currently available in view.";
+            }
+
             const totalMasterCount = masterOrders.length || sourceOrders.length;
             const activeTableCount = sourceOrders.length;
 
             let totalRevenue = 0;
+            let totalUnitsSold = 0;
+            let categoryUnits = {};
+            let carrierCounts = {};
+            let skuUnits = {};
+
             let pipelineCounts = {
                 delivered: 0,
                 returned: 0,
@@ -344,32 +397,63 @@ I analyze real-time website orders, financial performance, and delivery metrics.
             };
 
             sourceOrders.forEach(o => {
-                const rev = parseFloat(o.totalPrice || o.amount || o.Total || 0);
+                const rev = parseFloat(o.totalPrice || o.price || 0);
                 totalRevenue += rev;
 
                 const stage = this.getPipelineStage(o);
                 pipelineCounts[stage] = (pipelineCounts[stage] || 0) + 1;
+
+                // Carrier breakdown
+                const carrierInfo = this.getCarrierDetails(o);
+                carrierCounts[carrierInfo.carrier] = (carrierCounts[carrierInfo.carrier] || 0) + 1;
+
+                // Multi-item SKU & Unit counting
+                const parsedItems = this.parseOrderItems(o);
+                totalUnitsSold += parsedItems.length;
+
+                parsedItems.forEach(item => {
+                    categoryUnits[item.category] = (categoryUnits[item.category] || 0) + 1;
+                    if (item.sku && item.sku !== 'N/A') {
+                        skuUnits[item.sku] = (skuUnits[item.sku] || 0) + 1;
+                    }
+                });
             });
 
-            // Smart Exact Match Extractor for user query (Customer Name, Order #, City, Product, etc.)
+            // Top Best-Selling SKUs by volume
+            const sortedSkus = Object.entries(skuUnits)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([sku, count], idx) => `${idx + 1}. SKU: \`${sku}\` ➔ **${count} units sold**`)
+                .join('\n');
+
+            // Category breakdown text
+            const catSummaryText = Object.entries(categoryUnits)
+                .map(([cat, count]) => `• **${cat}**: ${count} Units`)
+                .join(' | ');
+
+            // Carrier breakdown text
+            const carrierSummaryText = Object.entries(carrierCounts)
+                .map(([c, count]) => `• **${c}**: ${count} Orders`)
+                .join(' | ');
+
+            // Smart Exact Match Extractor for user query (Customer Name, Order #, City, SKU, etc.)
             let exactMatches = [];
             const q = (userQuery || '').trim().toLowerCase();
             
             if (q) {
-                // Extract search terms (ignore generic words)
                 const terms = q.replace(/[^a-zA-Z0-9\s#]/g, '')
                                .split(/\s+/)
                                .filter(t => t.length >= 2 && !['get', 'me', 'the', 'order', 'details', 'of', 'for', 'show', 'what', 'is', 'where', 'status', 'find'].includes(t));
 
                 exactMatches = sourceOrders.filter(o => {
-                    const orderIdStr = String(o.orderNo || o.order_id || '').toLowerCase();
+                    const orderIdStr = String(o.orderNo || o.id || '').toLowerCase();
                     const custNameStr = String(o.customerName || o.customer || '').toLowerCase();
-                    const cityStr = String(o.city || '').toLowerCase();
+                    const cityStr = String(o.city || o.shippingCity || '').toLowerCase();
                     const itemStr = String(o.itemsOrdered || o.items || '').toLowerCase();
                     const skuStr = String(o.sku || '').toLowerCase();
                     const catStr = String(o.category || '').toLowerCase();
+                    const carrierStr = this.getCarrierDetails(o).carrier.toLowerCase();
 
-                    // Check exact or partial term match
                     return terms.some(t => {
                         const cleanT = t.replace('#', '');
                         return orderIdStr.includes(cleanT) ||
@@ -377,26 +461,33 @@ I analyze real-time website orders, financial performance, and delivery metrics.
                                cityStr.includes(t) ||
                                itemStr.includes(t) ||
                                skuStr.includes(t) ||
-                               catStr.includes(t);
+                               catStr.includes(t) ||
+                               carrierStr.includes(t);
                     });
                 });
             }
 
             let exactMatchSection = '';
             if (exactMatches.length > 0) {
-                const matchRows = exactMatches.slice(0, 15).map(o => 
-                    `• ORDER #${o.orderNo} | Customer Name: "${o.customerName}" | Date: ${o.dateOfOrder} | Price: ₹${o.totalPrice} | Payment: ${o.paymentMethod} | Logistics Status: ${o.logisticsStatus || o.fulfillmentStatus || 'UNKNOWN'} | Stage: ${this.getPipelineStage(o).toUpperCase()} | City: ${o.city} | PIN: ${o.pincode || o.pin || '-'} | Items: ${o.itemsOrdered} | SKU: ${o.sku || '-'} | Category: ${o.category || '-'} | Returned: ${o.returned ? 'Yes' : 'No'}`
-                ).join('\n');
+                const matchRows = exactMatches.slice(0, 15).map(o => {
+                    const items = this.parseOrderItems(o);
+                    const carrier = this.getCarrierDetails(o);
+                    const itemListStr = items.map(it => `${it.name} [SKU: ${it.sku} | CAT: ${it.category}]`).join(' + ');
+                    return `• ORDER #${o.orderNo} | Customer: "${o.customerName}" | Date: ${o.dateOfOrder || o.orderDate} | Price: ₹${o.totalPrice || o.price} | Payment: ${o.paymentMethod || o.paymentMode} | Stage: ${this.getPipelineStage(o).toUpperCase()} | Logistics Status: ${o.logisticsStatus || o.fulfillmentStatus} | Carrier: ${carrier.carrier} | AWB: ${carrier.awb} | City: ${o.city} | Total Products: ${items.length} Units (${itemListStr}) | Comments: ${carrier.comments || 'None'}`;
+                }).join('\n');
+
                 exactMatchSection = `
-🎯 EXACT HIGH-PRIORITY SEARCH MATCHES FOUND FOR USER QUERY ("${userQuery}"):
+🎯 TARGET HIGH-PRIORITY SEARCH SPOTLIGHT MATCHES ("${userQuery}"):
 ${matchRows}
 `;
             }
 
-            // Compact Index of ALL 173 Orders in Master Dataset
-            const allOrdersCompactIndex = sourceOrders.map(o => 
-                `• #${o.orderNo} | ${o.customerName} | ₹${o.totalPrice} | ${o.dateOfOrder} | ${o.paymentMethod} | ${this.getPipelineStage(o).toUpperCase()} (${o.logisticsStatus || o.fulfillmentStatus}) | ${o.city} | ${o.itemsOrdered}`
-            ).join('\n');
+            // Compact Multi-Item Master Index for ALL orders
+            const allOrdersCompactIndex = sourceOrders.map(o => {
+                const items = this.parseOrderItems(o);
+                const carrier = this.getCarrierDetails(o);
+                return `• #${o.orderNo} | ${o.customerName} | ₹${o.totalPrice || o.price} | ${o.dateOfOrder || o.orderDate} | ${o.paymentMethod || o.paymentMode} | ${this.getPipelineStage(o).toUpperCase()} (${o.logisticsStatus || o.fulfillmentStatus}) | Carrier: ${carrier.carrier} | City: ${o.city} | ${items.length} Products [${items.map(i => i.name).join(', ')}]`;
+            }).join('\n');
 
             const delPct = activeTableCount ? ((pipelineCounts.delivered / activeTableCount) * 100).toFixed(1) : 0;
             const retPct = activeTableCount ? ((pipelineCounts.returned / activeTableCount) * 100).toFixed(1) : 0;
@@ -406,20 +497,30 @@ ${matchRows}
             const unfPct = activeTableCount ? (((pipelineCounts.unfulfilled + pipelineCounts.pickup) / activeTableCount) * 100).toFixed(1) : 0;
 
             return `
-=== ACTIVE ORDERS MASTER TABLE & PIPELINE CONTEXT ===
-Total Master Dataset Orders: ${totalMasterCount}
+=== ACTIVE MASTER ORDERS & EXECUTIVE ANALYTICS CONTEXT ===
+Total Master Orders: ${totalMasterCount}
 Active Matching Orders in View: ${activeTableCount}
-Filtered View Total Revenue: ₹${Math.round(totalRevenue).toLocaleString('en-IN')}
+Total Revenue: ₹${Math.round(totalRevenue).toLocaleString('en-IN')}
+Total Individual Product Units Sold: ${totalUnitsSold} Units
 
-Exact Pipeline Metrics Breakdown:
+Category Unit Distribution:
+${catSummaryText}
+
+Logistics Carrier Distribution:
+${carrierSummaryText}
+
+Exact Pipeline Stage Breakdown:
 - Delivered Orders (Successful): ${pipelineCounts.delivered} (${delPct}%)
-- In Transit / Shipped / Hub: ${pipelineCounts.transit} (${traPct}%)
+- In Transit / Destination Hub: ${pipelineCounts.transit} (${traPct}%)
 - Returned Orders: ${pipelineCounts.returned} (${retPct}%)
 - RTO / Denied Orders: ${pipelineCounts.denied} (${rtoPct}%)
 - Canceled Orders: ${pipelineCounts.canceled} (${canPct}%)
-- New / Unfulfilled / Pending: ${pipelineCounts.unfulfilled + pipelineCounts.pickup} (${unfPct}%)
+- New / Unfulfilled: ${pipelineCounts.unfulfilled + pipelineCounts.pickup} (${unfPct}%)
+
+Top 10 SKUs Volume Leaderboard:
+${sortedSkus}
 ${exactMatchSection}
-=== COMPLETE MASTER DATASET COMPACT INDEX (${sourceOrders.length} TOTAL ORDERS) ===
+=== COMPLETE MASTER DATASET COMPACT INDEX (${sourceOrders.length} ORDERS) ===
 ${allOrdersCompactIndex}
 =====================================================
 `;
@@ -431,28 +532,53 @@ ${allOrdersCompactIndex}
             const sourceOrders = window.state?.orders || window.DASHBOARD_DATA?.masterOrders || [];
             if (!sourceOrders || !sourceOrders.length) return null;
 
-            // 1. Exact Order Number Search (e.g. #1079 or 1079)
+            // 1. Exact Order Number Search (e.g. #1111 or #1079)
             const orderMatch = q.match(/#?(\d{4})/);
             if (orderMatch) {
                 const targetId = `#${orderMatch[1]}`;
-                const found = sourceOrders.find(o => String(o.orderNo || '').trim() === targetId || String(o.id || '').trim() === targetId);
+                const found = sourceOrders.find(o => String(o.orderNo || o.id || '').trim() === targetId);
                 if (found) {
                     const priceFormatted = Math.round(Number(found.totalPrice || found.price || 0)).toLocaleString('en-IN');
+                    const parsedItems = this.parseOrderItems(found);
+                    const carrier = this.getCarrierDetails(found);
+
+                    // Calculate category breakdown for this order
+                    const catCounts = {};
+                    parsedItems.forEach(i => { catCounts[i.category] = (catCounts[i.category] || 0) + 1; });
+                    const catSummary = Object.entries(catCounts).map(([c, count]) => `${count} ${c}`).join(', ');
+
+                    // Itemized product table rows
+                    const itemRows = parsedItems.map((item, idx) => 
+                        `| **${idx + 1}** | **${item.name}** | \`${item.sku}\` | \`${item.category}\` |`
+                    ).join('\n');
+
+                    // Tracking link formatting
+                    const trackingDisplay = carrier.trackingUrl 
+                        ? `[${carrier.awb} ↗](${carrier.trackingUrl})` 
+                        : `\`${carrier.awb}\``;
+
                     return `### 📦 Order Details for ${found.orderNo}
 
 | Attribute | Details |
 | :--- | :--- |
 | **Order Number** | **${found.orderNo}** |
 | **Customer Name** | **${found.customerName || 'N/A'}** |
-| **Order Status** | \`${String(found.orderStatus || found.status || 'UNKNOWN').toUpperCase()}\` |
+| **Order Status** | \`${String(found.logisticsStatus || found.fulfillmentStatus || 'UNKNOWN').toUpperCase()}\` |
 | **Total Price** | **₹${priceFormatted}** |
-| **Payment Mode** | **${found.paymentMode || 'COD'}** |
-| **City / State** | ${found.shippingCity || found.city || 'N/A'}, ${found.shippingState || found.state || 'N/A'} |
-| **SKU / Product** | ${found.sku || 'N/A'} |
-| **Order Date** | ${found.orderDate || 'N/A'} |
-| **Logistics Carrier** | ${found.courierName || found.logistics || 'Standard Shipping'} |
+| **Total Products** | **${parsedItems.length} Products** (${catSummary}) |
+| **Payment Mode** | **${found.paymentMethod || found.paymentMode || 'COD'}** |
+| **City / State** | ${found.city || found.shippingCity || 'N/A'}, ${found.state || found.shippingState || 'N/A'} |
+| **Shipping Carrier** | **${carrier.carrier}** |
+| **AWB Tracking** | ${trackingDisplay} |
+| **Order Date** | ${found.dateOfOrder || found.orderDate || 'N/A'} |
+| **Delivery Comments** | ${carrier.comments || 'None'} |
 
-*Order retrieved directly from Live Master Table.*`;
+#### 🛍️ Itemized Product Breakdown (${parsedItems.length} Items):
+| # | Product Name | SKU | Category |
+| :--- | :--- | :--- | :--- |
+${itemRows}
+
+*Order retrieved directly from Live Master Dataset.*`;
                 }
             }
 
